@@ -32,6 +32,6 @@
         </form>
     </div>
     
-    <p style="margin-top: 30px; color: #666;">This is a placeholder page. Your frontend team can style this later.</p>
+    
 </body>
 </html>
