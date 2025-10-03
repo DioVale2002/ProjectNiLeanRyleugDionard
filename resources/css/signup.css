@@ -1,0 +1,180 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins'; 
+    height: 100%;
+    overflow-x: hidden; 
+    scroll-behavior: smooth;
+}
+
+body {
+    background: url('../img/background.jpg') no-repeat center center;
+    background-size: cover;   
+}
+
+.container {
+    display: flex;
+    justify-content: center;  
+    align-items: center;      
+    gap: 136px;
+    min-height: 94vh;        
+}
+
+.catchphrase{
+    width: 700px;
+    color: #FFFFFF;
+    font-family: 'Poppins', sans-serif;
+}
+
+.catchphrase h1{
+    font-weight: 750;
+    font-size: 32px;
+    white-space: nowrap;
+}
+
+.catchphrase p{
+    font-weight: 750;
+    font-size: 24px;
+
+}
+
+
+.login-form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 540px;
+    height: 723px;
+    background-color: #FFFFFF;
+    border-radius: 40px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo-wrapper {
+    margin-bottom: 0; 
+}
+
+.logo-wrapper img { 
+    height: auto;
+    display: block;
+    margin: 0 auto; 
+}
+
+.login-form h2{
+    font-weight: 700;
+    font-size: 40px;
+    margin-bottom: 44px;
+    margin-top: 0;
+}
+
+.form-group {
+    width: 395px;
+    margin-bottom: 19px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group input{
+    
+    padding: 13px 10px 13px 11px;
+    font-size: 24px;
+    border-radius: 10px;
+    border: 0.4px solid #ccc;
+}
+
+.login-form button{
+    width: 395px;
+    height: 55px;
+    background-color: #FCAE42;
+    color: black;
+    font-size: 24px;
+    font-weight: 400;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: 14px;
+}
+
+.already{
+    width: 395px;
+    font-family: 'poppins', sans-serif;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.login-form a {
+  color: #ED1B24; 
+  text-decoration: none;
+}
+
+.terms{
+    width: 395px;
+    font-family: 'poppins', sans-serif;
+    text-align: left;
+}
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1.4;
+}
+
+.custom-checkbox input {
+  display: none;
+}
+
+
+.custom-checkbox .checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #000000; 
+  border-radius: 50%;  
+  position: relative;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+
+.custom-checkbox input:checked + .checkmark::after {
+  content: "✔";
+  position: absolute;
+  top: 45%;
+  left: 65%;
+  transform: translate(-50%, -55%);
+  font-size: 25px;
+  color: #ED1B24; 
+  font-weight: bold;
+}
+
+
+.custom-checkbox a {
+  color: #ED1B24;   
+  text-decoration: none;
+}
+
+
+.copyright{
+    margin-left: 50px;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 0;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+.copyright p{
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.copyright a{
+    color: #FFFFFF;
+    text-decoration: none;
+    margin-right: 39px;
+}
+

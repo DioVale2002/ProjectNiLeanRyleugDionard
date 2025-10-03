@@ -20,19 +20,19 @@
                 <img src="img/logo.png" alt="logo">
             </div>
             <h2>Sign in to NCB</h2>
-            <form>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
                 <div class="form-group">
-                    <input type="email" placeholder="Email" required>
+                    <input type="email" name="email" placeholder="Email" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" placeholder="Password" required>
+                    <input type="password" name="password" placeholder="Password" required>
                 </div>
                 <button type="submit" class="btn">Sign In</button>
             </form>
             <p class="already">
-                Don’t have an account? <a href="signup.html">Sign up</a>
+                Don’t have an account? <a href="{{ route('register') }}">Register here</a>
             </p>
-            
         </div>
     </div>
      <div class="copyright">
