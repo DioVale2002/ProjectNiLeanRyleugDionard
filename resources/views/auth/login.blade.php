@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    @vite(['resources/css/login.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="../client/css/login.css">  
     <title>New Century Books</title>
 </head>
 <body>
@@ -17,7 +17,7 @@
         </div>
         <div class="login-form">
             <div class="logo-wrapper">
-                <img src="/resources/img/logo.png" alt="logo">
+                <img src="img/logo.png" alt="logo">
             </div>
             <h2>Sign in to NCB</h2>
             <form method="POST" action="{{ route('login') }}">
