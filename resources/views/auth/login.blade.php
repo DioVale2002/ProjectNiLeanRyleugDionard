@@ -17,7 +17,7 @@
         </div>
         <div class="login-form">
             <div class="logo-wrapper">
-                <img src="img/logo.png" alt="logo">
+                <img src="/resources/img/logo.png" alt="logo">
             </div>
             <h2>Sign in to NCB</h2>
             <form method="POST" action="{{ route('login') }}">
