@@ -42,6 +42,12 @@
     background-color: white;
 }
 
+.active{
+    background-color: #F54E4E;
+    color: white;
+    border-radius: 5px;
+}
+
 .sideNavLink:hover {
     background-color: #F54E4E;
     color: white;

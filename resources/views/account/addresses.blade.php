@@ -40,7 +40,7 @@
                         <img src="/images/Icon Delivery.png" class="navIcon" alt="Icon Delivery">
                         <p>My Orders</p>
                     </a>
-                    <a href="{{ route('account.addresses') }}" class="sideNavLink">
+                    <a href="{{ route('account.addresses') }}" class="sideNavLink active">
                         <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
                         <p>Adresses</p>
                     </a>
