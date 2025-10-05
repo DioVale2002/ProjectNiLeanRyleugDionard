@@ -52,10 +52,13 @@
                         <p>Archived Orders</p>
                     </a>
                     <div class="divider"></div>
-                    <a href="{{ route('logout') }}" class="sideNavLink">
-                        <img src="/images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
-                        <p>Logout</p>
-                    </a>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="sideNavLink">
+                            <img src="/images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
+                            <p>Logout</p>
+                        </button>
+                    </form>
             </div>
 
 
