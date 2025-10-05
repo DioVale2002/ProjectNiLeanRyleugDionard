@@ -154,6 +154,6 @@ class AuthTest extends TestCase
         $this->actingAs($customer, 'customer');
 
         $response = $this->get('/dashboard');
-        $response->assertStatus(200);
+        $response->assertRedirect('/account/orders');
     }
 }

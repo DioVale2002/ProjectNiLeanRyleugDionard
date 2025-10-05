@@ -21,27 +21,27 @@
             </div>
             <h2>Create your account</h2>
 
-            @if ($errors->any())
+            <?php if($errors->any()): ?>
                 <div class="error">
-                    @foreach ($errors->all() as $error)
-                        <p>{{ $error }}</p>
-                    @endforeach
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <p><?php echo e($error); ?></p>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            <form method="POST" action="{{ route('register') }}">
-                @csrf
+            <form method="POST" action="<?php echo e(route('register')); ?>">
+                <?php echo csrf_field(); ?>
                 <div class="form-group">
-                    <input type="text" name="first_name" placeholder="First Name" value="{{ old('first_name') }}" required>
+                    <input type="text" name="first_name" placeholder="First Name" value="<?php echo e(old('first_name')); ?>" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="last_name" placeholder="Last Name" value="{{ old('last_name') }}" required>
+                    <input type="text" name="last_name" placeholder="Last Name" value="<?php echo e(old('last_name')); ?>" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="contact_num" placeholder="Contact Number" value="{{ old('contact_num') }}" required>
+                    <input type="text" name="contact_num" placeholder="Contact Number" value="<?php echo e(old('contact_num')); ?>" required>
                 </div>
                 <div class="form-group">
-                    <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                    <input type="email" name="email" placeholder="Email" value="<?php echo e(old('email')); ?>" required>
                 </div>
                 <div class="form-group">
                     <input type="password" name="password" placeholder="Password (8+ characters)" required>
@@ -59,7 +59,7 @@
                 <button type="submit" class="btn">Confirm</button>
             </form>
             <p class="already">
-                Already have an account? <a href="{{ route('login') }}">Sign in</a>
+                Already have an account? <a href="<?php echo e(route('login')); ?>">Sign in</a>
             </p>
         </div>
     </div>
@@ -68,4 +68,4 @@
         <p><a href="">Privacy Policy&nbsp;</a><a href="">Terms of Service&nbsp;</a></p>
     </div>
 </body>
-</html>
+</html><?php /**PATH /var/www/html/resources/views/auth/register.blade.php ENDPATH**/ ?>

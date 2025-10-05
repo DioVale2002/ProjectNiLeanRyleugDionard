@@ -3,46 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Bookstore</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
-        input { width: 100%; padding: 8px; margin: 5px 0 15px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .error { color: red; font-size: 14px; }
-        .success { color: green; font-size: 14px; }
-        a { color: #007bff; text-decoration: none; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/login.css">  
+    <title>New Century Books</title>
 </head>
 <body>
-    <h2>Login</h2>
-    
-    <?php if(session('success')): ?>
-        <div class="success">
-            <p><?php echo e(session('success')); ?></p>
+    <div class="container">
+        <div class="catchphrase">
+            <h1>Welcome Back to Your Bookstore</h1>
+            <p>Access your textbooks, references, and academic resources anytime. Log in and continue your journey to smarter learning and greater success.</p>  
         </div>
-    <?php endif; ?>
+        <div class="login-form">
+            <div class="logo-wrapper">
+                <img src="/img/logo.png" alt="logo">
+            </div>
+            <h2>Sign in to NCB</h2>
 
-    <?php if($errors->any()): ?>
-        <div class="error">
-            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <p><?php echo e($error); ?></p>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php if(session('success')): ?>
+                <div class="success">
+                    <p><?php echo e(session('success')); ?></p>
+                </div>
+            <?php endif; ?>
+
+            <?php if($errors->any()): ?>
+                <div class="error">
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <p><?php echo e($error); ?></p>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="<?php echo e(route('login')); ?>">
+                <?php echo csrf_field(); ?>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" value="<?php echo e(old('email')); ?>" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+            <p class="already">
+                Don't have an account? <a href="<?php echo e(route('register')); ?>">Sign up</a>
+            </p>
         </div>
-    <?php endif; ?>
-
-    <form method="POST" action="<?php echo e(route('login')); ?>">
-        <?php echo csrf_field(); ?>
-        
-        <label>Email</label>
-        <input type="email" name="email" value="<?php echo e(old('email')); ?>" required>
-        
-        <label>Password</label>
-        <input type="password" name="password" required>
-        
-        <button type="submit">Login</button>
-    </form>
-    
-    <p style="margin-top: 20px;">Don't have an account? <a href="<?php echo e(route('register')); ?>">Register here</a></p>
+    </div>
+    <div class="copyright">
+        <p> © 2025 New Century Books. All rights reserved.</p>
+        <p><a href="">Privacy Policy&nbsp;</a><a href="">Terms of Service&nbsp;</a></p>
+    </div>
 </body>
 </html><?php /**PATH /var/www/html/resources/views/auth/login.blade.php ENDPATH**/ ?>
