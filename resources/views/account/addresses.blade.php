@@ -10,12 +10,12 @@
 
 <body>
     <header class="header">
-        <a href="#"></a><img class="logo" src="images/Logo(1).png" alt="logo"></a>
+        <a href="#"></a><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
         <input class="search-bar" type="text" placeholder="Search ">
         <div class="navigation">
             <p class="cusname">Customer Name</p>
-            <a href="#"><img src="images/User.png" alt="Profile Picture"></a>
-            <a href="#"><img src="images/cart.png" alt="cart"></a>
+            <a href="#"><img src="/images/User.png" alt="Profile Picture"></a>
+            <a href="#"><img src="/images/cart.png" alt="cart"></a>
         </div>
     </header>
     <nav class="navbar">
@@ -37,24 +37,24 @@
         <div class="mainContainer">
             <div class="sideNav">
                     <a href="{{ route('account.orders') }}" class="sideNavLink">
-                        <img src="images/Icon Delivery.png" class="navIcon" alt="Icon Delivery">
+                        <img src="/images/Icon Delivery.png" class="navIcon" alt="Icon Delivery">
                         <p>My Orders</p>
                     </a>
                     <a href="{{ route('account.addresses') }}" class="sideNavLink">
-                        <img src="images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
+                        <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
                         <p>Adresses</p>
                     </a>
                     <a href="{{ route('account.security') }}" class="sideNavLink">
-                        <img src="images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
+                        <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
                         <p>Login & Security</p>
                     </a>
                     <a href="{{ route('account.archived') }}" class="sideNavLink">
-                        <img src="images/ArchiveIcon.png" class="navIcon" alt="Archive Orders Icon">
+                        <img src="/images/ArchiveIcon.png" class="navIcon" alt="Archive Orders Icon">
                         <p>Archived Orders</p>
                     </a>
                     <div class="divider"></div>
                     <a href="{{ route('logout') }}" class="sideNavLink">
-                        <img src="images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
+                        <img src="/images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
                         <p>Logout</p>
                     </a>
             </div>
