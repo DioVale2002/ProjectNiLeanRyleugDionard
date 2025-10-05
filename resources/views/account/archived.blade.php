@@ -3,31 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archived Orders - Bookstore</title>
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/userAccount.css">
+    <title>Login & Security</title>
 </head>
 <body>
-    <div class="account-container">
-        <h2>Your Account</h2>
-        <p>User Account Access: {{ Auth::guard('customer')->user()->email }}</p>
+    <header class="header">
+        <a href="#"></a><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
+        <input class="search-bar" type="text" placeholder="Search ">
+        <div class="navigation">
+            <p class="cusname">Customer Name</p>
+            <a href="#"><img src="/images/User.png" alt="Profile Picture"></a>
+            <a href="#"><img src="/images/cart.png" alt="cart"></a>
+        </div>
+    </header>
+    <nav class="navbar">
+        <div class="navlinks-container">
+            <a href="#">BOOKS</a>
+            <a href="#">E-BOOKS</a>
+            <a href="#">BEST SELLERS</a>
+            <a href="#">NEW</a>
+            <a href="#">COLLECTIONS</a>
+        </div> 
+    </nav> 
 
-        <div class="sidebar">
-            <a href="{{ route('account.orders') }}">My Orders</a>
-            <a href="{{ route('account.addresses') }}">Your Addresses</a>
-            <a href="{{ route('account.security') }}">Login & Security</a>
-            <a href="{{ route('account.archived') }}" class="active">Archive Orders</a>
-            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                @csrf
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
+    <main>
+        <div class="accountheader">
+            <h1>Welcome</h1>
+            <p>Customer Name, Email: {{ Auth::guard('customer')->user()->email }}</p>
         </div>
 
-        <div class="content">
-            <h3>Archive Orders</h3>
-            <div class="no-orders">
-                <p>No orders yet</p>
+        <div class="mainContainer">
+            <div class="sideNav">
+                    <a href="{{ route('account.orders') }}" class="sideNavLink">
+                        <img src="/images/Icon Delivery.png" class="navIcon" alt="Icon Delivery">
+                        <p>My Orders</p>
+                    </a>
+                    <a href="{{ route('account.addresses') }}" class="sideNavLink">
+                        <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
+                        <p>Adresses</p>
+                    </a>
+                    <a href="{{ route('account.security') }}" class="sideNavLink">
+                        <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
+                        <p>Login & Security</p>
+                    </a>
+                    <a href="{{ route('account.archived') }}" class="sideNavLink active">
+                        <img src="/images/ArchiveIcon.png" class="navIcon" alt="Archive Orders Icon">
+                        <p>Archived Orders</p>
+                    </a>
+                    <div class="divider"></div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="sideNavLink">
+                            <img src="/images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
+                            <p>Logout</p>
+                        </button>
+                    </form>
             </div>
-        </div>
-    </div>
+
+            
+            <div class="mainContent">
+                <h1>Your Orders</h1>
+                <div class="divider"></div>
+                <h3 style="color: red; margin-top: 50px;">No Orders yet.</h3>
+            </div>
+            
+    </main>
 </body>
 </html>
+
+
+
+
+
+
