@@ -49,6 +49,7 @@
                 <div class="form-group">
                     <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
                 </div>
+                <button type="submit" class="btn">Confirm</button>
                 <div class="terms">
                     <label class="custom-checkbox">
                         <input type="checkbox" required>
@@ -56,7 +57,6 @@
                         I accept the<a href="#">&nbsp;Terms of Service</a> &nbsp;and&nbsp; <a href="#">Privacy Policy</a>
                     </label>
                 </div>
-                <button type="submit" class="btn">Confirm</button>
             </form>
             <p class="already">
                 Already have an account? <a href="{{ route('login') }}">Sign in</a>
