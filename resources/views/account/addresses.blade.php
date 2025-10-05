@@ -56,7 +56,7 @@
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="sideNavLink">
-                            <img src="images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
+                            <img src="/images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
                             <p>Logout</p>
                         </button>
                     </form>

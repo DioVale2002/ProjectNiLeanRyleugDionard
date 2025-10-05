@@ -38,6 +38,8 @@
     color: black;
     padding: 5px;
     align-items: center;
+    border-style: none;
+    background-color: white;
 }
 
 .sideNavLink:hover {
