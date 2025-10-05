@@ -35,7 +35,7 @@
 
         <div class="mainContainer">
             <div class="sideNav">
-                    <a href="{{ route('account.orders') }}" class="sideNavLink">
+                    <a href="{{ route('account.orders') }}" class="sideNavLink active">
                         <img src="/images/Icon Delivery.png" class="navIcon" alt="Icon Delivery">
                         <p>My Orders</p>
                     </a>

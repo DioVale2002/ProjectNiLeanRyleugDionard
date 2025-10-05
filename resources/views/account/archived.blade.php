@@ -47,7 +47,7 @@
                         <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
                         <p>Login & Security</p>
                     </a>
-                    <a href="{{ route('account.archived') }}" class="sideNavLink">
+                    <a href="{{ route('account.archived') }}" class="sideNavLink active">
                         <img src="/images/ArchiveIcon.png" class="navIcon" alt="Archive Orders Icon">
                         <p>Archived Orders</p>
                     </a>

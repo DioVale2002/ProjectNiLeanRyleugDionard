@@ -43,7 +43,7 @@
                         <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
                         <p>Adresses</p>
                     </a>
-                    <a href="{{ route('account.security') }}" class="sideNavLink">
+                    <a href="{{ route('account.security') }}" class="sideNavLink active">
                         <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
                         <p>Login & Security</p>
                     </a>
