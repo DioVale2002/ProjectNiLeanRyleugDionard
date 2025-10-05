@@ -16,12 +16,18 @@ Route::middleware('guest:customer')->group(function () {
 // Authenticated routes (logged in)
 Route::middleware('auth:customer')->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return redirect()->route('account.orders');
     })->name('dashboard');
     
-    Route::get('/account/edit', [AccountController::class, 'edit'])->name('account.edit');
-    Route::put('/account/update', [AccountController::class, 'update'])->name('account.update');
-    Route::put('/account/password', [AccountController::class, 'updatePassword'])->name('account.password');
+    // Account pages
+    Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::get('/account/archived', [AccountController::class, 'archived'])->name('account.archived');
+    Route::get('/account/addresses', [AccountController::class, 'addresses'])->name('account.addresses');
+    Route::get('/account/security', [AccountController::class, 'security'])->name('account.security');
+    
+    // Update routes
+    Route::put('/account/address/update', [AccountController::class, 'updateAddress'])->name('account.address.update');
+    Route::put('/account/info/update', [AccountController::class, 'updateInfo'])->name('account.info.update');
     
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

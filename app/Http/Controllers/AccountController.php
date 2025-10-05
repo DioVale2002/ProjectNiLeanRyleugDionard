@@ -9,28 +9,35 @@ use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
-    public function edit()
+    public function orders()
+    {
+        return view('account.orders');
+    }
+
+    public function archived()
+    {
+        return view('account.archived');
+    }
+
+    public function addresses()
     {
         $customer = Auth::guard('customer')->user();
         $address = $customer->address;
         
-        return view('account.edit', compact('customer', 'address'));
+        return view('account.addresses', compact('address'));
     }
 
-    public function update(Request $request)
+    public function security()
+    {
+        $customer = Auth::guard('customer')->user();
+        
+        return view('account.security', compact('customer'));
+    }
+
+    public function updateAddress(Request $request)
     {
         $customer = Auth::guard('customer')->user();
 
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'contact_num' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:customers,email,' . $customer->cus_id . ',cus_id',
-        ]);
-
-        $customer->update($validated);
-
-        // Handle address
         $addressData = $request->validate([
             'country' => 'nullable|string|max:255',
             'province' => 'nullable|string|max:255',
@@ -39,7 +46,6 @@ class AccountController extends Controller
             'zip_postal_code' => 'nullable|string|max:255',
         ]);
 
-        // Only update/create address if at least one field is filled
         if (array_filter($addressData)) {
             if ($customer->address) {
                 $customer->address->update($addressData);
@@ -48,26 +54,34 @@ class AccountController extends Controller
             }
         }
 
-        return redirect()->route('account.edit')->with('success', 'Account updated successfully!');
+        return redirect()->route('account.addresses')->with('success', 'Address updated successfully!');
     }
 
-    public function updatePassword(Request $request)
+    public function updateInfo(Request $request)
     {
         $customer = Auth::guard('customer')->user();
 
         $validated = $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'contact_num' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:customers,email,' . $customer->cus_id . ',cus_id',
+            'new_password' => 'nullable|string|min:8',
         ]);
-
-        if (!Hash::check($validated['current_password'], $customer->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect']);
-        }
 
         $customer->update([
-            'password' => Hash::make($validated['password']),
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'contact_num' => $validated['contact_num'],
+            'email' => $validated['email'],
         ]);
 
-        return redirect()->route('account.edit')->with('success', 'Password updated successfully!');
+        if (!empty($validated['new_password'])) {
+            $customer->update([
+                'password' => Hash::make($validated['new_password']),
+            ]);
+        }
+
+        return redirect()->route('account.security')->with('success', 'Account information updated successfully!');
     }
 }
