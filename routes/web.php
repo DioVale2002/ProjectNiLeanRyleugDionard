@@ -29,6 +29,9 @@ Route::middleware('auth:customer')->group(function () {
     Route::put('/account/address/update', [AccountController::class, 'updateAddress'])->name('account.address.update');
     Route::put('/account/info/update', [AccountController::class, 'updateInfo'])->name('account.info.update');
     
+    // Delete account
+    Route::delete('/account/delete', [AccountController::class, 'deleteAccount'])->name('account.delete');
+    
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

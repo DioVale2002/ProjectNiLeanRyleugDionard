@@ -72,7 +72,23 @@
                 </div>
 
                 <button type="submit" class="btn-save">Save</button>
-                <button type="button" class="btn-delete">Delete Account</button>
+            </form>
+
+            <hr style="margin: 40px 0;">
+
+            <h3>Delete Account</h3>
+            <p style="color: red;">Warning: This action cannot be undone. All your data will be permanently deleted.</p>
+            
+            <form method="POST" action="{{ route('account.delete') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                @csrf
+                @method('DELETE')
+
+                <div class="form-group">
+                    <label>Confirm Password to Delete Account</label>
+                    <input type="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn-delete">Delete My Account</button>
             </form>
         </div>
     </div>

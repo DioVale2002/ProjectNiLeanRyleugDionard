@@ -84,4 +84,28 @@ class AccountController extends Controller
 
         return redirect()->route('account.security')->with('success', 'Account information updated successfully!');
     }
+
+    public function deleteAccount(Request $request)
+    {
+        $customer = Auth::guard('customer')->user();
+
+        // Validate password confirmation
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        if (!Hash::check($request->password, $customer->password)) {
+            return back()->withErrors(['password' => 'Incorrect password. Please try again.']);
+        }
+
+        // Delete the customer (address will be deleted automatically due to cascade)
+        $customer->delete();
+
+        // Logout
+        Auth::guard('customer')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Your account has been deleted successfully.');
+    }
 }
