@@ -1,0 +1,168 @@
+.accountheader {
+    margin-top: 100px;
+    margin-left: 291px;
+}
+
+.accountheader h1 {
+    font-size: 33px;
+    font-weight: bolder;
+    color: #333;
+    margin-bottom: 20px;
+    padding: 0;
+    margin: 0;
+    
+}
+.accountheader p {
+    font-size: 20px;
+    color: #666;
+    padding: 0;
+    margin: 0;
+}
+
+.sideNav{
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    height: 300px;
+    justify-content: space-between;
+    width: 343px;
+}
+
+.sideNavLink {
+    width: 343px;
+    height: 61px;
+    display: flex;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    padding: 5px;
+    align-items: center;
+}
+
+.sideNavLink:hover {
+    background-color: #F54E4E;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navIcon {
+    margin-right: 20px;
+}
+
+.divider {
+    border-color: #666;
+    border-style: solid;
+    margin: 10px 0;
+}
+
+.mainContainer {
+    display: flex;
+    justify-content: space-between;
+    margin: auto 281px;;
+}
+
+/* Diria na ang mga main content For each selection*/
+
+.mainContent {
+    margin-top: 50px;
+    margin-left: 25px;
+    width: 1000px;
+    height: 750px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* display: flex;
+    flex-direction: column; */
+}
+
+
+/* Login & Security */
+
+.form{
+    display: flex;
+    flex-direction: row;
+    
+    align-items: flex-start;
+}
+
+.labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 30px;
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+.labels label{
+    margin-bottom: 50px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.input-fields{
+    margin-top: 50px;
+    margin-left: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.input-fields input{
+    width: 600px;
+    height: 40px;
+    margin-bottom: 36px;
+    padding: 5px 10px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    
+}
+
+.buttonContainer {
+    align-content: flex-end;
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 30px;
+    
+}
+
+.button1 {
+    width: 150px;
+    height: 40px;
+    background-color: #F54E4E;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 20px;
+    transition: background-color 0.3s;
+}
+
+.button2 {
+    width: 150px;
+    height: 40px;
+    background-color: #F54E4E;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 20px;
+}
+
+.button1:hover, .button2:hover{
+    background-color: #333;
+}
