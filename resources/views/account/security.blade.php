@@ -9,7 +9,7 @@
 </head>
 <body>
     <header class="header">
-        <a href="#"></a><img class="logo" src="images/Logo(1).png" alt="logo"></a>
+        <a href="#"></a><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
         <input class="search-bar" type="text" placeholder="Search ">
         <div class="navigation">
             <p class="cusname">Customer Name</p>
