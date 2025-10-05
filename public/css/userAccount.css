@@ -86,6 +86,17 @@
     flex-direction: column; */
 }
 
+.mainContent2{
+    margin-top: 50px;
+    margin-left: 25px;
+    width: 1000px;
+    height: 350px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Login & Security */
 

@@ -3,94 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Security - Bookstore</title>
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/styles/header.css">
+    <link rel="stylesheet" href="/styles/userAccount.css">
+    <title>Login & Security</title>
 </head>
 <body>
-    <div class="account-container">
-        <h2>Your Account</h2>
-        <p>User Account Access: {{ Auth::guard('customer')->user()->email }}</p>
+    <header class="header">
+        <a href="#"></a><img class="logo" src="images/Logo(1).png" alt="logo"></a>
+        <input class="search-bar" type="text" placeholder="Search ">
+        <div class="navigation">
+            <p class="cusname">Customer Name</p>
+            <a href="#"><img src="/images/User.png" alt="Profile Picture"></a>
+            <a href="#"><img src="/images/cart.png" alt="cart"></a>
+        </div>
+    </header>
+    <nav class="navbar">
+        <div class="navlinks-container">
+            <a href="#">BOOKS</a>
+            <a href="#">E-BOOKS</a>
+            <a href="#">BEST SELLERS</a>
+            <a href="#">NEW</a>
+            <a href="#">COLLECTIONS</a>
+        </div> 
+    </nav> 
 
-        <div class="sidebar">
-            <a href="{{ route('account.orders') }}">My Orders</a>
-            <a href="{{ route('account.addresses') }}">Your Addresses</a>
-            <a href="{{ route('account.security') }}" class="active">Login & Security</a>
-            <a href="{{ route('account.archived') }}">Archive Orders</a>
-            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                @csrf
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
+    <main>
+        <div class="accountheader">
+            <h1>Welcome</h1>
+            <p>Customer Name, Email: {{ Auth::guard('customer')->user()->email }}</p>
         </div>
 
-        <div class="content">
-            <h3>Your Personal Information</h3>
+        <div class="mainContainer">
+            <div class="sideNav">
+                    <a href="{{ route('account.orders') }}" class="sideNavLink">
+                        <img src="/images/Icon Delivery.png" class="navIcon" alt="Icon Delivery">
+                        <p>My Orders</p>
+                    </a>
+                    <a href="{{ route('account.addresses') }}" class="sideNavLink">
+                        <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
+                        <p>Adresses</p>
+                    </a>
+                    <a href="{{ route('account.security') }}" class="sideNavLink">
+                        <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
+                        <p>Login & Security</p>
+                    </a>
+                    <a href="{{ route('account.archived') }}" class="sideNavLink">
+                        <img src="/images/ArchiveIcon.png" class="navIcon" alt="Archive Orders Icon">
+                        <p>Archived Orders</p>
+                    </a>
+                    <div class="divider"></div>
+                    <a href="{{ route('logout') }}" class="sideNavLink">
+                        <img src="/images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
+                        <p>Logout</p>
+                    </a>
+            </div>
 
-            @if (session('success'))
-                <div class="success">{{ session('success') }}</div>
-            @endif
 
-            @if ($errors->any())
-                <div class="error">
-                    @foreach ($errors->all() as $error)
-                        <p>{{ $error }}</p>
-                    @endforeach
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('account.info.update') }}">
+            <div>
+            <form method="POST" action="{{ route('account.info.update') }}" class="mainContent">
                 @csrf
                 @method('PUT')
+                <h1>Your Personal Information</h1>
+                <div class="divider"></div>
 
-                <div class="form-group">
-                    <label>First Name</label>
+                <div class="form">
+                    <div class="labels">
+                    <label for="first_name">First Name</label>
+                    <label for="last_name">Last Name</label>
+                    <label for="email">Email</label>
+                    <label for="contact_number">Contact Number</label>           
+                    <label for="password">Password</label>   
+                    <label for="new_password">New Password</label>
+                </div>
+
+                <div class="input-fields">
                     <input type="text" name="first_name" value="{{ old('first_name', $customer->first_name) }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Last Name</label>
                     <input type="text" name="last_name" value="{{ old('last_name', $customer->last_name) }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email</label>
                     <input type="email" name="email" value="{{ old('email', $customer->email) }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Contact Number</label>
                     <input type="text" name="contact_num" value="{{ old('contact_num', $customer->contact_num) }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
                     <input type="password" value="••••••••••••••••" disabled>
-                </div>
-
-                <div class="form-group">
-                    <label>New Password</label>
                     <input type="password" name="new_password" placeholder="Leave blank to keep current password">
                 </div>
 
-                <button type="submit" class="btn-save">Save</button>
+                </div>
+                    <div class="buttonContainer">
+                    <button type="submit" class="button1" style="margin-right: 50px;">Save</button>
+                </div>
             </form>
-
-            <hr style="margin: 40px 0;">
-
-            <h3>Delete Account</h3>
-            <p style="color: red;">Warning: This action cannot be undone. All your data will be permanently deleted.</p>
-            
-            <form method="POST" action="{{ route('account.delete') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+            <form method="POST" action="{{ route('account.delete') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');" class="mainContent2">
                 @csrf
                 @method('DELETE')
+                <h1>Delete Account</h1>
+                <div class="warning-badge" style="color: red;">
+                    <p>Warning: Deleting your account is irreversible. All your data will be permanently removed.</p>
+                </div>
+                <div class="divider"></div>
 
-                <div class="form-group">
-                    <label>Confirm Password to Delete Account</label>
-                    <input type="password" name="password" required>
+                <div class="form">
+                    <div class="labels">
+                    <label for="password">Confirm Password</label>
                 </div>
 
-                <button type="submit" class="btn-delete">Delete My Account</button>
+                <div class="input-fields">
+                    <input type="password" name="password" required>
+                </div>
+                </div>
+                    <div class="buttonContainer">
+                    <button type="submit" class="button1" style="margin-right: 50px;">DELETE</button>
+                </div>
             </form>
-        </div>
-    </div>
+            </div>
+    </main>
 </body>
 </html>
+
+
+
+
+
+
