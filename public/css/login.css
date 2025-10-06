@@ -97,9 +97,13 @@ body {
     margin-bottom: 7px;
 }
 
+.error{
+    margin: 0;
+}
+
 .error p{
     margin-top: 0;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
 .already{
