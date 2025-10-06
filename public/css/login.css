@@ -97,6 +97,11 @@ body {
     margin-bottom: 7px;
 }
 
+.error {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
 .already{
     width: 395px;
     font-family: 'poppins', sans-serif;
