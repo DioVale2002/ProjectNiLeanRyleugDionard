@@ -55,7 +55,7 @@ class AccountTest extends TestCase
         $response = $this->get('/account/orders');
         $response->assertStatus(200);
         $response->assertViewIs('account.orders');
-        $response->assertSee('No orders yet');
+        $response->assertSee('No Orders yet');
     }
 
     public function test_authenticated_user_can_view_archived_page()
@@ -66,7 +66,7 @@ class AccountTest extends TestCase
         $response = $this->get('/account/archived');
         $response->assertStatus(200);
         $response->assertViewIs('account.archived');
-        $response->assertSee('No orders yet');
+        $response->assertSee('No Orders yet');
     }
 
     public function test_authenticated_user_can_view_addresses_page()

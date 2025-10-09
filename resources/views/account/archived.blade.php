@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/userAccount.css">
-    <title>Login & Security</title>
+    <title>Archived Orders</title>
 </head>
 <body>
     <header class="header">
-        <a href="#"></a><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
+        <a href="#"><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
         <input class="search-bar" type="text" placeholder="Search ">
         <div class="navigation">
-            <p class="cusname">Customer Name</p>
+            <p>Welcome, {{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }}!</p>
             <a href="#"><img src="/images/User.png" alt="Profile Picture"></a>
             <a href="#"><img src="/images/cart.png" alt="cart"></a>
         </div>
@@ -30,7 +30,7 @@
     <main>
         <div class="accountheader">
             <h1>Welcome</h1>
-            <p>Customer Name, Email: {{ Auth::guard('customer')->user()->email }}</p>
+            <p>{{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }}, Email: {{ Auth::guard('customer')->user()->email }}</p>
         </div>
 
         <div class="mainContainer">
@@ -41,7 +41,7 @@
                     </a>
                     <a href="{{ route('account.addresses') }}" class="sideNavLink">
                         <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
-                        <p>Adresses</p>
+                        <p>Addresses</p>
                     </a>
                     <a href="{{ route('account.security') }}" class="sideNavLink">
                         <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
@@ -61,19 +61,41 @@
                     </form>
             </div>
 
-            
             <div class="mainContent">
-                <h1>Your Orders</h1>
+                <h1>Archived Orders</h1>
                 <div class="divider"></div>
-                <h3 style="color: red; margin-top: 50px;">No Orders yet.</h3>
+                
+                @if($orders->isEmpty())
+                    <h3 style="color: red; margin-top: 50px;">No Orders yet.</h3>
+                @else
+                    @foreach($orders as $order)
+                        <div style="border: 1px solid #ccc; padding: 15px; margin: 20px 0; border-radius: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3>Order #{{ $order->order_id }}</h3>
+                                    <p>Date: {{ $order->order_date->format('M d, Y') }}</p>
+                                    <p>Status: <strong style="color: {{ $order->order_status == 'Completed' ? 'green' : ($order->order_status == 'Cancelled' ? 'red' : 'gray') }}">{{ $order->order_status }}</strong></p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <h3>₱{{ number_format($order->total_price, 2) }}</h3>
+                                    <p>{{ $order->paymentMethod->methodName }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="divider"></div>
+                            
+                            <h4>Items:</h4>
+                            @foreach($order->cart->items as $item)
+                                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                    <p>{{ $item->product->Title }} by {{ $item->product->Author }}</p>
+                                    <p>{{ $item->quantity }} x ₱{{ number_format($item->unitPrice, 2) }} = ₱{{ number_format($item->subtotal, 2) }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endforeach
+                @endif
             </div>
-            
+        </div>
     </main>
 </body>
 </html>
-
-
-
-
-
-
