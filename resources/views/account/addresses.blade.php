@@ -10,7 +10,7 @@
 
 <body>
     <header class="header">
-        <a href="#"></a><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
+        <a href="#"><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
         <input class="search-bar" type="text" placeholder="Search ">
         <div class="navigation">
             <p>Welcome, {{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }}!</p>
@@ -41,8 +41,8 @@
                         <p>My Orders</p>
                     </a>
                     <a href="{{ route('account.addresses') }}" class="sideNavLink active">
-                        <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
-                        <p>Adresses</p>
+                        <img src="/images/AdressIcon.png" class="navIcon" alt="Addresses Icon">
+                        <p>Addresses</p>
                     </a>
                     <a href="{{ route('account.security') }}" class="sideNavLink">
                         <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
@@ -79,37 +79,60 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('account.address.update') }}" class="mainContent">
+                <form method="POST" action="{{ route('account.address.update') }}" class="mainContent" id="updateAddressForm">
                     @csrf
                     @method('PUT')
-                    <h1>Your Address Information</h1>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h1>Your Address Information</h1>
+                        <button type="button" class="button2" id="editButton" onclick="toggleEdit()">Edit</button>
+                    </div>
                     <div class="divider"></div>
 
                     <div class="form">
                         <div class="labels">
-                        <label for="Country">Country</label>
-                        <label for="Province">Province</label>
-                        <label for="City">City</label>
-                        <label for="Barangay">Barangay</label>           
-                        <label for="Zip/Postal Code">Zip/Postal Code</label>   
+                            <label for="Country">Country</label>
+                            <label for="Province">Province</label>
+                            <label for="City">City</label>
+                            <label for="Barangay">Barangay</label>           
+                            <label for="Zip/Postal Code">Zip/Postal Code</label>   
+                        </div>
+
+                        <div class="input-fields">
+                            <input type="text" name="country" id="country" value="{{ old('country', $address->country ?? 'Not set') }}" readonly>
+                            <input type="text" name="province" id="province" value="{{ old('province', $address->province ?? 'Not set') }}" readonly>
+                            <input type="text" name="city" id="city" value="{{ old('city', $address->city ?? 'Not set') }}" readonly>
+                            <input type="text" name="barangay" id="barangay" value="{{ old('barangay', $address->barangay ?? 'Not set') }}" readonly>
+                            <input type="text" name="zip_postal_code" id="zip_postal_code" value="{{ old('zip_postal_code', $address->zip_postal_code ?? 'Not set') }}" placeholder="Numbers only" readonly>
+                        </div>
                     </div>
 
-                    <div class="input-fields">
-                        <input type="text" name="country" value="{{ old('country', $address->country ?? '') }}">
-                        <input type="text" name="province" value="{{ old('province', $address->province ?? '') }}">
-                        <input type="text" name="city" value="{{ old('city', $address->city ?? '') }}">
-                        <input type="text" name="barangay" value="{{ old('barangay', $address->barangay ?? '') }}">
-                        <input type="text" name="zip_postal_code" value="{{ old('zip_postal_code', $address->zip_postal_code ?? '') }}" placeholder="Numbers only">
-                    </div>
-                    
-                    </div>
-                        <div class="buttonContainer">
+                    <div class="buttonContainer" id="saveButton" style="display: none;">
+                        <button type="button" class="button2" onclick="cancelEdit()">Cancel</button>
                         <button type="submit" class="button1">Save</button>
                     </div>
                 </form>
             </div>
         </div>
-    </main> 
+    </main>
 
+    <script>
+        function toggleEdit() {
+            const inputs = document.querySelectorAll('#updateAddressForm input');
+            inputs.forEach(input => {
+                input.removeAttribute('readonly');
+                // Clear "Not set" placeholder when editing
+                if (input.value === 'Not set') {
+                    input.value = '';
+                }
+            });
+            
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('saveButton').style.display = 'flex';
+        }
+
+        function cancelEdit() {
+            location.reload();
+        }
+    </script>
 </body>
 </html>

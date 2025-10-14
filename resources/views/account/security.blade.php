@@ -9,7 +9,7 @@
 </head>
 <body>
     <header class="header">
-        <a href="#"></a><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
+        <a href="#"><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
         <input class="search-bar" type="text" placeholder="Search ">
         <div class="navigation">
             <p>Welcome, {{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }}!</p>
@@ -41,7 +41,7 @@
                     </a>
                     <a href="{{ route('account.addresses') }}" class="sideNavLink">
                         <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
-                        <p>Adresses</p>
+                        <p>Addresses</p>
                     </a>
                     <a href="{{ route('account.security') }}" class="sideNavLink active">
                         <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
@@ -61,7 +61,6 @@
                     </form>
             </div>
 
-
             <div>
             @if (session('success'))
                 <div class="success" style="padding: 15px; margin: 20px 0; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px;">
@@ -79,42 +78,50 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('account.info.update') }}" class="mainContent">
+            <form method="POST" action="{{ route('account.info.update') }}" class="mainContent" id="updateInfoForm">
                 @csrf
                 @method('PUT')
-                <h1>Your Personal Information</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1>Your Personal Information</h1>
+                    <button type="button" class="button2" id="editButton" onclick="toggleEdit()">Edit</button>
+                </div>
                 <div class="divider"></div>
 
                 <div class="form">
                     <div class="labels">
-                    <label for="first_name">First Name</label>
-                    <label for="last_name">Last Name</label>
-                    <label for="email">Email</label>
-                    <label for="contact_number">Contact Number</label>           
-                    <label for="current_password">Current Password</label>   
-                    <label for="new_password">New Password</label>
-                    <label for="new_password_confirmation">Confirm New Password</label>
+                        <label for="first_name">First Name</label>
+                        <label for="last_name">Last Name</label>
+                        <label for="email">Email</label>
+                        <label for="contact_number">Contact Number</label>           
+                        <label for="current_password">Current Password</label>   
+                        <label for="new_password">New Password</label>
+                        <label for="new_password_confirmation">Confirm New Password</label>
+                    </div>
+
+                    <div class="input-fields">
+                        <input type="text" name="first_name" id="first_name" value="{{ old('first_name', $customer->first_name) }}" readonly required>
+                        <input type="text" name="last_name" id="last_name" value="{{ old('last_name', $customer->last_name) }}" readonly required>
+                        <input type="email" name="email" id="email" value="{{ old('email', $customer->email) }}" readonly required>
+                        <input type="text" name="contact_num" id="contact_num" value="{{ old('contact_num', $customer->contact_num) }}" readonly required>
+                        <input type="password" name="current_password" id="current_password" placeholder="Enter current password to change" readonly>
+                        <input type="password" name="new_password" id="new_password" placeholder="Leave blank to keep current password" readonly>
+                        <input type="password" name="new_password_confirmation" id="new_password_confirmation" placeholder="Confirm new password" readonly>
+                    </div>
                 </div>
 
-                <div class="input-fields">
-                    <input type="text" name="first_name" value="{{ old('first_name', $customer->first_name) }}" required>
-                    <input type="text" name="last_name" value="{{ old('last_name', $customer->last_name) }}" required>
-                    <input type="email" name="email" value="{{ old('email', $customer->email) }}" required>
-                    <input type="text" name="contact_num" value="{{ old('contact_num', $customer->contact_num) }}" required>
-                    <input type="password" name="current_password" placeholder="Required only when changing password">
-                    <input type="password" name="new_password" placeholder="Leave blank to keep current password">
-                    <input type="password" name="new_password_confirmation" placeholder="Confirm new password">
-                </div>
-
-                </div>
-                    <div class="buttonContainer">
+                <div class="buttonContainer" id="saveButton" style="display: none;">
+                    <button type="button" class="button2" onclick="cancelEdit()">Cancel</button>
                     <button type="submit" class="button1" style="margin-right: 50px;">Save</button>
                 </div>
             </form>
-            <form method="POST" action="{{ route('account.delete') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');" class="mainContent2">
+
+            <form method="POST" action="{{ route('account.delete') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');" class="mainContent2" id="deleteAccountForm">
                 @csrf
                 @method('DELETE')
-                <h1>Delete Account</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1>Delete Account</h1>
+                    <button type="button" class="button2" id="editDeleteButton" onclick="toggleDeleteEdit()">Enter Password</button>
+                </div>
                 <div class="warning-badge" style="color: red;">
                     <p>Warning: Deleting your account is irreversible. All your data will be permanently removed.</p>
                 </div>
@@ -122,37 +129,53 @@
 
                 <div class="form">
                     <div class="labels">
-                    <label for="password">Confirm Password</label>
-                </div>
+                        <label for="password">Confirm Password</label>
+                    </div>
 
-                <div class="input-fields">
-                    <input type="password" name="password" required>
+                    <div class="input-fields">
+                        <input type="password" name="password" id="delete_password" placeholder="Enter password to delete account" readonly required>
+                    </div>
                 </div>
-                </div>
-                    <div class="buttonContainer">
-                    <button type="submit" class="button1" style="margin-right: 50px;">DELETE</button>
+                <div class="buttonContainer" id="deleteButton" style="display: none;">
+                    <button type="button" class="button2" onclick="cancelDeleteEdit()">Cancel</button>
+                    <button type="submit" class="button1" style="margin-right: 50px; background-color: #dc3545;">DELETE</button>
                 </div>
             </form>
             </div>
+        </div>
     </main>
+
     <script>
-        document.getElementById('updateInfoForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        function toggleEdit() {
+            const inputs = document.querySelectorAll('#updateInfoForm input');
+            inputs.forEach(input => {
+                input.removeAttribute('readonly');
+            });
             
-            const firstName = document.querySelector('input[name="first_name"]').value;
-            const lastName = document.querySelector('input[name="last_name"]').value;
-            const newPassword = document.querySelector('input[name="new_password"]').value;
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('saveButton').style.display = 'flex';
+        }
+
+        function cancelEdit() {
+            location.reload();
+        }
+
+        function toggleDeleteEdit() {
+            const passwordInput = document.getElementById('delete_password');
+            passwordInput.removeAttribute('readonly');
             
-            let message = 'Are you sure you want to update your information?';
+            document.getElementById('editDeleteButton').style.display = 'none';
+            document.getElementById('deleteButton').style.display = 'flex';
+        }
+
+        function cancelDeleteEdit() {
+            const passwordInput = document.getElementById('delete_password');
+            passwordInput.setAttribute('readonly', true);
+            passwordInput.value = '';
             
-            if (newPassword) {
-                message = 'Are you sure you want to update your information and change your password?';
-            }
-            
-            if (confirm(message)) {
-                this.submit();
-            }
-        });
+            document.getElementById('editDeleteButton').style.display = 'block';
+            document.getElementById('deleteButton').style.display = 'none';
+        }
     </script>
 </body>
 </html>
