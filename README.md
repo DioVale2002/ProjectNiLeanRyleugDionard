@@ -1,6 +1,5 @@
 # NCB OIMS — New Century Books Order & Inventory Management System
 
-> **CS12L Software Engineering 1 — Capstone Project**
 > Laravel 11 · PHP 8.2 · MySQL · Blade · Plain CSS
 
 ---
