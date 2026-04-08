@@ -1,674 +1,730 @@
-# Bookstore - Laravel Backend
+# NCB OIMS — New Century Books Order & Inventory Management System
 
-A Laravel-based bookstore application with customer authentication and account management.
+> **CS12L Software Engineering 1 — Capstone Project**
+> Laravel 11 · PHP 8.2 · MySQL · Blade · Plain CSS
 
 ---
 
 ## Table of Contents
 
-1. [Prerequisites](#prerequisites)
-2. [Installation & Setup](#installation--setup)
-3. [Project Structure](#project-structure)
-4. [Available Routes](#available-routes)
-5. [Database Schema](#database-schema)
-6. [Development Commands](#development-commands)
-7. [Testing](#testing)
-8. [Styling Guide for Frontend](#styling-guide-for-frontend)
-9. [Git Workflow](#git-workflow)
-10. [Troubleshooting](#troubleshooting)
+- [Project Overview](#project-overview)
+- [Team Roles](#team-roles)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Project Structure](#project-structure)
+- [Database Schema](#database-schema)
+- [All Routes](#all-routes)
+- [Subsystems Built](#subsystems-built)
+- [Testing](#testing)
+- [Frontend Dev Guide](#frontend-dev-guide)
+- [Development Commands](#development-commands)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## Project Overview
+
+NCB OIMS is a bookstore management system for New Century Books. It handles:
+
+- **Customer-facing**: Browse catalog, manage cart, place orders
+- **Admin-facing**: Manage products, stock, vouchers, and analytics
+
+Authentication uses an OTP-based email system (no passwords on the customer side in the final version — the current `password` field in customers is a placeholder for the transition).
+
+---
+
+## Team Roles
+
+| Role | Responsibility |
+|------|---------------|
+| Backend Dev (Dio) | Laravel backend — controllers, models, migrations, routes, tests |
+| Frontend Dev | Blade view styling — CSS, layout, Figma implementation |
+
+> **Frontend dev:** Jump straight to the [Frontend Dev Guide](#frontend-dev-guide) section.
 
 ---
 
 ## Prerequisites
 
-Before you begin, make sure you have the following installed on your system:
+Make sure you have these installed:
 
-- **WSL2** (Windows Subsystem for Linux) - if on Windows
-- **Docker Desktop** (with WSL2 integration enabled)
-- **Git**
+- PHP 8.2+
+- Composer
+- MySQL 8+
+- Node.js (for Tailwind/Vite if needed)
+- Git
 
 ---
 
 ## Installation & Setup
 
-### 1. Clone the Repository
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/DioVale2002/ProjectNiLeanRyleugDionard.git
 cd ProjectNiLeanRyleugDionard
 ```
 
-### 2. Install Dependencies
+### 2. Install PHP dependencies
 
 ```bash
-# Install Composer dependencies using Docker
-docker run --rm \
-    -u "$(id -u):$(id -g)" \
-    -v "$(pwd):/var/www/html" \
-    -w /var/www/html \
-    laravelsail/php84-composer:latest \
-    composer install --ignore-platform-reqs
+composer install
 ```
 
-### 3. Configure Environment
+### 3. Set up environment
 
 ```bash
-# Copy environment file
-cp .env.example .env
-
-# Add required Docker variables
-echo "WWWGROUP=1000" >> .env
-echo "WWWUSER=1000" >> .env
-echo "APP_PORT=8000" >> .env
-
-# Edit .env file to configure database
-nano .env
+cp .env .env.example
 ```
 
-**Important:** In the `.env` file, find the database section and make sure it looks like this (uncomment if needed):
+Open `.env` and set your database credentials:
 
 ```env
 DB_CONNECTION=mysql
-DB_HOST=mysql
+DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=sail
+DB_DATABASE=ncb_oims
+DB_USERNAME=ncb_user
 DB_PASSWORD=password
 ```
 
-Remove or comment out any SQLite references.
-
-### 4. Generate Application Key
+### 4. Create the database
 
 ```bash
-docker run --rm \
-    -v "$(pwd):/var/www/html" \
-    -w /var/www/html \
-    laravelsail/php84-composer:latest \
-    php artisan key:generate
+sudo mysql -u root
 ```
 
-### 5. Start Docker Containers
+Inside MySQL:
+
+```sql
+CREATE DATABASE ncb_oims;
+CREATE USER 'ncb_user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON ncb_oims.* TO 'ncb_user'@'localhost';
+GRANT ALL PRIVILEGES ON testing.* TO 'ncb_user'@'localhost';
+CREATE DATABASE IF NOT EXISTS testing;
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### 5. Generate app key and run migrations
 
 ```bash
-# Start all services in the background
-docker-compose up -d
-
-# Wait for MySQL to fully initialize
-sleep 60
-
-# Verify containers are running
-docker-compose ps
-
-# All containers should show "Up (healthy)" status
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
 ```
 
-### 6. Run Database Migrations
+### 6. Start the server
 
 ```bash
-# Run migrations to create database tables
-docker-compose exec laravel.test php artisan migrate
+php artisan serve
 ```
 
-### 7. Access the Application
-
-The application will be running at:
-- **Frontend URL**: http://localhost:8000
-- **Login Page**: http://localhost:8000/login
-- **Register Page**: http://localhost:8000/register
-
-### Common Installation Issues
-
-**Issue: "Connection refused" when running docker-compose**
-- **Solution**: Make sure Docker Desktop is running on Windows with WSL2 integration enabled
-- Go to Docker Desktop → Settings → Resources → WSL Integration
-- Enable integration with your Ubuntu/WSL distro
-
-**Issue: "Port 80 already in use"**
-- **Solution**: The project is configured to use port 8000 (check `APP_PORT=8000` in `.env`)
-
-**Issue: MySQL connection errors**
-- **Solution**: Make sure your `.env` database settings are uncommented and correct:
-  ```env
-  DB_CONNECTION=mysql
-  DB_HOST=mysql
-  DB_PORT=3306
-  DB_DATABASE=laravel
-  DB_USERNAME=sail
-  DB_PASSWORD=password
-  ```
-- If you started containers before fixing `.env`, recreate them:
-  ```bash
-  docker-compose down -v
-  docker-compose up -d
-  sleep 60
-  docker-compose exec laravel.test php artisan migrate
-  ```
-
-**Issue: "View not found" errors**
-- **Solution**: Files might be missing `.blade.php` extension or be in wrong directory
-- Check: `ls -la resources/views/auth/` and `ls -la resources/views/account/`
+App runs at `http://localhost:8000`.
 
 ---
 
 ## Project Structure
 
 ```
-bookstore/
+ProjectNiLeanRyleugDionard/
 ├── app/
 │   ├── Http/
-│   │   └── Controllers/
-│   │       ├── AuthController.php      # Handles login, register, logout
-│   │       └── AccountController.php   # Handles account editing
+│   │   ├── Controllers/
+│   │   │   ├── Admin/
+│   │   │   │   ├── ProductController.php     # Admin product CRUD
+│   │   │   │   ├── StockController.php       # Stock in/out management
+│   │   │   │   └── VoucherController.php     # Voucher CRUD
+│   │   │   ├── AccountController.php         # Customer account pages
+│   │   │   ├── AuthController.php            # Login, register, logout
+│   │   │   ├── CatalogController.php         # Public product browsing
+│   │   │   ├── CartController.php            # Cart CRUD
+│   │   │   └── OrderController.php           # Order placement
+│   │   └── Requests/
+│   │       ├── Admin/                        # Admin form validation
+│   │       ├── PlaceOrderRequest.php
+│   │       └── StoreCartItemRequest.php
 │   └── Models/
-│       ├── Customer.php                # Customer model
-│       └── Address.php                 # Address model
-├── config/
-│   └── auth.php                        # Authentication configuration
-├── resources/
-│   ├── views/
-│   │   ├── auth/
-│   │   │   ├── login.blade.php        # Login page
-│   │   │   └── register.blade.php     # Registration page
-│   │   ├── account/
-│   │   │   └── edit.blade.php         # Edit account page
-│   │   └── dashboard.blade.php        # Dashboard (placeholder)
-│   ├── css/
-│   │   └── app.css                    # Main CSS file
-│   └── js/
-│       └── app.js                     # Main JavaScript file
-├── routes/
-│   └── web.php                        # All application routes
+│       ├── Address.php
+│       ├── Archive.php
+│       ├── Cart.php
+│       ├── CartItem.php
+│       ├── Customer.php
+│       ├── Order.php
+│       ├── PaymentMethod.php
+│       ├── Product.php
+│       ├── Sale.php
+│       ├── StockIn.php
+│       ├── StockOut.php
+│       └── Voucher.php
 ├── database/
-│   └── migrations/                    # Database schema
-├── tests/
-│   └── Feature/                       # Test files
-│       ├── AuthTest.php               # Authentication tests
-│       └── AccountTest.php            # Account management tests
-├── docker-compose.yml                 # Docker configuration
-├── .env                               # Environment variables
-└── README.md                          # This file
+│   ├── migrations/
+│   └── seeders/
+│       ├── DatabaseSeeder.php
+│       └── PaymentMethodSeeder.php           # Seeds GCash, Maya, COD, Bank Transfer
+├── resources/
+│   └── views/
+│       ├── admin/
+│       │   ├── layouts/app.blade.php         # Admin layout (sidebar + topbar)
+│       │   ├── products/                     # index, create, edit, show
+│       │   ├── stock/                        # index
+│       │   └── vouchers/                     # index, create, edit
+│       ├── auth/
+│       │   ├── login.blade.php
+│       │   ├── register.blade.php
+│       │   └── welcome.blade.php
+│       ├── account/
+│       │   ├── orders.blade.php
+│       │   ├── archived.blade.php
+│       │   ├── addresses.blade.php
+│       │   └── security.blade.php
+│       ├── catalog/
+│       │   ├── index.blade.php               # Product grid + search + genre filter
+│       │   └── show.blade.php                # Product detail + add to cart
+│       └── cart/
+│           └── index.blade.php               # Cart items + checkout form
+├── public/
+│   ├── css/
+│   │   ├── header.css                        # Shared header styles
+│   │   ├── userAccount.css                   # Account page styles
+│   │   ├── admin.css                         # Admin panel styles
+│   │   ├── catalog.css                       # TODO: frontend dev styles this
+│   │   └── cart.css                          # TODO: frontend dev styles this
+│   └── images/                               # Logo, icons
+├── routes/
+│   └── web.php
+└── tests/
+    └── Feature/
+        ├── AuthTest.php                      # 10 tests
+        ├── AccountTest.php                   # 18 tests
+        ├── InventoryTest.php                 # 23 tests
+        ├── CatalogTest.php                   # 9 tests
+        └── CartTest.php                      # 19 tests
 ```
-
----
-
-## Available Routes
-
-### Guest Routes (Not Logged In)
-| Method | URI | Action | Description |
-|--------|-----|--------|-------------|
-| GET | `/` | Redirect | Redirects to login |
-| GET | `/register` | `AuthController@showRegister` | Show registration form |
-| POST | `/register` | `AuthController@register` | Process registration |
-| GET | `/login` | `AuthController@showLogin` | Show login form |
-| POST | `/login` | `AuthController@login` | Process login |
-
-### Authenticated Routes (Logged In)
-| Method | URI | Action | Description |
-|--------|-----|--------|-------------|
-| GET | `/dashboard` | View | Show dashboard |
-| GET | `/account/edit` | `AccountController@edit` | Show edit account form |
-| PUT | `/account/update` | `AccountController@update` | Update account info & address |
-| PUT | `/account/password` | `AccountController@updatePassword` | Change password |
-| POST | `/logout` | `AuthController@logout` | Logout user |
 
 ---
 
 ## Database Schema
 
-### Customers Table
-| Column | Type | Description |
-|--------|------|-------------|
-| `cus_id` | BIGINT (PK) | Primary key |
-| `first_name` | VARCHAR | Customer's first name |
-| `last_name` | VARCHAR | Customer's last name |
-| `contact_num` | VARCHAR | Contact number |
-| `email` | VARCHAR (unique) | Email address |
-| `password` | VARCHAR | Hashed password |
-| `remember_token` | VARCHAR | Remember me token |
-| `created_at` | TIMESTAMP | Creation timestamp |
-| `updated_at` | TIMESTAMP | Last update timestamp |
+### customers
+| Column | Type | Notes |
+|--------|------|-------|
+| cus_id | BIGINT PK | |
+| first_name | VARCHAR | |
+| last_name | VARCHAR | |
+| contact_num | VARCHAR | |
+| email | VARCHAR | unique |
+| password | VARCHAR | hashed |
+| remember_token | VARCHAR | |
 
-### Addresses Table
-| Column | Type | Description |
-|--------|------|-------------|
-| `add_id` | BIGINT (PK) | Primary key |
-| `country` | VARCHAR | Country |
-| `province` | VARCHAR | Province |
-| `city` | VARCHAR | City |
-| `barangay` | VARCHAR | Barangay |
-| `zip_postal_code` | VARCHAR | ZIP/Postal code |
-| `cus_id` | BIGINT (FK) | Foreign key to customers |
-| `created_at` | TIMESTAMP | Creation timestamp |
-| `updated_at` | TIMESTAMP | Last update timestamp |
+### addresses
+| Column | Type | Notes |
+|--------|------|-------|
+| add_id | BIGINT PK | |
+| country | VARCHAR | nullable |
+| province | VARCHAR | nullable |
+| city | VARCHAR | nullable |
+| barangay | VARCHAR | nullable |
+| zip_postal_code | VARCHAR | nullable |
+| cus_id | BIGINT FK | → customers |
 
-**Important Notes:**
-- Address is **optional** and only appears in the Edit Account page
-- Address is **NOT required** during registration
-- One customer can have one address (one-to-one relationship)
+### products
+| Column | Type | Notes |
+|--------|------|-------|
+| product_ID | BIGINT PK | |
+| Title | VARCHAR | |
+| Author | VARCHAR | |
+| Price | DECIMAL(10,2) | |
+| Stock | INT | |
+| ISBN | VARCHAR | |
+| Publisher | VARCHAR | |
+| Genre | VARCHAR | |
+| Rating | DECIMAL(3,2) | nullable |
+| Review | TEXT | nullable |
+| Age_Group | VARCHAR | nullable |
+| Length | INT | nullable |
+| Width | INT | nullable |
+
+### vouchers
+| Column | Type | Notes |
+|--------|------|-------|
+| voucher_id | BIGINT PK | |
+| voucherName | VARCHAR | |
+| voucherType | VARCHAR | `percentage` or `flat` |
+| voucherAmount | INT | |
+| voucherUsed | INT | default 0 |
+
+### carts
+| Column | Type | Notes |
+|--------|------|-------|
+| cart_id | BIGINT PK | |
+| createdDate | DATE | |
+| status | ENUM | `active`, `checked_out`, `abandoned` |
+| cus_id | BIGINT FK | → customers |
+
+### cart_items
+| Column | Type | Notes |
+|--------|------|-------|
+| cartitems_id | BIGINT PK | |
+| quantity | INT | |
+| unitPrice | DECIMAL(10,2) | |
+| subtotal | DECIMAL(10,2) | |
+| cart_id | BIGINT FK | → carts |
+| product_ID | BIGINT FK | → products |
+
+### orders
+| Column | Type | Notes |
+|--------|------|-------|
+| order_id | BIGINT PK | |
+| order_status | ENUM | `Pending`, `Processing`, `Completed`, `Cancelled`, `Failed` |
+| order_date | DATE | |
+| total_price | DECIMAL(10,2) | |
+| voucher_id | BIGINT FK | → vouchers, nullable |
+| add_id | BIGINT FK | → addresses, nullable |
+| paymentMethod_id | BIGINT FK | → payment_methods |
+| cus_id | BIGINT FK | → customers |
+| cart_id | BIGINT FK | → carts |
+
+### payment_methods
+| Column | Type | Notes |
+|--------|------|-------|
+| paymentMethod_id | BIGINT PK | |
+| methodName | VARCHAR | Cash on Delivery, GCash, Maya, Bank Transfer |
+
+### stock_in
+| Column | Type | Notes |
+|--------|------|-------|
+| stockIn_id | BIGINT PK | |
+| stockIn_date | DATE | |
+| productIn | BIGINT FK | → products |
+
+### stock_out
+| Column | Type | Notes |
+|--------|------|-------|
+| stockOut_id | BIGINT PK | |
+| stockOut_date | DATE | |
+| productOut | BIGINT FK | → products |
+
+### archive
+| Column | Type | Notes |
+|--------|------|-------|
+| archived_id | BIGINT PK | |
+| archived_date | DATE | |
+| archivedProduct | BIGINT FK | → products |
+
+### sales
+| Column | Type | Notes |
+|--------|------|-------|
+| sales_item_id | BIGINT PK | |
+| order_id | BIGINT FK | → orders |
+| product_id | BIGINT FK | → products |
+| quantity | INT | |
+| total_price | DECIMAL(10,2) | |
 
 ---
 
-## Development Commands
+## All Routes
 
-### Starting/Stopping the Application
+### Guest Routes (no login required)
 
-```bash
-# Start containers (in background)
-docker-compose up -d
+| Method | URI | Description |
+|--------|-----|-------------|
+| GET | `/` | Redirects to `/login` |
+| GET | `/login` | Login page |
+| POST | `/login` | Process login |
+| GET | `/register` | Register page |
+| POST | `/register` | Process registration |
+| GET | `/catalog` | Browse all books (supports `?search=` and `?genre=`) |
+| GET | `/catalog/{product}` | Product detail page |
 
-# Start containers (with logs visible)
-docker-compose up
+### Authenticated Customer Routes (`auth:customer`)
 
-# Stop containers
-docker-compose down
+| Method | URI | Description |
+|--------|-----|-------------|
+| POST | `/logout` | Logout |
+| GET | `/dashboard` | Redirects to `/account/orders` |
+| GET | `/account/orders` | Active orders |
+| GET | `/account/archived` | Completed/cancelled orders |
+| GET | `/account/addresses` | Manage delivery address |
+| GET | `/account/security` | Account info & password |
+| PUT | `/account/address/update` | Update address |
+| PUT | `/account/info/update` | Update name, email, password |
+| DELETE | `/account/delete` | Delete account |
+| GET | `/cart` | View cart |
+| POST | `/cart/add` | Add item to cart |
+| PATCH | `/cart/update/{cartItem}` | Update item quantity |
+| DELETE | `/cart/remove/{cartItem}` | Remove item from cart |
+| POST | `/orders` | Place order |
 
-# Restart containers
-docker-compose restart
+### Admin Routes (no auth middleware yet — to be added)
 
-# View logs
-docker-compose logs -f
+| Method | URI | Description |
+|--------|-----|-------------|
+| GET | `/admin/products` | Product list |
+| GET | `/admin/products/create` | Add product form |
+| POST | `/admin/products` | Save new product |
+| GET | `/admin/products/{product}` | Product detail |
+| GET | `/admin/products/{product}/edit` | Edit product form |
+| PUT | `/admin/products/{product}` | Update product |
+| DELETE | `/admin/products/{product}` | Archive product |
+| GET | `/admin/stock` | Stock management |
+| POST | `/admin/stock/in` | Record stock increase |
+| POST | `/admin/stock/out` | Record stock decrease |
+| GET | `/admin/vouchers` | Voucher list |
+| GET | `/admin/vouchers/create` | Add voucher form |
+| POST | `/admin/vouchers` | Save new voucher |
+| GET | `/admin/vouchers/{voucher}/edit` | Edit voucher form |
+| PUT | `/admin/vouchers/{voucher}` | Update voucher |
+| DELETE | `/admin/vouchers/{voucher}` | Delete voucher |
 
-# Check container status
-docker-compose ps
-```
+---
 
-### Running Commands Inside Container
+## Subsystems Built
 
-```bash
-# Run artisan commands
-docker-compose exec laravel.test php artisan [command]
+### ✅ Subsystem 1 — Inventory Management (Admin)
+- Product CRUD with archiving (products are never hard deleted)
+- Stock in/out logging — every change is recorded in `stock_in` / `stock_out`
+- Voucher CRUD (percentage and flat discount types)
+- Admin layout with sidebar navigation
 
-# Clear all caches
-docker-compose exec laravel.test php artisan cache:clear
-docker-compose exec laravel.test php artisan config:clear
-docker-compose exec laravel.test php artisan view:clear
-docker-compose exec laravel.test php artisan route:clear
+### ✅ Subsystem 2 — Order & Catalog
+- Public catalog with search (by title/author) and genre filtering
+- Product detail page with add-to-cart
+- Cart with quantity updates and item removal
+- Checkout with payment method, delivery address, and optional voucher
+- Voucher discount applied at order time (percentage or flat)
+- Stock auto-decremented on order placement
+- Sale records created per order item
 
-# Run database migrations
-docker-compose exec laravel.test php artisan migrate
+### ⬜ Subsystem 3 — Payment & Billing
+> Not yet built. Planned: PDF receipt generation using `barryvdh/laravel-dompdf`.
 
-# Rollback migrations
-docker-compose exec laravel.test php artisan migrate:rollback
-
-# Fresh migration (drop all tables and re-migrate)
-docker-compose exec laravel.test php artisan migrate:fresh
-
-# Regenerate autoload files
-docker-compose exec laravel.test composer dump-autoload
-
-# Access container shell
-docker-compose exec laravel.test bash
-```
+### ⬜ Subsystem 4 — Report & Analytics
+> Not yet built. Planned: Daily/monthly/yearly sales charts, top/low selling books.
 
 ---
 
 ## Testing
 
-The project includes comprehensive unit tests covering all authentication and account management features.
+### Setup
+
+Make sure the `testing` database exists and `ncb_user` has access:
+
+```bash
+sudo mysql -u root -e "CREATE DATABASE IF NOT EXISTS testing; GRANT ALL PRIVILEGES ON testing.* TO 'ncb_user'@'localhost'; FLUSH PRIVILEGES;"
+```
+
+Make sure `.env.testing` exists:
+
+```bash
+cp .env .env.testing
+# Change DB_DATABASE=testing in .env.testing
+```
 
 ### Running Tests
 
 ```bash
 # Run all tests
-docker-compose exec laravel.test php artisan test
+php artisan test
 
-# Run specific test file
-docker-compose exec laravel.test php artisan test --filter=AuthTest
-docker-compose exec laravel.test php artisan test --filter=AccountTest
+# Run a specific file
+php artisan test tests/Feature/InventoryTest.php
+php artisan test tests/Feature/CatalogTest.php
+php artisan test tests/Feature/CartTest.php
 
-# Run tests with coverage (if you have Xdebug)
-docker-compose exec laravel.test php artisan test --coverage
+# Run all feature tests together
+php artisan test tests/Feature/
 ```
 
 ### Test Coverage
 
-**AuthTest.php** (10 tests)
-- User can view register page
-- User can register with valid data
-- User cannot register with invalid email
-- User cannot register with duplicate email
-- User can view login page
-- User can login with correct credentials
-- User cannot login with incorrect password
-- User can logout
-- Guest cannot access dashboard
-- Authenticated user can access dashboard
-
-**AccountTest.php** (10 tests)
-- Guest cannot access edit account page
-- Authenticated user can view edit account page
-- User can update account information
-- User cannot update email to existing email
-- User can add address
-- User can update existing address
-- User can update password with correct current password
-- User cannot update password with incorrect current password
-- User cannot update password without confirmation
-- Address is optional on update
-
-### Creating the Testing Database
-
-```bash
-# Create testing database
-docker-compose exec mysql mysql -u sail -ppassword -e "CREATE DATABASE IF NOT EXISTS testing;"
-```
+| File | Tests | What's covered |
+|------|-------|---------------|
+| `AuthTest.php` | 10 | Register, login, logout, guest redirect |
+| `AccountTest.php` | 18 | Orders, addresses, security, account update/delete |
+| `InventoryTest.php` | 23 | Product CRUD, archiving, voucher CRUD, stock in/out |
+| `CatalogTest.php` | 9 | Browsing, search, genre filter, product detail, auth gates |
+| `CartTest.php` | 19 | Cart access, add/update/remove items, place order, voucher discounts |
+| **Total** | **79** | |
 
 ---
 
-## Styling Guide for Frontend
+## Frontend Dev Guide
 
-All views currently use **basic inline CSS** for rapid prototyping. Here's how to customize them:
+> This section is written specifically for the frontend developer joining the project.
 
-### File Locations
+### How the views work
 
-| File | Purpose |
-|------|---------|
-| `resources/views/auth/login.blade.php` | Login form |
-| `resources/views/auth/register.blade.php` | Registration form |
-| `resources/views/account/edit.blade.php` | Account edit form with address |
-| `resources/views/dashboard.blade.php` | Dashboard placeholder |
-| `resources/css/app.css` | Main CSS file (compile with Vite) |
-| `resources/js/app.js` | Main JavaScript file |
+All views are **Blade templates** (Laravel's templating engine). The file extension is `.blade.php`. Blade is just HTML with some extra syntax — you don't need to know Laravel to style these.
 
-### Blade Template Syntax
+### Key Blade syntax you'll encounter
 
 ```blade
-{{-- Comments --}}
+{{-- This is a comment --}}
 
-{{-- Output escaped data --}}
-{{ $variable }}
+{{-- Print a variable (auto-escaped) --}}
+{{ $product->Title }}
 
-{{-- Output unescaped data (be careful!) --}}
-{!! $html !!}
+{{-- Generate a URL to a named route --}}
+{{ route('catalog.index') }}
+{{ route('catalog.show', $product) }}
 
-{{-- CSRF token (REQUIRED in all forms) --}}
+{{-- CSRF token — required in every form, don't remove it --}}
 @csrf
 
-{{-- Method spoofing for PUT/DELETE --}}
+{{-- Method spoofing — required for PUT/PATCH/DELETE forms --}}
 @method('PUT')
-
-{{-- Generate URLs --}}
-{{ route('login') }}
-{{ route('account.edit') }}
-
-{{-- Old input (persists form data on errors) --}}
-{{ old('email') }}
+@method('DELETE')
 
 {{-- Conditionals --}}
-@if (session('success'))
-    <div>{{ session('success') }}</div>
+@if(session('success'))
+    <div class="alert">{{ session('success') }}</div>
 @endif
 
-@if ($errors->any())
-    @foreach ($errors->all() as $error)
-        <p>{{ $error }}</p>
-    @endforeach
-@endif
+{{-- Loops --}}
+@foreach($products as $product)
+    <div>{{ $product->Title }}</div>
+@endforeach
 
-{{-- Include other views --}}
-@include('partials.header')
-
-{{-- Extend layouts --}}
-@extends('layouts.app')
-
-@section('content')
-    <!-- Your content here -->
-@endsection
+{{-- Auth check --}}
+@auth('customer')
+    <p>You are logged in</p>
+@else
+    <a href="{{ route('login') }}">Login</a>
+@endauth
 ```
 
-### Adding Your Own Styles
+### CSS files — what's done, what's yours
 
-**Option 1: Replace Inline Styles**
-Simply remove the `<style>` tags and add your own CSS classes.
+| File | Status | Notes |
+|------|--------|-------|
+| `public/css/header.css` | Existing | Shared header — already styled, matches existing pages |
+| `public/css/userAccount.css` | Existing | Account pages sidebar and layout |
+| `public/css/admin.css` | Existing | Admin panel — basic functional styles |
+| `public/css/catalog.css` | **Yours** | Catalog index and product detail — see Figma |
+| `public/css/cart.css` | **Yours** | Cart page and checkout form — see Figma |
 
-**Option 2: Use a CSS Framework**
+Link your CSS files at the top of the relevant views — the `TODO` comments mark exactly where:
+
+```html
+{{-- TODO: Frontend dev links catalog.css here --}}
+```
+
+### Class naming conventions
+
+Every element in the catalog and cart views has a descriptive class. Here's the key ones:
+
+**Catalog index (`/catalog`)**
+```
+.catalog-main          — main content wrapper
+.catalog-header        — title + count row
+.catalog-title         — page heading
+.catalog-count         — "X books found" text
+.product-grid          — the book card grid
+.product-card          — individual book card
+.product-card-link     — wraps the cover + info (clickable)
+.product-cover         — cover image area
+.product-cover-placeholder  — 📖 emoji placeholder (swap for <img> later)
+.badge                 — label on card (e.g. low stock)
+.badge-low-stock       — orange/red low stock indicator
+.product-card-body     — text content inside card
+.product-title         — book title
+.product-author        — author name
+.product-genre         — genre tag
+.product-rating        — star rating
+.product-price         — price in ₱
+.btn-add-to-cart       — add to cart button on card
+.btn-login-to-buy      — shown to guests instead of add to cart
+.empty-state           — shown when no results
+.pagination-wrapper    — wraps Laravel pagination links
+```
+
+**Catalog show (`/catalog/{id}`)**
+```
+.product-detail-main      — page wrapper
+.back-link                — ← Back to Catalog link
+.product-detail-layout    — two-column layout (cover left, info right)
+.product-detail-cover     — left column
+.product-cover-placeholder-lg  — large cover placeholder
+.product-detail-info      — right column
+.detail-title             — book title (h1)
+.detail-author            — "by Author Name"
+.detail-price             — price
+.detail-rating            — rating display
+.detail-meta-table        — specs table (genre, publisher, ISBN, etc.)
+.in-stock                 — green stock text
+.out-of-stock             — red stock text
+.detail-description       — review/description block
+.detail-cart-form         — add to cart form
+.qty-selector             — quantity input row
+.btn-add-to-cart          — add to cart button
+.out-of-stock-msg         — shown when stock = 0
+```
+
+**Cart (`/cart`)**
+```
+.cart-main                — page wrapper
+.cart-title               — "My Cart" heading
+.cart-layout              — two-column: items left, summary right
+.cart-items-section       — left column
+.cart-item-count          — "X item(s)" label
+.cart-item                — individual cart row
+.cart-item-cover          — book thumbnail area
+.cart-cover-placeholder   — placeholder emoji
+.cart-item-info           — title, author, price
+.cart-item-title          — book title
+.cart-item-author         — author
+.cart-item-price          — unit price
+.cart-item-controls       — quantity form + subtotal + remove
+.qty-form                 — update quantity form
+.qty-control              — input + update button row
+.btn-update               — update quantity button
+.cart-item-subtotal       — item total price
+.btn-remove               — remove item button
+.cart-summary             — right column (order summary)
+.summary-title            — "Order Summary" heading
+.summary-breakdown        — price rows
+.summary-row              — individual price line
+.summary-total-row        — final total row
+.checkout-form            — the order placement form
+.checkout-field           — individual form field group
+.address-box              — displays saved address
+.btn-link-sm              — "Change address" link
+.no-address-warning       — shown when no address saved
+.btn-place-order          — final submit button
+.empty-cart               — shown when cart is empty
+```
+
+### Book cover images
+
+Cover images aren't implemented yet. Every view has a placeholder:
+
+```html
+<div class="product-cover-placeholder">📖</div>
+{{-- Future: <img src="{{ $product->cover_image }}" alt="{{ $product->Title }}"> --}}
+```
+
+When the backend adds image upload support, you just swap the `<div>` for the `<img>` tag. The surrounding structure stays the same.
+
+### Figma reference
+
+The Figma file has the full design for all screens. Key screens to implement:
+
+- Catalog index — product grid with filters, search bar, genre nav tabs
+- Product detail — two-column layout, book specs, add to cart
+- Cart — item list with quantity controls, order summary sidebar with checkout form
+- Admin dashboard — sidebar nav, product/stock/voucher tables
+
+### Running the app locally
+
 ```bash
-# Install Tailwind CSS (example)
-docker-compose exec laravel.test npm install -D tailwindcss postcss autoprefixer
-docker-compose exec laravel.test npx tailwindcss init -p
-
-# Or install Bootstrap
-docker-compose exec laravel.test npm install bootstrap
+# Backend dev will have this running, you just need the URL
+php artisan serve
+# App at http://localhost:8000
 ```
 
-**Option 3: Use Custom CSS**
-Edit `resources/css/app.css` and compile with Vite:
+Visit these URLs to see your views live:
+
+| URL | View |
+|-----|------|
+| `http://localhost:8000/catalog` | Catalog index |
+| `http://localhost:8000/catalog/1` | Product detail (if product ID 1 exists) |
+| `http://localhost:8000/cart` | Cart (must be logged in) |
+| `http://localhost:8000/admin/products` | Admin product list |
+
+### Git workflow
+
+Always work on a feature branch:
+
 ```bash
-docker-compose exec laravel.test npm run dev
+# Create your branch
+git checkout -b frontend/catalog-styling
+
+# After making changes
+git add .
+git commit -m "Style catalog grid and product cards"
+git push origin frontend/catalog-styling
+
+# Create a pull request on GitHub when done
 ```
+
+Never push directly to `main`.
 
 ---
 
-## Git Workflow
-
-### Basic Commands
+## Development Commands
 
 ```bash
-# Check current status
-git status
+# Start server
+php artisan serve
 
-# Check current branch
-git branch
+# Clear all caches (run this if views aren't updating)
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
 
-# Create and switch to new feature branch
-git checkout -b feature/your-feature-name
+# Re-run all migrations from scratch (WARNING: deletes all data)
+php artisan migrate:fresh --seed
 
-# Stage changes
-git add .
+# Check all registered routes
+php artisan route:list
 
-# Commit changes
-git commit -m "Your descriptive commit message"
+# Run tests
+php artisan test
 
-# Push to remote
-git push origin feature/your-feature-name
-
-# Pull latest changes
-git pull origin main
-
-# Merge main into your branch
-git checkout feature/your-feature-name
-git merge main
+# Regenerate autoloader (run after adding new classes)
+composer dump-autoload
 ```
-
-### Recommended Workflow
-
-1. Create a feature branch: `git checkout -b feature/styling-login-page`
-2. Make your changes
-3. Test your changes: `docker-compose exec laravel.test php artisan test`
-4. Commit: `git commit -m "Add new login page styling"`
-5. Push: `git push origin feature/styling-login-page`
-6. Create pull request on GitHub
 
 ---
 
 ## Troubleshooting
 
-### Docker Issues
-
-**Problem:** `Connection refused` when running docker-compose
-
-**Solution:**
+**Views not updating after edits**
 ```bash
-# Check if Docker is running
-docker --version
-
-# Start Docker service (if using Docker in WSL)
-sudo service docker start
-
-# OR make sure Docker Desktop is running (Windows)
-# Go to Docker Desktop → Settings → Resources → WSL Integration
-# Enable integration with your Ubuntu/WSL distro
+php artisan view:clear
 ```
 
-### Database Issues
+**500 error on admin product edit**
 
-**Problem:** `Access denied for user 'sail'@'...'` or MySQL connection errors
-
-**Solution:**
-```bash
-# 1. Make sure .env has correct database settings (uncommented)
-cat .env | grep DB_
-
-# Should show:
-# DB_CONNECTION=mysql
-# DB_HOST=mysql
-# DB_PORT=3306
-# DB_DATABASE=laravel
-# DB_USERNAME=sail
-# DB_PASSWORD=password
-
-# 2. Recreate MySQL container with correct credentials
-docker-compose down -v
-docker-compose up -d
-sleep 60
-docker-compose exec laravel.test php artisan migrate
+Make sure `UpdateProductRequest.php` has this exact ISBN unique rule:
+```php
+'ISBN' => 'required|string|unique:products,ISBN,' . $this->route('product')->product_ID . ',product_ID',
 ```
 
-**Problem:** `SQLSTATE[HY000] [2002] Connection refused`
+**`Class StoreCartItemRequest does not exist`**
 
-**Solution:**
+The file was generated with a typo. Fix it:
 ```bash
-# MySQL is still initializing, wait longer
-sleep 30
-docker-compose exec laravel.test php artisan migrate
-
-# Check if MySQL is ready
-docker-compose logs mysql | tail -20
-# Look for: "ready for connections. Version: '8.0.32'"
+mv app/Http/Requests/StorCartItemRequest.php app/Http/Requests/StoreCartItemRequest.php
 ```
 
-**Problem:** Laravel wants to use SQLite instead of MySQL
-
-**Solution:**
+**Tests failing with `Access denied to database 'testing'`**
 ```bash
-# Check database configuration
-cat .env | grep DB_CONNECTION
-
-# If it shows sqlite, change to mysql
-sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' .env
-
-# Uncomment MySQL settings
-nano .env
-# Remove # from DB_HOST, DB_PORT, etc.
+sudo mysql -u root -e "GRANT ALL PRIVILEGES ON testing.* TO 'ncb_user'@'localhost'; FLUSH PRIVILEGES;"
 ```
 
-### Container Issues
+**Migration fails with foreign key error**
 
-**Problem:** Port 80 already in use
-
-**Solution:**
-```bash
-# The project is configured to use port 8000
-# Make sure APP_PORT=8000 is in .env
-grep APP_PORT .env
-
-# If not there:
-echo "APP_PORT=8000" >> .env
-
-# Restart
-docker-compose down
-docker-compose up -d
+Check that migration filenames are in chronological order. The customers/addresses migration must run before the orders migration:
 ```
-
-**Problem:** `vendor/laravel/sail/runtimes/8.4 does not exist`
-
-**Solution:**
-```bash
-# Install Composer dependencies first
-docker run --rm \
-    -u "$(id -u):$(id -g)" \
-    -v "$(pwd):/var/www/html" \
-    -w /var/www/html \
-    laravelsail/php84-composer:latest \
-    composer install --ignore-platform-reqs
-
-# Then start containers
-docker-compose up -d
-```
-
-### View/File Issues
-
-**Problem:** `View [auth.login] not found`
-
-**Solution:**
-```bash
-# Check if view files exist
-ls -la resources/views/auth/
-
-# Make sure files have .blade.php extension
-# Fix if needed:
-cd resources/views/auth
-mv login login.blade.php
-mv register register.blade.php
-
-# Clear cache
-docker-compose exec laravel.test php artisan view:clear
-```
-
-**Problem:** `Target class [App\Http\Controllers\AuthController] does not exist`
-
-**Solution:**
-```bash
-# Check if controller files have .php extension
-ls -la app/Http/Controllers/
-
-# Fix if needed:
-cd app/Http/Controllers
-mv AuthController AuthController.php
-mv AccountController AccountController.php
-
-# Regenerate autoload
-docker-compose exec laravel.test composer dump-autoload
-docker-compose restart
-```
-
-### Permission Issues
-
-**Problem:** Permission denied when writing to storage
-
-**Solution:**
-```bash
-# Fix storage permissions
-docker-compose exec laravel.test chmod -R 777 storage bootstrap/cache
+2025_01_01_000000_create_customers_and_addresses_tables.php  ← must be first
+2025_01_02_000000_create_orders_system_tables.php            ← depends on above
 ```
 
 ---
 
-## Testing the Application
+## Stack Reference
 
-### Manual Testing Steps
-
-1. **Register a new account**
-   - Go to http://localhost:8000/register
-   - Fill in: First Name, Last Name, Contact Number, Email, Password
-   - Note: Address is NOT required during registration
-   - Submit and you'll be logged in automatically
-
-2. **Login**
-   - Go to http://localhost:8000/login
-   - Enter your email and password
-   - You'll be redirected to the dashboard
-
-3. **Edit Account**
-   - Click "Edit Account" button on dashboard
-   - Update your personal information
-   - Add/update your address (optional)
-   - Change your password if needed
-   - Submit to save changes
-
-4. **Logout**
-   - Click "Logout" button
-   - You'll be redirected to login page
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Laravel | 11.x | Backend framework |
+| PHP | 8.2 | Runtime |
+| MySQL | 8.x | Database |
+| Blade | — | Templating |
+| Plain CSS | — | Styling (per-page CSS files) |
+| Tailwind CSS | 4.0 (in package.json) | Available but not used yet |
 
 ---
 
-
-
-
-
----
-
-**Last Updated:** October 2025  
-**Laravel Version:** 12.x  
-**PHP Version:** 8.4
+*Last updated: April 2026 — Backend subsystems 1 & 2 complete, 79 tests passing*
