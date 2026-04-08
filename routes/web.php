@@ -39,3 +39,29 @@ Route::middleware('auth:customer')->group(function () {
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+// Admin - Inventory Management
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+    Route::resource('vouchers', \App\Http\Controllers\Admin\VoucherController::class);
+
+    Route::get('stock', [\App\Http\Controllers\Admin\StockController::class, 'index'])
+        ->name('stock.index');
+    Route::post('stock/in', [\App\Http\Controllers\Admin\StockController::class, 'storeIn'])
+        ->name('stock.in');
+    Route::post('stock/out', [\App\Http\Controllers\Admin\StockController::class, 'storeOut'])
+        ->name('stock.out');
+});
+
+// Catalog (public)
+Route::get('/catalog', [\App\Http\Controllers\CatalogController::class, 'index'])->name('catalog.index');
+Route::get('/catalog/{product}', [\App\Http\Controllers\CatalogController::class, 'show'])->name('catalog.show');
+
+// Cart & Orders (auth required)
+Route::middleware('auth:customer')->group(function () {
+    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/update/{cartItem}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{cartItem}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
+});
