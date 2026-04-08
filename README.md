@@ -37,7 +37,7 @@ Authentication uses an OTP-based email system (no passwords on the customer side
 
 | Role | Responsibility |
 |------|---------------|
-| Backend Dev (Dio) | Laravel backend — controllers, models, migrations, routes, tests |
+| Backend Dev | Laravel backend — controllers, models, migrations, routes, tests |
 | Frontend Dev | Blade view styling — CSS, layout, Figma implementation |
 
 > **Frontend dev:** Jump straight to the [Frontend Dev Guide](#frontend-dev-guide) section.
@@ -450,8 +450,6 @@ php artisan test tests/Feature/
 ---
 
 ## Frontend Dev Guide
-
-> This section is written specifically for the frontend developer joining the project.
 
 ### How the views work
 
