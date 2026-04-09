@@ -201,23 +201,25 @@ class AccountTest extends TestCase
     }
 
     public function test_user_can_update_password_in_info_update()
-    {
-        $customer = $this->createCustomer();
-        $this->actingAs($customer, 'customer');
+{
+    $customer = $this->createCustomer();
+    $this->actingAs($customer, 'customer');
 
-        $response = $this->put('/account/info/update', [
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'contact_num' => '09123456789',
-            'email' => 'john@example.com',
-            'new_password' => 'newpassword456',
-        ]);
+    $response = $this->put('/account/info/update', [
+        'first_name'            => 'John',
+        'last_name'             => 'Doe',
+        'contact_num'           => '09123456789',
+        'email'                 => 'john@example.com',
+        'current_password'      => 'password123',
+        'new_password'          => 'newpassword456',
+        'new_password_confirmation' => 'newpassword456',
+    ]);
 
-        $response->assertRedirect('/account/security');
+    $response->assertRedirect('/account/security');
 
-        $customer->refresh();
-        $this->assertTrue(Hash::check('newpassword456', $customer->password));
-    }
+    $customer->refresh();
+    $this->assertTrue(Hash::check('newpassword456', $customer->password));
+}
 
     public function test_user_can_delete_account_with_correct_password()
     {

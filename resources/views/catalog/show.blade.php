@@ -1,136 +1,133 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/header.css">
-    {{-- TODO: Frontend dev links catalog.css here --}}
-    <title>{{ $product->Title }} - New Century Books</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/output.css" />
+    <title>{{ $product->Title }} - NCB</title>
 </head>
 <body>
 
-    <header class="header">
-        <a href="{{ route('catalog.index') }}">
-            <img class="logo" src="/images/Logo(1).png" alt="NCB Logo">
-        </a>
-        <div class="navigation">
-            @auth('customer')
-                <p>Welcome, {{ Auth::guard('customer')->user()->first_name }}!</p>
-                <a href="{{ route('account.orders') }}">
-                    <img src="/images/User.png" alt="My Account">
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="login-link">Login</a>
-            @endauth
-            <a href="{{ route('cart.index') }}">
-                <img src="/images/cart.png" alt="Cart">
-            </a>
+    @include('partials.header')
+
+    @if(session('success'))
+        <div class="mx-[282px] mt-4 bg-green-100 text-green-800 px-4 py-3 rounded">
+            {{ session('success') }}
         </div>
-    </header>
+    @endif
 
-    <nav class="navbar">
-        <div class="navlinks-container">
-            <a href="{{ route('catalog.index') }}" class="nav-link">ALL BOOKS</a>
+    {{-- Book detail --}}
+    <div class="grid grid-cols-2 gap-x-6 mt-[103px] mx-[282px] mb-[80px]">
+
+        {{-- Left: Cover --}}
+        <div class="flex justify-center items-start mr-5">
+            <img src="/images/SampleBook.png" alt="{{ $product->Title }}" class="max-h-[500px] object-contain" />
         </div>
-    </nav>
 
-    <main class="product-detail-main">
-
-        <a href="{{ route('catalog.index') }}" class="back-link">← Back to Catalog</a>
-
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        {{-- ================================
-             PRODUCT DETAIL LAYOUT
-             Left: cover image
-             Right: info + add to cart
-             ================================ --}}
-        <div class="product-detail-layout">
-
-            {{-- Left: Cover --}}
-            <div class="product-detail-cover">
-                {{-- Placeholder until image upload built --}}
-                <div class="product-cover-placeholder-lg">📖</div>
-                {{-- Future: <img src="{{ $product->cover_image }}" alt="{{ $product->Title }}"> --}}
-            </div>
-
-            {{-- Right: Info --}}
-            <div class="product-detail-info">
-                <h1 class="detail-title">{{ $product->Title }}</h1>
-                <p class="detail-author">by {{ $product->Author }}</p>
-                <p class="detail-price">₱{{ number_format($product->Price, 2) }}</p>
+        {{-- Right: Info --}}
+        <div>
+            <div class="border border-black border-2 shadow shadow-black w-full p-4">
+                <p class="text-black text-[40px]">{{ $product->Title }}</p>
+                <p class="text-black text-[20px] mt-2">By {{ $product->Author }}</p>
 
                 @if($product->Rating)
-                    <p class="detail-rating">★ {{ number_format($product->Rating, 1) }} / 5</p>
-                @endif
-
-                {{-- Book metadata table --}}
-                <table class="detail-meta-table">
-                    <tr>
-                        <th>Genre</th>
-                        <td>{{ $product->Genre }}</td>
-                    </tr>
-                    <tr>
-                        <th>Publisher</th>
-                        <td>{{ $product->Publisher }}</td>
-                    </tr>
-                    <tr>
-                        <th>ISBN</th>
-                        <td>{{ $product->ISBN }}</td>
-                    </tr>
-                    @if($product->Age_Group)
-                    <tr>
-                        <th>Age Group</th>
-                        <td>{{ $product->Age_Group }}</td>
-                    </tr>
-                    @endif
-                    @if($product->Length && $product->Width)
-                    <tr>
-                        <th>Dimensions</th>
-                        <td>{{ $product->Length }} x {{ $product->Width }} cm</td>
-                    </tr>
-                    @endif
-                    <tr>
-                        <th>Availability</th>
-                        <td class="{{ $product->Stock > 0 ? 'in-stock' : 'out-of-stock' }}">
-                            {{ $product->Stock > 0 ? $product->Stock . ' in stock' : 'Out of Stock' }}
-                        </td>
-                    </tr>
-                </table>
-
-                @if($product->Review)
-                    <div class="detail-description">
-                        <h4>Description</h4>
-                        <p>{{ $product->Review }}</p>
+                    <div class="flex items-center mt-5">
+                        @for($i = 1; $i <= 5; $i++)
+                            <img src="{{ $i <= round($product->Rating) ? '/images/StarVal.png' : '/images/StarNone.png' }}"
+                                alt="" class="w-5 h-5" />
+                        @endfor
+                        <span class="ml-2 text-gray-500 text-[14px]">{{ number_format($product->Rating, 1) }}/5</span>
                     </div>
                 @endif
 
-                {{-- Add to cart section --}}
-                @if($product->Stock > 0)
-                    @auth('customer')
-                        <form action="{{ route('cart.add') }}" method="POST" class="detail-cart-form">
-                            @csrf
-                            <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
-                            <div class="qty-selector">
-                                <label for="quantity">Quantity</label>
-                                <input type="number" id="quantity" name="quantity"
-                                       value="1" min="1" max="{{ $product->Stock }}">
-                            </div>
-                            <button type="submit" class="btn-add-to-cart">ADD TO CART</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="btn-add-to-cart">LOGIN TO BUY</a>
-                    @endauth
-                @else
-                    <p class="out-of-stock-msg">This item is currently out of stock.</p>
-                @endif
-
+                <p class="text-black text-[36px] mt-[20px]">₱{{ number_format($product->Price, 2) }}</p>
             </div>
-        </div>
 
-    </main>
+            {{-- Metadata --}}
+            <table class="w-full mt-6 text-[16px]">
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500 w-[140px]">Genre</th>
+                    <td class="py-2">{{ $product->Genre }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">Publisher</th>
+                    <td class="py-2">{{ $product->Publisher }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">ISBN</th>
+                    <td class="py-2">{{ $product->ISBN }}</td>
+                </tr>
+                @if($product->Age_Group)
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">Age Group</th>
+                    <td class="py-2">{{ $product->Age_Group }}</td>
+                </tr>
+                @endif
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">Availability</th>
+                    <td class="py-2 {{ $product->Stock > 0 ? 'text-green-600' : 'text-[#ED1B24]' }} font-bold">
+                        {{ $product->Stock > 0 ? $product->Stock . ' in stock' : 'Out of Stock' }}
+                    </td>
+                </tr>
+            </table>
+
+            @if($product->Review)
+                <p class="text-[#5D5454] text-[16px] mt-6">{{ $product->Review }}</p>
+            @endif
+
+            {{-- Add to cart --}}
+            @if($product->Stock > 0)
+                @auth('customer')
+                    <p class="text-[24px] text-[#5D5454] mt-[47px]">Quantity:</p>
+                    <form action="{{ route('cart.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
+                        <div class="flex justify-start items-center mt-[20px]">
+                            <div class="bg-white border border-[#FCAE42] border-2 w-[45px] h-[40px] flex items-center justify-center">
+                                <button type="button" onclick="decrementQty()"
+                                    class="hover:cursor-pointer w-full text-center text-black text-[30px] font-bold leading-none">-</button>
+                            </div>
+                            <input id="qty" name="quantity" type="number"
+                                class="bg-[#FCAE42] w-[85px] h-[55px] text-[24px] font-bold text-center border-none"
+                                value="1" min="1" max="{{ $product->Stock }}" />
+                            <div class="bg-white border border-[#FCAE42] border-2 w-[45px] h-[40px] flex items-center justify-center">
+                                <button type="button" onclick="incrementQty()"
+                                    class="hover:cursor-pointer w-full text-center text-black text-[30px] font-bold leading-none">+</button>
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="mt-6 bg-[#FCAE42] text-black font-bold text-[20px] py-3 px-10 hover:bg-[#F54E4E] hover:text-white transition-colors">
+                            ADD TO CART
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}"
+                        class="inline-block mt-6 bg-[#FCAE42] text-black font-bold text-[20px] py-3 px-10 hover:bg-[#F54E4E] hover:text-white transition-colors">
+                        LOGIN TO BUY
+                    </a>
+                @endauth
+            @else
+                <p class="mt-6 text-[#ED1B24] font-bold text-[20px]">Out of Stock</p>
+            @endif
+
+            <a href="{{ route('catalog.index') }}" class="inline-block mt-6 text-[#ED1B24] hover:underline">
+                ← Back to Catalog
+            </a>
+        </div>
+    </div>
+
+    @include('partials.footer')
 
 </body>
+<script>
+    function incrementQty() {
+        const input = document.getElementById('qty');
+        const max = parseInt(input.max);
+        if (parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
+    }
+    function decrementQty() {
+        const input = document.getElementById('qty');
+        if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
+    }
+</script>
 </html>

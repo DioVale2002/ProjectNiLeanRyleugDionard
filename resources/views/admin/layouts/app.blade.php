@@ -3,61 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/admin.css">
-    <title>NCB Admin – @yield('title')</title>
+    <link rel="stylesheet" href="/css/output.css">
+    <title>NCB Admin — @yield('title')</title>
 </head>
-<body>
-    <div class="admin-wrapper">
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    {{-- Admin topbar --}}
+    <div class="flex gap-5 justify-between items-center mx-[70px] py-2">
+        <img src="/images/Logo.png" alt="NCB Logo" class="h-12" />
+        <h1 class="text-black font-bold text-[18px]">Admin</h1>
+    </div>
+    <hr class="bg-[#FCAE42] h-1 border-0" />
+    <hr class="bg-[#F54E4E] h-1 border-0 mb-9" />
+
+    <div class="flex gap-[42px] flex-1">
 
         {{-- Sidebar --}}
-        <aside class="admin-sidebar">
-            <div class="sidebar-logo">
-                <img src="/img/logo.png" alt="NCB Logo">
-                <span>NCB Admin</span>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="{{ route('admin.products.index') }}"
-                   class="sidebar-link {{ request()->is('admin/products*') ? 'active' : '' }}">
-                    📦 Products
-                </a>
-                <a href="{{ route('admin.vouchers.index') }}"
-                   class="sidebar-link {{ request()->is('admin/vouchers*') ? 'active' : '' }}">
-                    🎟️ Vouchers
-                </a>
-            </nav>
-        </aside>
+        <div class="w-[343px] pt-10 ml-[70px]">
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/products*') || request()->is('admin/stock*') ? 'bg-[#ED1B24]/20' : '' }}"
+               href="{{ route('admin.products.index') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/inventory.png" alt="" />
+                </div>
+                <p class="font-bold text-[25px] ml-3.5">Inventory</p>
+            </a>
 
-        {{-- Main --}}
-        <div class="admin-main">
-            <header class="admin-topbar">
-                <h2>@yield('title')</h2>
-                <span>Admin Panel</span>
-            </header>
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/vouchers*') ? 'bg-[#ED1B24]/20' : '' }}"
+               href="{{ route('admin.vouchers.index') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/coupon.png" alt="" />
+                </div>
+                <p class="font-bold text-[25px] ml-3.5">Vouchers</p>
+            </a>
 
-            <main class="admin-content">
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px]" href="#">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/pie-graph.png" alt="" />
+                </div>
+                <p class="font-bold text-[25px] ml-3.5">Analytics</p>
+            </a>
 
-                {{-- Flash messages --}}
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-error">{{ session('error') }}</div>
-                @endif
-                @if($errors->any())
-                    <div class="alert alert-error">
-                        @foreach($errors->all() as $error)
-                            <p>{{ $error }}</p>
-                        @endforeach
-                    </div>
-                @endif
+            <hr class="my-4 border-gray-300" />
 
-                @yield('content')
-            </main>
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md" href="{{ route('login') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="/images/userAcc-img/logout.png" alt="" />
+                </div>
+                <p class="font-bold text-[25px] ml-3.5">Log Out</p>
+            </a>
         </div>
 
+        {{-- Main content --}}
+        <div class="flex-1 mr-[70px] mt-8">
+
+            {{-- Flash messages --}}
+            @if(session('success'))
+                <div class="bg-green-100 text-green-800 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="bg-red-100 text-red-800 px-4 py-3 rounded mb-4">{{ session('error') }}</div>
+            @endif
+            @if($errors->any())
+                <div class="bg-red-100 text-red-800 px-4 py-3 rounded mb-4">
+                    @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
+                </div>
+            @endif
+
+            @yield('content')
+        </div>
     </div>
+
 </body>
 </html>
