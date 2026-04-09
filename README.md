@@ -1,6 +1,5 @@
 # NCB OIMS — New Century Books Order & Inventory Management System
 
-> **CS12L Software Engineering 1 — Capstone Project**
 > Laravel 11 · PHP 8.2 · MySQL · Blade · Plain CSS
 
 ---
@@ -37,7 +36,7 @@ Authentication uses an OTP-based email system (no passwords on the customer side
 
 | Role | Responsibility |
 |------|---------------|
-| Backend Dev (Dio) | Laravel backend — controllers, models, migrations, routes, tests |
+| Backend Dev | Laravel backend — controllers, models, migrations, routes, tests |
 | Frontend Dev | Blade view styling — CSS, layout, Figma implementation |
 
 > **Frontend dev:** Jump straight to the [Frontend Dev Guide](#frontend-dev-guide) section.
@@ -450,8 +449,6 @@ php artisan test tests/Feature/
 ---
 
 ## Frontend Dev Guide
-
-> This section is written specifically for the frontend developer joining the project.
 
 ### How the views work
 
