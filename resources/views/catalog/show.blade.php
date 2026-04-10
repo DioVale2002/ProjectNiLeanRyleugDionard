@@ -11,24 +11,24 @@
     @include('partials.header')
 
     @if(session('success'))
-        <div class="mx-[282px] mt-4 bg-green-100 text-green-800 px-4 py-3 rounded">
+        <div class="mx-4 md:mx-10 xl:mx-[282px] mt-4 bg-green-100 text-green-800 px-4 py-3 rounded">
             {{ session('success') }}
         </div>
     @endif
 
     {{-- Book detail --}}
-    <div class="grid grid-cols-2 gap-x-6 mt-[103px] mx-[282px] mb-[80px]">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-x-6 mt-[50px] xl:mt-[103px] mx-4 md:mx-10 xl:mx-[282px] mb-[80px]">
 
         {{-- Left: Cover --}}
-        <div class="flex justify-center items-start mr-5">
+        <div class="flex justify-center items-start xl:mr-5 mb-8 xl:mb-0">
             <img src="/images/SampleBook.png" alt="{{ $product->Title }}" class="max-h-[500px] object-contain" />
         </div>
 
         {{-- Right: Info --}}
         <div>
             <div class="border border-black border-2 shadow shadow-black w-full p-4">
-                <p class="text-black text-[40px]">{{ $product->Title }}</p>
-                <p class="text-black text-[20px] mt-2">By {{ $product->Author }}</p>
+                <p class="text-black text-[32px] xl:text-[40px] leading-tight">{{ $product->Title }}</p>
+                <p class="text-black text-[18px] xl:text-[20px] mt-2">By {{ $product->Author }}</p>
 
                 @if($product->Rating)
                     <div class="flex items-center mt-5">
@@ -40,7 +40,7 @@
                     </div>
                 @endif
 
-                <p class="text-black text-[36px] mt-[20px]">₱{{ number_format($product->Price, 2) }}</p>
+                <p class="text-black text-[32px] xl:text-[36px] mt-[20px]">₱{{ number_format($product->Price, 2) }}</p>
             </div>
 
             {{-- Metadata --}}
@@ -78,7 +78,7 @@
             {{-- Add to cart --}}
             @if($product->Stock > 0)
                 @auth('customer')
-                    <p class="text-[24px] text-[#5D5454] mt-[47px]">Quantity:</p>
+                    <p class="text-[24px] text-[#5D5454] mt-[40px] xl:mt-[47px]">Quantity:</p>
                     <form action="{{ route('cart.add') }}" method="POST">
                         @csrf
                         <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
@@ -96,13 +96,13 @@
                             </div>
                         </div>
                         <button type="submit"
-                            class="mt-6 bg-[#FCAE42] text-black font-bold text-[20px] py-3 px-10 hover:bg-[#F54E4E] hover:text-white transition-colors">
+                            class="mt-6 bg-[#FCAE42] text-black font-bold text-[20px] py-3 px-10 w-full xl:w-auto hover:bg-[#F54E4E] hover:text-white transition-colors">
                             ADD TO CART
                         </button>
                     </form>
                 @else
                     <a href="{{ route('login') }}"
-                        class="inline-block mt-6 bg-[#FCAE42] text-black font-bold text-[20px] py-3 px-10 hover:bg-[#F54E4E] hover:text-white transition-colors">
+                        class="inline-block mt-6 bg-[#FCAE42] text-black font-bold text-[20px] py-3 px-10 w-full xl:w-auto text-center hover:bg-[#F54E4E] hover:text-white transition-colors">
                         LOGIN TO BUY
                     </a>
                 @endauth

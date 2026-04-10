@@ -6,169 +6,193 @@
     <link rel="stylesheet" href="/css/output.css" />
     <title>Books - NCB</title>
 </head>
-<body>
+<body class="bg-gray-50">
 
     @include('partials.header')
 
-    {{-- Flash --}}
+    {{-- Messages --}}
     @if(session('success'))
-        <div class="mx-[261px] mt-4 bg-green-100 text-green-800 px-4 py-3 rounded">
+        <div class="mx-4 md:mx-10 xl:mx-[261px] mt-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
             {{ session('success') }}
         </div>
     @endif
 
-    {{-- Filter bar --}}
-    <form action="{{ route('catalog.index') }}" method="GET"
-          class="w-[1195px] h-full bg-white border border-gray-400 mx-auto mt-[20px]">
-        <div class="grid grid-cols-4 p-7 gap-4">
+    @if(session('error'))
+        <div class="mx-4 md:mx-10 xl:mx-[261px] mt-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            {{ session('error') }}
+        </div>
+    @endif
 
-            {{-- Genre filter --}}
-            <div class="relative w-full">
-                <button id="genre-btn" type="button"
-                    class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
-                    <span id="genre-btn-text" class="truncate pointer-events-none">
-                        {{ request('genre') ? strtoupper(request('genre')) : 'GENRE' }}
-                    </span>
-                </button>
-                <div id="genre-popup"
-                    class="hidden absolute top-full left-0 mt-1 w-[120%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="flex flex-col gap-4">
-                        @foreach($genres as $genre)
-                            <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="radio" name="genre" value="{{ $genre }}"
-                                    {{ request('genre') === $genre ? 'checked' : '' }}
-                                    class="cursor-pointer" />
-                                <span class="text-white font-bold uppercase tracking-wide">
-                                    {{ $genre }}
-                                </span>
-                            </label>
-                        @endforeach
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="radio" name="genre" value=""
-                                {{ !request('genre') ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">All</span>
-                        </label>
+    {{-- Main content area --}}
+    <div class="mx-4 md:mx-10 xl:mx-[261px] py-8">
+
+        {{-- Filters section --}}
+        <form action="{{ route('catalog.index') }}" method="GET" class="mb-8">
+            <div class="w-[1195px] h-full bg-white border border-gray-400 mx-auto">
+                <div class="grid grid-cols-8 p-7 gap-4">
+                    {{-- Genre filter --}}
+                    <div class="relative w-full">
+                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
+                            <span class="truncate pointer-events-none">GENRE</span>
+                        </button>
                     </div>
+
+                    {{-- Price filter --}}
+                    <div class="relative w-full">
+                        <input
+                            type="number"
+                            name="min_price"
+                            value="{{ request('min_price') }}"
+                            placeholder="MIN PRICE"
+                            min="0"
+                            class="w-full px-2 py-2 text-[#ED1B24] bg-white border border-[#ED1B24] flex justify-center items-center text-center font-bold"
+                        />
+                    </div>
+
+                    {{-- Max price --}}
+                    <div class="relative w-full">
+                        <input
+                            type="number"
+                            name="max_price"
+                            value="{{ request('max_price') }}"
+                            placeholder="MAX PRICE"
+                            min="0"
+                            class="w-full px-2 py-2 text-[#ED1B24] bg-white border border-[#ED1B24] flex justify-center items-center text-center font-bold"
+                        />
+                    </div>
+
+                    {{-- Search box --}}
+                    <div class="relative w-full">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="SEARCH"
+                            class="w-full px-2 py-2 text-[#ED1B24] bg-white border border-[#ED1B24] text-center font-bold"
+                        />
+                    </div>
+
+                    {{-- Remaining filter placeholders --}}
+                    <div class="relative w-full">
+                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
+                            <span class="truncate pointer-events-none">FORMAT</span>
+                        </button>
+                    </div>
+
+                    <div class="relative w-full">
+                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
+                            <span class="truncate pointer-events-none">RATING</span>
+                        </button>
+                    </div>
+
+                    <div class="relative w-full">
+                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
+                            <span class="truncate pointer-events-none">AGE</span>
+                        </button>
+                    </div>
+
+                    {{-- FILTER Button --}}
+                    <button type="submit" class="text-white bg-[#ED1B24] font-bold px-2 py-2 w-full border border-[#ED1B24] flex items-center justify-center gap-2 hover:bg-red-700 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                        </svg>
+                        FILTER
+                    </button>
                 </div>
             </div>
+        </form>
 
-            {{-- Search box spanning remaining columns --}}
-            <div class="col-span-2 flex items-center">
-                <input type="text" name="search" value="{{ request('search') }}"
-                    placeholder="Search by title or author..."
-                    class="w-full px-4 py-2 border border-[#ED1B24] focus:outline-none" />
-            </div>
-
-            <button type="submit"
-                class="bg-[#ED1B24] text-white font-bold py-2 px-4 hover:bg-[#FCAE42] hover:text-black transition-colors">
-                Filter Results
-            </button>
+        {{-- Results header --}}
+        <div class="mb-6 mt-8">
+            <p class="text-[35px] font-bold text-black">Suggested Books</p>
         </div>
-    </form>
 
-    {{-- Results heading --}}
-    <div class="w-[1195px] mx-auto mt-6 mb-4 flex justify-between items-center">
-        <p class="text-xl text-black/60">
-            @if(request('search'))
-                Results for "{{ request('search') }}"
-            @elseif(request('genre'))
-                {{ request('genre') }}
-            @else
-                All Books
-            @endif
-            <span class="text-sm">({{ $products->total() }} found)</span>
-        </p>
-        @if(request('search') || request('genre'))
-            <a href="{{ route('catalog.index') }}" class="text-[#ED1B24] text-sm">Clear filters</a>
-        @endif
-    </div>
-
-    {{-- Product grid --}}
-    <div class="w-[1195px] mx-auto">
+        {{-- Product grid --}}
         @if($products->isEmpty())
-            <div class="py-20 text-center text-gray-500">
-                <p class="text-[24px]">No books found.</p>
-                <a href="{{ route('catalog.index') }}" class="text-[#ED1B24] mt-4 inline-block">View all books</a>
+            <div class="text-center py-16">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No books found</h3>
+                <p class="text-gray-600 mb-6">Try adjusting your filters or search terms</p>
+                <a href="{{ route('catalog.index') }}" class="inline-block bg-[#ED1B24] text-white font-semibold px-6 py-2 rounded-lg hover:bg-red-700 transition">
+                    View All Books
+                </a>
             </div>
         @else
-            <div class="grid grid-cols-4 gap-6 mt-4">
+            <div class="grid grid-cols-5 gap-y-8 mb-6 px-[237px]">
                 @foreach($products as $product)
-                    <div class="flex flex-col border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-
-                        {{-- Cover --}}
+                    <div class="h-full w-[265px] border border-gray-400 shadow-md relative">
+                        {{-- Product image --}}
                         <a href="{{ route('catalog.show', $product) }}" class="block">
-                            <div class="w-full h-[220px] bg-gray-100 flex items-center justify-center overflow-hidden">
-                                <img src="/images/SampleBook.png" alt="{{ $product->Title }}"
-                                    class="h-full object-cover" />
+                            <div class="flex justify-center items-center pt-6">
+                                <img src="/images/SampleBook.png" alt="{{ $product->Title }}" class="h-40 object-contain" />
                             </div>
                         </a>
 
-                        {{-- Info --}}
-                        <a href="{{ route('catalog.show', $product) }}" class="flex flex-col flex-1 p-3">
-                            <p class="font-bold text-black text-[15px] leading-tight mb-1 line-clamp-2">
-                                {{ $product->Title }}
-                            </p>
-                            <p class="text-gray-500 text-[13px] mb-1">{{ $product->Author }}</p>
-                            <p class="text-gray-400 text-[12px] mb-2">{{ $product->Genre }}</p>
+                        {{-- Product info --}}
+                        <div class="p-4 flex flex-col">
+                            <a href="{{ route('catalog.show', $product) }}" class="block">
+                                <p class="text-black text-[15px] overflow-hidden line-clamp-2">
+                                    {{ $product->Title }}
+                                </p>
+                            </a>
+                            
+                            <p class="text-black text-[11px] mt-[7px]">{{ $product->Author }}</p>
 
+                            {{-- Rating --}}
                             @if($product->Rating)
-                                <div class="flex items-center mb-2">
+                                <div class="flex items-center mt-1 ml-0 w-[125px]">
                                     @for($i = 1; $i <= 5; $i++)
-                                        <img src="{{ $i <= round($product->Rating) ? '/images/StarVal.png' : '/images/StarNone.png' }}"
-                                            alt="" class="w-4 h-4" />
+                                        <svg class="w-4 h-4 {{ $i <= round($product->Rating) ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
                                     @endfor
                                 </div>
                             @endif
 
-                            <p class="text-black font-bold text-[18px] mt-auto">
-                                ₱{{ number_format($product->Price, 2) }}
-                            </p>
+                            {{-- Price --}}
+                            <p class="text-black text-[15px] font-bold mt-[10px]">₱ {{ number_format($product->Price, 2) }}</p>
 
-                            @if($product->Stock <= 5)
-                                <p class="text-[#ED1B24] text-[12px] mt-1">Only {{ $product->Stock }} left!</p>
-                            @endif
-                        </a>
-
-                        {{-- Add to cart --}}
-                        @auth('customer')
-                            <form action="{{ route('cart.add') }}" method="POST" class="p-3 pt-0">
-                                @csrf
-                                <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit"
-                                    class="w-full bg-white border border-[#FCAE42] text-black font-bold py-2 hover:bg-[#FCAE42] transition-colors text-[14px]">
-                                    ADD TO CART
-                                </button>
-                            </form>
-                        @else
-                            <div class="p-3 pt-0">
-                                <a href="{{ route('login') }}"
-                                    class="block w-full text-center bg-white border border-[#FCAE42] text-black font-bold py-2 hover:bg-[#FCAE42] transition-colors text-[14px]">
-                                    LOGIN TO BUY
-                                </a>
+                            {{-- Button --}}
+                            <div class="w-full flex justify-center px-[22px] py-[9px] mt-auto">
+                                @auth('customer')
+                                    @if($product->Stock > 0)
+                                        <form action="{{ route('cart.add') }}" method="POST" class="w-full">
+                                            @csrf
+                                            <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit"
+                                                class="bg-white text-black border-[#FCAE42] border-2 w-full py-[10px] transition-colors hover:bg-[#FCAE42] hover:text-white hover:font-bold hover:cursor-pointer">
+                                                ADD TO CART
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button type="button" disabled class="bg-white text-gray-400 border-[#FCAE42] border-2 w-full py-[10px] cursor-not-allowed">
+                                            OUT OF STOCK
+                                        </button>
+                                    @endif
+                                @else
+                                    <a href="{{ route('login') }}" class="bg-white text-black border-[#FCAE42] border-2 w-full py-[10px] text-center transition-colors hover:bg-[#FCAE42] hover:text-white hover:font-bold">
+                                        ADD TO CART
+                                    </a>
+                                @endauth
                             </div>
-                        @endauth
+
+                            {{-- Bestseller Badge --}}
+                            <div class="bg-[#FCAE42] w-[97px] absolute top-11 left-0">
+                                <p class="text-[13px] font-bold px-[7px] py-[2px]">BESTSELLERS</p>
+                            </div>
+                        </div>
                     </div>
                 @endforeach
             </div>
-
-            {{-- Pagination --}}
-            <div class="mt-8 mb-8">{{ $products->links() }}</div>
         @endif
+
+        {{-- Pagination --}}
+        <div class="mt-12">
+            {{ $products->links() }}
+        </div>
     </div>
 
     @include('partials.footer')
 
 </body>
-<script>
-    // Genre dropdown toggle
-    const genreBtn = document.getElementById('genre-btn');
-    const genrePopup = document.getElementById('genre-popup');
-    genreBtn.addEventListener('click', () => genrePopup.classList.toggle('hidden'));
-    document.addEventListener('click', (e) => {
-        if (!genreBtn.contains(e.target) && !genrePopup.contains(e.target)) {
-            genrePopup.classList.add('hidden');
-        }
-    });
-</script>
 </html>

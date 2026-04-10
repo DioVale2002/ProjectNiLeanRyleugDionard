@@ -7,8 +7,9 @@
     <title>Login - NCB</title>
 </head>
 <body class="bg-[url('/images/AuthBG.jpg')] bg-cover bg-no-repeat min-h-screen flex flex-col">
-
+    
     <div class="flex-1 flex items-center justify-center mx-[228px] mt-[80px] mb-[40px]">
+        {{-- Left Section: Heading --}}
         <div>
             <p class="text-white text-[32px] font-bold">
                 Learn + Achieve, all in One Bookstore
@@ -19,38 +20,55 @@
             </p>
         </div>
 
-        <div class="bg-white w-[540px] h-full rounded-[25px] flex flex-col items-center">
-            <img src="/images/LoginLogo.png" alt="NCB Logo" />
+        {{-- Right Section: Login Form Card --}}
+        <div class="bg-white w-[540px] rounded-[25px] flex flex-col items-center pt-8 pb-8">
+            <img src="/images/LoginLogo.png" alt="NCB Logo" class="h-12 mb-6" />
             <p class="text-[36px] font-bold">Log In to NCB</p>
 
+            {{-- Error Messages --}}
             @if($errors->any())
-                <div class="w-[395px] mt-4">
+                <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4 w-[395px]">
                     @foreach($errors->all() as $error)
-                        <p class="text-[#ED1B24] text-[14px]">{{ $error }}</p>
+                        <p class="text-red-700 text-sm">{{ $error }}</p>
                     @endforeach
                 </div>
             @endif
 
-            <form class="flex flex-col" action="{{ route('login') }}" method="POST">
+            {{-- Form --}}
+            <form action="{{ route('login') }}" method="POST" class="flex flex-col mt-6">
                 @csrf
+
+                {{-- Email --}}
                 <input
-                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px]"
-                    type="email" name="email"
-                    placeholder="Email"
+                    id="email"
+                    type="email"
+                    name="email"
                     value="{{ old('email') }}"
-                    required>
+                    placeholder="Email"
+                    required
+                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] p-5 text-[24px] mt-[20px]"
+                />
+
+                {{-- Password (labeled as OTP Code for reference design) --}}
                 <input
-                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px]"
-                    type="password" name="password"
+                    id="password"
+                    type="password"
+                    name="password"
                     placeholder="Password"
-                    required>
+                    required
+                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] p-5 text-[24px] mt-[20px]"
+                />
+
+                {{-- Submit Button --}}
                 <button
+                    type="submit"
                     class="bg-[#FCAE42] h-[55px] text-[24px] text-black py-2 px-4 rounded-[10px] mt-[30px]"
-                    type="submit">
+                >
                     Log In
                 </button>
             </form>
 
+            {{-- Sign Up Link --}}
             <div class="flex mt-6 mb-14">
                 <p class="text-[15px] mr-0.5">Don't have an account?</p>
                 <a href="{{ route('register') }}" class="text-[15px] text-[#ED1B24]">Sign Up</a>

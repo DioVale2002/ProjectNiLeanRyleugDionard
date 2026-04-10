@@ -47,7 +47,12 @@ class CartController extends Controller
     {
         $product = Product::findOrFail($request->product_ID);
 
-        abort_if($product->Stock < $request->quantity, 422, 'Insufficient stock.');
+        if ($product->Stock < $request->quantity) {
+            return back()->with('error', $product->Stock > 0 
+                ? "Only {$product->Stock} available, but you requested {$request->quantity}."
+                : 'This item is out of stock.'
+            );
+        }
 
         $cart = $this->getOrCreateCart();
 
@@ -56,7 +61,9 @@ class CartController extends Controller
 
         if ($existing) {
             $newQty = $existing->quantity + $request->quantity;
-            abort_if($product->Stock < $newQty, 422, 'Insufficient stock.');
+            if ($product->Stock < $newQty) {
+                return back()->with('error', "Only {$product->Stock} available in total.");
+            }
 
             $existing->update([
                 'quantity' => $newQty,
@@ -82,7 +89,13 @@ class CartController extends Controller
         ])['quantity'];
 
         $product = $cartItem->product;
-        abort_if($product->Stock < $quantity, 422, 'Insufficient stock.');
+        
+        if ($product->Stock < $quantity) {
+            return back()->with('error', $product->Stock > 0 
+                ? "Only {$product->Stock} available in stock."
+                : 'This item is out of stock.'
+            );
+        }
 
         $cartItem->update([
             'quantity' => $quantity,

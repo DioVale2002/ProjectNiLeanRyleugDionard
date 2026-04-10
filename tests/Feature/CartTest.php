@@ -144,7 +144,8 @@ class CartTest extends TestCase
             'quantity'   => 10,
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(302);
+        $response->assertSessionHas('error');
         $this->assertDatabaseMissing('cart_items', [
             'product_ID' => $product->product_ID,
         ]);
@@ -223,7 +224,8 @@ class CartTest extends TestCase
             'quantity' => 99,
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(302);
+        $response->assertSessionHas('error');
     }
 
     // -------------------------------------------------------

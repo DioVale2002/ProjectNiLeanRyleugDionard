@@ -63,5 +63,12 @@ Route::middleware('auth:customer')->group(function () {
     Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
     Route::patch('/cart/update/{cartItem}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{cartItem}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+
+    Route::get('/checkout/address', [\App\Http\Controllers\OrderController::class, 'address'])->name('checkout.address');
+    Route::post('/checkout/address', [\App\Http\Controllers\OrderController::class, 'saveAddressStep'])->name('checkout.address.save');
+    Route::get('/checkout/payment', [\App\Http\Controllers\OrderController::class, 'payment'])->name('checkout.payment');
+    Route::post('/checkout/payment', [\App\Http\Controllers\OrderController::class, 'confirmPayment'])->name('checkout.payment.confirm');
+    Route::get('/checkout/receipt/{order}', [\App\Http\Controllers\OrderController::class, 'receipt'])->name('checkout.receipt');
+
     Route::post('/orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
 });

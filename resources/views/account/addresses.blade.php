@@ -6,51 +6,95 @@
     <link rel="stylesheet" href="/css/output.css" />
     <title>Addresses - NCB</title>
 </head>
-<body>
+<body class="bg-gray-50">
     @include('partials.header')
     @php $customer = Auth::guard('customer')->user(); @endphp
 
-    <div class="ml-[282px] mt-[50px] mb-[50px]">
-        <p class="text-[36px] text-black font-bold">Your Account</p>
-        <div class="flex">
-            <p class="text-[17px] text-black/50 mr-1">{{ $customer->first_name }} {{ $customer->last_name }},</p>
-            <p class="text-[17px] text-black/50">Email: {{ $customer->email }}</p>
+    <div class="mx-4 md:mx-10 xl:mx-[261px] py-8">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Your Account</h1>
+            <p class="text-gray-600">Welcome back, <span class="font-semibold">{{ $customer->first_name }} {{ $customer->last_name }}</span></p>
         </div>
-    </div>
 
-    <div class="flex mx-[282px] mb-[80px]">
-        @include('partials.account-nav', ['active' => 'addresses'])
-        <div class="flex-1">
-            <p class="text-[28px] font-bold mb-4">Delivery Address</p>
-            <hr class="mb-6 border-gray-300" />
+        <div class="flex flex-col xl:flex-row gap-8">
+            {{-- Sidebar Navigation --}}
+            @include('partials.account-nav', ['active' => 'addresses'])
 
-            @if(session('success'))
-                <div class="bg-green-100 text-green-800 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
-            @endif
-            @if($errors->any())
-                <div class="bg-red-100 text-red-800 px-4 py-3 rounded mb-4">
-                    @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
+            {{-- Main Content --}}
+            <div class="flex-1 min-w-0">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Delivery Address</h2>
+
+                    @if(session('success'))
+                        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
+                    @endif
+                    @if($errors->any())
+                        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 space-y-1">
+                            @foreach($errors->all() as $error)
+                                <p class="text-sm">{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <form action="{{ route('account.address.update') }}" method="POST" class="space-y-5">
+                        @csrf
+                        @method('PUT')
+
+                        {{-- Country --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
+                            <input type="text" name="country"
+                                value="{{ old('country', $address?->country) }}"
+                                placeholder="e.g., Philippines"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
+                        </div>
+
+                        {{-- Province & City --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Province</label>
+                                <input type="text" name="province"
+                                    value="{{ old('province', $address?->province) }}"
+                                    placeholder="e.g., Metro Manila"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                                <input type="text" name="city"
+                                    value="{{ old('city', $address?->city) }}"
+                                    placeholder="e.g., Manila"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
+                            </div>
+                        </div>
+
+                        {{-- Barangay & Postal Code --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Barangay</label>
+                                <input type="text" name="barangay"
+                                    value="{{ old('barangay', $address?->barangay) }}"
+                                    placeholder="Barangay name"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code</label>
+                                <input type="text" name="zip_postal_code"
+                                    value="{{ old('zip_postal_code', $address?->zip_postal_code) }}"
+                                    placeholder="e.g., 1000"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
+                            </div>
+                        </div>
+
+                        {{-- Buttons --}}
+                        <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
+                            <button type="submit"
+                                class="bg-[#ED1B24] text-white font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition">
+                                Save Address
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            @endif
-
-            <form action="{{ route('account.address.update') }}" method="POST" class="max-w-[500px]">
-                @csrf
-                @method('PUT')
-
-                @foreach(['country' => 'Country', 'province' => 'Province', 'city' => 'City', 'barangay' => 'Barangay', 'zip_postal_code' => 'ZIP / Postal Code'] as $field => $label)
-                    <div class="mb-4">
-                        <label class="block text-[16px] font-medium text-gray-700 mb-1">{{ $label }}</label>
-                        <input type="text" name="{{ $field }}"
-                            value="{{ old($field, $address?->$field) }}"
-                            class="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#FCAE42] text-[16px]" />
-                    </div>
-                @endforeach
-
-                <button type="submit"
-                    class="bg-[#FCAE42] text-black font-bold text-[16px] py-3 px-8 hover:bg-[#F54E4E] hover:text-white transition-colors mt-2">
-                    Save Address
-                </button>
-            </form>
+            </div>
         </div>
     </div>
     @include('partials.footer')
