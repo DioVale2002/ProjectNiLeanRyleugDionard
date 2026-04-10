@@ -1,6 +1,6 @@
 # NCB OIMS — New Century Books Order & Inventory Management System
 
-> Laravel 11 · PHP 8.2 · MySQL · Blade · Plain CSS
+> Laravel 12 · PHP 8.2 · MySQL · Blade · Tailwind (Vite)
 
 ---
 
@@ -29,6 +29,8 @@ NCB OIMS is a bookstore management system for New Century Books. It handles:
 - **Admin-facing**: Manage products, stock, vouchers, and analytics
 
 Authentication uses an OTP-based email system (no passwords on the customer side in the final version — the current `password` field in customers is a placeholder for the transition).
+
+Current implementation status and continuation checklist are tracked in `NEXT_STEPS.md`.
 
 ---
 
@@ -131,6 +133,8 @@ ProjectNiLeanRyleugDionard/
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Admin/
+│   │   │   │   ├── AnalyticsController.php   # Admin analytics and reports
+│   │   │   │   ├── OrderController.php       # Admin event-based order tracking
 │   │   │   │   ├── ProductController.php     # Admin product CRUD
 │   │   │   │   ├── StockController.php       # Stock in/out management
 │   │   │   │   └── VoucherController.php     # Voucher CRUD
@@ -165,6 +169,8 @@ ProjectNiLeanRyleugDionard/
 │   └── views/
 │       ├── admin/
 │       │   ├── layouts/app.blade.php         # Admin layout (sidebar + topbar)
+│       │   ├── analytics/                    # index
+│       │   ├── orders/                       # index
 │       │   ├── products/                     # index, create, edit, show
 │       │   ├── stock/                        # index
 │       │   └── vouchers/                     # index, create, edit
@@ -348,11 +354,17 @@ ProjectNiLeanRyleugDionard/
 | GET | `/account/security` | Account info & password |
 | PUT | `/account/address/update` | Update address |
 | PUT | `/account/info/update` | Update name, email, password |
+| PATCH | `/account/orders/{order}/received` | Mark processing order as received |
 | DELETE | `/account/delete` | Delete account |
 | GET | `/cart` | View cart |
 | POST | `/cart/add` | Add item to cart |
 | PATCH | `/cart/update/{cartItem}` | Update item quantity |
 | DELETE | `/cart/remove/{cartItem}` | Remove item from cart |
+| GET | `/checkout/address` | Checkout address step |
+| POST | `/checkout/address` | Save checkout address step |
+| GET | `/checkout/payment` | Checkout payment step |
+| POST | `/checkout/payment` | Confirm checkout payment |
+| GET | `/checkout/receipt/{order}` | Checkout receipt |
 | POST | `/orders` | Place order |
 
 ### Admin Routes (no auth middleware yet — to be added)
@@ -366,6 +378,9 @@ ProjectNiLeanRyleugDionard/
 | GET | `/admin/products/{product}/edit` | Edit product form |
 | PUT | `/admin/products/{product}` | Update product |
 | DELETE | `/admin/products/{product}` | Archive product |
+| GET | `/admin/orders` | Event-based order monitoring |
+| PATCH | `/admin/orders/{order}/event` | Trigger admin order event |
+| GET | `/admin/analytics` | Sales and stock analytics |
 | GET | `/admin/stock` | Stock management |
 | POST | `/admin/stock/in` | Record stock increase |
 | POST | `/admin/stock/out` | Record stock decrease |
@@ -383,6 +398,7 @@ ProjectNiLeanRyleugDionard/
 ### ✅ Subsystem 1 — Inventory Management (Admin)
 - Product CRUD with archiving (products are never hard deleted)
 - Stock in/out logging — every change is recorded in `stock_in` / `stock_out`
+- Creating a product with initial stock auto-logs a stock-in record
 - Voucher CRUD (percentage and flat discount types)
 - Admin layout with sidebar navigation
 
@@ -394,12 +410,20 @@ ProjectNiLeanRyleugDionard/
 - Voucher discount applied at order time (percentage or flat)
 - Stock auto-decremented on order placement
 - Sale records created per order item
+- Event-based order monitoring for admin (`start_processing`, `cancel`, `timeout_fail`)
+- Customer order completion event (`I received this order`) for processing orders
 
-### ⬜ Subsystem 3 — Payment & Billing
-> Not yet built. Planned: PDF receipt generation using `barryvdh/laravel-dompdf`.
+### ✅ Subsystem 3 — Payment & Billing
+- Checkout steps: address and payment
+- Payment method selection and voucher application
+- Receipt generation page after confirmed order
 
-### ⬜ Subsystem 4 — Report & Analytics
-> Not yet built. Planned: Daily/monthly/yearly sales charts, top/low selling books.
+### ✅ Subsystem 4 — Report & Analytics
+- Admin analytics dashboard at `/admin/analytics`
+- Revenue/order KPI cards with period filter (daily/monthly/yearly/custom)
+- Sales performance table by day
+- Top-selling and low-selling books reports
+- Stock insight cards and stock movement counters
 
 ---
 
