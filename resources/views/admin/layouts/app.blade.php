@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="/css/admin.css">
     <title>NCB Admin — @yield('title')</title>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
