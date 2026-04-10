@@ -28,6 +28,8 @@ Route::middleware('auth:customer')->group(function () {
     // Update routes
     Route::put('/account/address/update', [AccountController::class, 'updateAddress'])->name('account.address.update');
     Route::put('/account/info/update', [AccountController::class, 'updateInfo'])->name('account.info.update');
+    Route::patch('/account/orders/{order}/received', [AccountController::class, 'markReceived'])
+        ->name('account.orders.received');
     
     // Delete account
     Route::delete('/account/delete', [AccountController::class, 'deleteAccount'])->name('account.delete');
@@ -44,6 +46,10 @@ Route::get('/', function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
     Route::resource('vouchers', \App\Http\Controllers\Admin\VoucherController::class);
+    Route::get('orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])
+        ->name('orders.index');
+    Route::patch('orders/{order}/event', [\App\Http\Controllers\Admin\OrderController::class, 'handleEvent'])
+        ->name('orders.event');
 
     Route::get('stock', [\App\Http\Controllers\Admin\StockController::class, 'index'])
         ->name('stock.index');

@@ -129,6 +129,10 @@
 
                         {{-- Product info --}}
                         <div class="p-4 flex flex-col">
+                            <div class="bg-[#FCAE42] w-[97px] mb-2">
+                                <p class="text-[13px] font-bold px-[7px] py-[2px]">BESTSELLERS</p>
+                            </div>
+
                             <a href="{{ route('catalog.show', $product) }}" class="block">
                                 <p class="text-black text-[15px] overflow-hidden line-clamp-2">
                                     {{ $product->Title }}
@@ -176,10 +180,6 @@
                                 @endauth
                             </div>
 
-                            {{-- Bestseller Badge --}}
-                            <div class="bg-[#FCAE42] w-[97px] absolute top-11 left-0">
-                                <p class="text-[13px] font-bold px-[7px] py-[2px]">BESTSELLERS</p>
-                            </div>
                         </div>
                     </div>
                 @endforeach

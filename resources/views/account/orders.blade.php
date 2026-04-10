@@ -30,6 +30,9 @@
                     @if(session('success'))
                         <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
                     @endif
+                    @if(session('error'))
+                        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">{{ session('error') }}</div>
+                    @endif
 
                     @if($orders->isEmpty())
                         <div class="text-center py-12">
@@ -79,6 +82,18 @@
                                                 </div>
                                             @endif
                                         </div>
+
+                                        @if($order->order_status === 'Processing')
+                                            <div class="mt-4 flex justify-end">
+                                                <form action="{{ route('account.orders.received', $order) }}" method="POST" onsubmit="return confirm('Confirm that you received this order?')">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="rounded-md bg-[#ED1B24] px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">
+                                                        I received this order
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach

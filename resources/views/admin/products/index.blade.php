@@ -2,13 +2,6 @@
 @section('title', 'Products')
 
 @section('content')
-@php
-    $productCollection = $products->getCollection();
-    $totalProducts = $products->total();
-    $activeProducts = $productCollection->where('Stock', '>', 0)->count();
-    $lowStockProducts = $productCollection->where('Stock', '<=', 5)->count();
-@endphp
-
 <div class="mx-[70px] mt-8 pb-10 font-sans">
     <div class="flex items-center justify-between mb-3.5">
         <p class="text-xl text-black/60">Inventory Summary</p>
@@ -30,7 +23,7 @@
                     <p class="text-white">Active</p>
                     <div class="flex items-center gap-2.5">
                         <p class="text-[20px] font-medium text-white">{{ $activeProducts }}</p>
-                        <p class="text-[12px] text-white">{{ $totalProducts > 0 ? round(($activeProducts / max($totalProducts, 1)) * 100) : 0 }}%</p>
+                        <p class="text-[12px] text-white">{{ $totalProducts > 0 ? number_format(($activeProducts / max($totalProducts, 1)) * 100, 1) : 0 }}%</p>
                     </div>
                 </div>
             </div>
@@ -44,13 +37,29 @@
                 </div>
                 <div>
                     <p class="text-black">1 Star Rating</p>
-                    <p class="text-[20px] font-medium text-black">{{ $productCollection->where('Rating', '<=', 1)->count() }}</p>
+                    <p class="text-[20px] font-medium text-black">{{ $ratingOneProducts }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <h1 class="my-6 text-center text-black/60">Inventory Items</h1>
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-center text-black/60">Inventory Items</h1>
+        <form method="GET" action="{{ route('admin.products.index') }}" class="flex flex-wrap items-center gap-3">
+            <input type="search" name="search" value="{{ $search }}" placeholder="Search book name or author" class="h-[42px] w-[240px] rounded-md border border-gray-300 px-4 text-sm outline-none" />
+            <input type="number" name="stock" value="{{ $stock }}" placeholder="Exact stock" min="0" class="h-[42px] w-[140px] rounded-md border border-gray-300 px-4 text-sm outline-none" />
+            <select name="status" class="h-[42px] w-[160px] rounded-md border border-gray-300 px-4 text-sm outline-none">
+                <option value="all" {{ $status === 'all' ? 'selected' : '' }}>All stock</option>
+                <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active only</option>
+                <option value="low" {{ $status === 'low' ? 'selected' : '' }}>Low stock</option>
+                <option value="out" {{ $status === 'out' ? 'selected' : '' }}>Out of stock</option>
+            </select>
+            <button type="submit" class="h-[42px] rounded-md bg-[#FCAE42] px-5 text-sm text-white">Search</button>
+            @if($search !== '' || $stock !== '' || $status !== 'all')
+                <a href="{{ route('admin.products.index') }}" class="text-sm text-gray-500 hover:text-gray-700">Clear</a>
+            @endif
+        </form>
+    </div>
 
     <div class="overflow-x-auto w-full rounded-xl bg-white shadow-sm border border-gray-100">
         <table class="w-full whitespace-nowrap border-collapse text-left">

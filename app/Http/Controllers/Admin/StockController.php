@@ -7,16 +7,62 @@ use App\Http\Requests\Admin\StockOutRequest;
 use App\Models\Product;
 use App\Models\StockIn;
 use App\Models\StockOut;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products  = Product::orderBy('Title')->paginate(10);
-        $stockIns  = StockIn::with('product')->latest()->take(20)->get();
+        $search = trim((string) $request->query('search', ''));
+        $stock = trim((string) $request->query('stock', ''));
+        $status = (string) $request->query('status', 'all');
+
+        $inventoryQuery = Product::query();
+
+        if ($search !== '') {
+            $inventoryQuery->where(function ($query) use ($search) {
+                $query->where('Title', 'like', "%{$search}%")
+                    ->orWhere('Author', 'like', "%{$search}%");
+            });
+        }
+
+        if ($stock !== '' && is_numeric($stock)) {
+            $inventoryQuery->where('Stock', (int) $stock);
+        }
+
+        if ($status === 'active') {
+            $inventoryQuery->where('Stock', '>', 0);
+        } elseif ($status === 'low') {
+            $inventoryQuery->whereBetween('Stock', [1, 5]);
+        } elseif ($status === 'out') {
+            $inventoryQuery->where('Stock', 0);
+        }
+
+        $products = $inventoryQuery->orderBy('Title')->paginate(10)->withQueryString();
+        $inventoryProducts = Product::orderBy('Title')->get();
+        $stockIns = StockIn::with('product')->latest()->take(20)->get();
         $stockOuts = StockOut::with('product')->latest()->take(20)->get();
-        return view('admin.stock.index', compact('products', 'stockIns', 'stockOuts'));
+
+        $allProducts = Product::query();
+        $totalProducts = $allProducts->count();
+        $activeProducts = (clone $allProducts)->where('Stock', '>', 0)->count();
+        $lowStockProducts = (clone $allProducts)->whereBetween('Stock', [1, 5])->count();
+        $outOfStockProducts = (clone $allProducts)->where('Stock', 0)->count();
+
+        return view('admin.stock.index', compact(
+            'products',
+            'inventoryProducts',
+            'stockIns',
+            'stockOuts',
+            'search',
+            'stock',
+            'status',
+            'totalProducts',
+            'activeProducts',
+            'lowStockProducts',
+            'outOfStockProducts'
+        ));
     }
 
     // Reason: stock increase — log entry + increment product stock atomically

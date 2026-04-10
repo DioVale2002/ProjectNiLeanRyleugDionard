@@ -5,13 +5,32 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreVoucherRequest;
 use App\Http\Requests\Admin\UpdateVoucherRequest;
 use App\Models\Voucher;
+use Illuminate\Http\Request;
 
 class VoucherController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $vouchers = Voucher::paginate(10);
-        return view('admin.vouchers.index', compact('vouchers'));
+        $search = trim((string) $request->query('search', ''));
+
+        $vouchersQuery = Voucher::query();
+
+        if ($search !== '') {
+            $vouchersQuery->where('voucherName', 'like', "%{$search}%");
+        }
+
+        $vouchers = $vouchersQuery->orderBy('voucherName')->paginate(10)->withQueryString();
+
+        $allVouchers = Voucher::query();
+        $totalVouchers = $allVouchers->count();
+        $activeVouchers = (clone $allVouchers)->where('voucherUsed', '>', 0)->count();
+
+        return view('admin.vouchers.index', compact(
+            'vouchers',
+            'search',
+            'totalVouchers',
+            'activeVouchers'
+        ));
     }
 
     public function create()

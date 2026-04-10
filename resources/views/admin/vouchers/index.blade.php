@@ -2,12 +2,6 @@
 @section('title', 'Vouchers')
 
 @section('content')
-@php
-    $voucherCollection = $vouchers->getCollection();
-    $totalVouchers = $vouchers->total();
-    $activeVouchers = $voucherCollection->where('voucherUsed', '>', 0)->count();
-@endphp
-
 <div class="mx-[70px] mt-8 pb-10 font-sans">
     <div class="flex items-center justify-between mb-3.5">
         <p class="text-xl text-black/60">Voucher Summary</p>
@@ -28,13 +22,22 @@
                 <p class="text-white">Active Vouchers</p>
                 <div class="flex items-center gap-2.5">
                     <p class="text-[20px] font-medium text-white">{{ $activeVouchers }}</p>
-                    <p class="text-[12px] text-white">{{ $totalVouchers > 0 ? round(($activeVouchers / max($totalVouchers, 1)) * 100) : 0 }}%</p>
+                    <p class="text-[12px] text-white">{{ $totalVouchers > 0 ? number_format(($activeVouchers / max($totalVouchers, 1)) * 100, 1) : 0 }}%</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <h1 class="my-6 text-center text-black/60">Voucher Items</h1>
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-center text-black/60">Voucher Items</h1>
+        <form method="GET" action="{{ route('admin.vouchers.index') }}" class="flex items-center gap-3">
+            <input type="search" name="search" value="{{ $search }}" placeholder="Search voucher name" class="h-[42px] w-[320px] rounded-md border border-gray-300 px-4 text-sm outline-none" />
+            <button type="submit" class="h-[42px] rounded-md bg-[#FCAE42] px-5 text-sm text-white">Search</button>
+            @if($search !== '')
+                <a href="{{ route('admin.vouchers.index') }}" class="text-sm text-gray-500 hover:text-gray-700">Clear</a>
+            @endif
+        </form>
+    </div>
 
     <div class="overflow-x-auto w-full rounded-xl bg-white shadow-sm border border-gray-100">
         <table class="w-full whitespace-nowrap border-collapse text-left">

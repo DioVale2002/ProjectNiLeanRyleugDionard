@@ -3,18 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
+    private const TIMEOUT_DAYS = 14;
+
+    private function applyTimeoutFailuresForCustomer(int $customerId): void
+    {
+        Order::query()
+            ->where('cus_id', $customerId)
+            ->where('order_status', 'Processing')
+            ->whereDate('order_date', '<=', now()->subDays(self::TIMEOUT_DAYS)->toDateString())
+            ->update(['order_status' => 'Failed']);
+    }
+
     public function orders()
     {
         $customer = Auth::guard('customer')->user();
+        $this->applyTimeoutFailuresForCustomer($customer->cus_id);
         
         // Get active orders (Pending, Processing)
-        $orders = \App\Models\Order::where('cus_id', $customer->cus_id)
+        $orders = Order::where('cus_id', $customer->cus_id)
             ->active()
             ->with(['cart.items.product', 'paymentMethod', 'address'])
             ->orderBy('order_date', 'desc')
@@ -26,9 +39,10 @@ class AccountController extends Controller
     public function archived()
     {
         $customer = Auth::guard('customer')->user();
+        $this->applyTimeoutFailuresForCustomer($customer->cus_id);
         
         // Get archived orders (Completed, Cancelled, Failed)
-        $orders = \App\Models\Order::where('cus_id', $customer->cus_id)
+        $orders = Order::where('cus_id', $customer->cus_id)
             ->archived()
             ->with(['cart.items.product', 'paymentMethod', 'address'])
             ->orderBy('order_date', 'desc')
@@ -118,6 +132,24 @@ class AccountController extends Controller
         }
 
         return redirect()->route('account.security')->with('success', 'Account information updated successfully!');
+    }
+
+    public function markReceived(Order $order)
+    {
+        $customer = Auth::guard('customer')->user();
+
+        abort_if($order->cus_id !== $customer->cus_id, 403);
+
+        $this->applyTimeoutFailuresForCustomer($customer->cus_id);
+        $order->refresh();
+
+        if ($order->order_status !== 'Processing') {
+            return redirect()->route('account.orders')->with('error', 'This order cannot be marked as received yet.');
+        }
+
+        $order->update(['order_status' => 'Completed']);
+
+        return redirect()->route('account.archived')->with('success', 'Order marked as received. Thank you!');
     }
 
     public function deleteAccount(Request $request)

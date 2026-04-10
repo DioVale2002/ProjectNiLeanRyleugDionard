@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="/css/output.css">
-    <link rel="stylesheet" href="/css/admin.css">
     <title>NCB Admin — @yield('title')</title>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="min-h-screen bg-[#f8fafc] flex flex-col">
 
     {{-- Admin topbar --}}
     <div class="flex gap-5 justify-between items-center mx-[70px] py-2">
@@ -22,12 +20,20 @@
 
         {{-- Sidebar --}}
         <div class="w-[343px] pt-10 ml-[70px]">
-            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/products*') || request()->is('admin/stock*') ? 'bg-[#ED1B24]/20' : '' }}"
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/products*') ? 'bg-[#ED1B24]/20' : '' }}"
                href="{{ route('admin.products.index') }}">
                 <div class="w-[70px] bg-white rounded-sm border border-black/30">
                     <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/inventory.png" alt="" />
                 </div>
                 <p class="font-bold text-[25px] ml-3.5">Inventory</p>
+            </a>
+
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/stock*') ? 'bg-[#ED1B24]/20' : '' }}"
+               href="{{ route('admin.stock.index') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/stockBanner.png" alt="" />
+                </div>
+                <p class="font-bold text-[25px] ml-3.5">Stock</p>
             </a>
 
             <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/vouchers*') ? 'bg-[#ED1B24]/20' : '' }}"
@@ -36,6 +42,14 @@
                     <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/coupon.png" alt="" />
                 </div>
                 <p class="font-bold text-[25px] ml-3.5">Vouchers</p>
+            </a>
+
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/orders*') ? 'bg-[#ED1B24]/20' : '' }}"
+               href="{{ route('admin.orders.index') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/pie-graph.png" alt="" />
+                </div>
+                <p class="font-bold text-[25px] ml-3.5">Orders</p>
             </a>
 
             <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px]" href="#">

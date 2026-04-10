@@ -6,15 +6,57 @@ use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Requests\Admin\UpdateProductRequest;
 use App\Models\Archive;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     // Reason: list all non-archived products with pagination
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::paginate(10);
-        return view('admin.products.index', compact('products'));
+        $search = trim((string) $request->query('search', ''));
+        $stock = trim((string) $request->query('stock', ''));
+        $status = (string) $request->query('status', 'all');
+
+        $productsQuery = Product::query();
+
+        if ($search !== '') {
+            $productsQuery->where(function ($query) use ($search) {
+                $query->where('Title', 'like', "%{$search}%")
+                    ->orWhere('Author', 'like', "%{$search}%");
+            });
+        }
+
+        if ($stock !== '' && is_numeric($stock)) {
+            $productsQuery->where('Stock', (int) $stock);
+        }
+
+        if ($status === 'active') {
+            $productsQuery->where('Stock', '>', 0);
+        } elseif ($status === 'low') {
+            $productsQuery->whereBetween('Stock', [1, 5]);
+        } elseif ($status === 'out') {
+            $productsQuery->where('Stock', 0);
+        }
+
+        $products = $productsQuery->orderBy('Title')->paginate(10)->withQueryString();
+
+        $allProducts = Product::query();
+        $totalProducts = $allProducts->count();
+        $activeProducts = (clone $allProducts)->where('Stock', '>', 0)->count();
+        $lowStockProducts = (clone $allProducts)->where('Stock', '<=', 5)->count();
+        $ratingOneProducts = (clone $allProducts)->where('Rating', '<=', 1)->count();
+
+        return view('admin.products.index', compact(
+            'products',
+            'search',
+            'stock',
+            'status',
+            'totalProducts',
+            'activeProducts',
+            'lowStockProducts',
+            'ratingOneProducts'
+        ));
     }
 
     public function create()
