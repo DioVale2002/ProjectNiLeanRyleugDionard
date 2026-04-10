@@ -67,9 +67,6 @@
             <div class="lg:col-span-2">
                 @if(!$cart || $cart->items->isEmpty())
                     <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-                        <svg class="mx-auto w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                        </svg>
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
                         <p class="text-gray-600 mb-6">Add items to get started with your order</p>
                         <a href="{{ route('catalog.index') }}" class="inline-block bg-[#ED1B24] text-white font-semibold px-6 py-2 rounded-lg hover:bg-red-700 transition">
