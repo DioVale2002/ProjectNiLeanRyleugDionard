@@ -46,6 +46,8 @@ Route::get('/', function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
     Route::resource('vouchers', \App\Http\Controllers\Admin\VoucherController::class);
+    Route::get('analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])
+        ->name('analytics.index');
     Route::get('orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])
         ->name('orders.index');
     Route::patch('orders/{order}/event', [\App\Http\Controllers\Admin\OrderController::class, 'handleEvent'])

@@ -52,7 +52,8 @@
                 <p class="font-bold text-[25px] ml-3.5">Orders</p>
             </a>
 
-            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px]" href="#">
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/analytics*') ? 'bg-[#ED1B24]/20' : '' }}"
+               href="{{ route('admin.analytics.index') }}">
                 <div class="w-[70px] bg-white rounded-sm border border-black/30">
                     <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/pie-graph.png" alt="" />
                 </div>
