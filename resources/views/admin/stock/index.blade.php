@@ -133,7 +133,7 @@
                             <tr class="border-b border-gray-100">
                                 <td class="py-3">{{ $s->stockIn_id }}</td>
                                 <td class="py-3">{{ $s->product->Title ?? '—' }}</td>
-                                <td class="py-3">{{ $s->stockIn_date }}</td>
+                                <td class="py-3">{{ \Illuminate\Support\Carbon::parse($s->stockIn_date)->format('M d, Y') }}</td>
                             </tr>
                         @empty
                             <tr><td colspan="3" class="py-6 text-center text-gray-500">No records yet.</td></tr>
@@ -153,7 +153,7 @@
                             <tr class="border-b border-gray-100">
                                 <td class="py-3">{{ $s->stockOut_id }}</td>
                                 <td class="py-3">{{ $s->product->Title ?? '—' }}</td>
-                                <td class="py-3">{{ $s->stockOut_date }}</td>
+                                <td class="py-3">{{ \Illuminate\Support\Carbon::parse($s->stockOut_date)->format('M d, Y') }}</td>
                             </tr>
                         @empty
                             <tr><td colspan="3" class="py-6 text-center text-gray-500">No records yet.</td></tr>

@@ -6,6 +6,7 @@ use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Requests\Admin\UpdateProductRequest;
 use App\Models\Archive;
 use App\Models\Product;
+use App\Models\StockIn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -66,7 +67,19 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        Product::create($request->validated());
+        $validated = $request->validated();
+
+        DB::transaction(function () use ($validated) {
+            $product = Product::create($validated);
+
+            if (($validated['Stock'] ?? 0) > 0) {
+                StockIn::create([
+                    'stockIn_date' => now()->toDateString(),
+                    'productIn' => $product->product_ID,
+                ]);
+            }
+        });
+
         return redirect()->route('admin.products.index')
             ->with('success', 'Product added successfully.');
     }
