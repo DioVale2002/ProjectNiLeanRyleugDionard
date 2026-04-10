@@ -23,27 +23,22 @@
     <div class="mx-[219px] mt-[100px] h-full">
 
         {{-- Steps --}}
-        <div class="flex mb-8">
-            <a href="{{ route('cart.index') }}">
-                <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                    <p class="py-[15px] px-[80px]">1 Summary</p>
-                </div>
+        <div class="grid grid-cols-2 md:grid-cols-7 gap-2 md:gap-3 items-center mb-8">
+            <a href="{{ route('cart.index') }}" class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold hover:opacity-95">
+                1 Summary
             </a>
-            <a href="{{ route('checkout.address') }}">
-                <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                    <p class="py-[15px] px-[80px]">2 Address</p>
-                </div>
+            <div class="hidden md:block h-[2px] bg-[#ED1B24]"></div>
+            <a href="{{ route('checkout.address') }}" class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold hover:opacity-95">
+                2 Address
             </a>
-            <a href="{{ route('checkout.payment') }}">
-                <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                    <p class="py-[15px] px-[80px]">3 Payment</p>
-                </div>
+            <div class="hidden md:block h-[2px] bg-[#ED1B24]"></div>
+            <a href="{{ route('checkout.payment') }}" class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold hover:opacity-95">
+                3 Payment
             </a>
-            <a href="#">
-                <div class="h-[52px] flex items-center justify-center border border-gray-400 bg-gray-300">
-                    <p class="py-[15px] px-[80px]">4 Receipt</p>
-                </div>
-            </a>
+            <div class="hidden md:block h-[2px] bg-[#ED1B24]"></div>
+            <div class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold">
+                4 Receipt
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -52,8 +47,8 @@
                 {{-- Success Card --}}
                 <div class="bg-white rounded-lg border border-gray-200 p-8 text-center shadow-sm mb-6">
                     <div class="mb-6">
-                        <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-10 h-10 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                        <div class="mx-auto mb-4 rounded-full flex items-center justify-center bg-green-50 text-green-600 font-bold text-[34px] leading-none" style="width:64px;height:64px;">
+                            &#10003;
                         </div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">Order Confirmed!</h1>
                         <p class="text-gray-600">Thank you for your purchase. Your order has been successfully placed.</p>

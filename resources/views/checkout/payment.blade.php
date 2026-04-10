@@ -21,30 +21,25 @@
     <div class="mx-4 md:mx-10 xl:mx-[261px] py-8 mb-16">
         {{-- Checkout Progress --}}
         <div class="mb-8">
-            <p class="text-[36px] font-bold mb-5">Payment</p>
-            
+            <p class="text-3xl font-bold mb-5">Payment</p>
+
             {{-- Steps --}}
-            <div class="flex">
-                <a href="{{ route('cart.index') }}">
-                    <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                        <p class="py-[15px] px-[80px]">1 Summary</p>
-                    </div>
+            <div class="grid grid-cols-2 md:grid-cols-7 gap-2 md:gap-3 items-center">
+                <a href="{{ route('cart.index') }}" class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold hover:opacity-95">
+                    1 Summary
                 </a>
-                <a href="{{ route('checkout.address') }}">
-                    <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                        <p class="py-[15px] px-[80px]">2 Address</p>
-                    </div>
+                <div class="hidden md:block h-[2px] bg-[#ED1B24]"></div>
+                <a href="{{ route('checkout.address') }}" class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold hover:opacity-95">
+                    2 Address
                 </a>
-                <a href="#">
-                    <div class="h-[52px] flex items-center justify-center border border-gray-400 bg-gray-300">
-                        <p class="py-[15px] px-[80px]">3 Payment</p>
-                    </div>
-                </a>
-                <a href="#">
-                    <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                        <p class="py-[15px] px-[80px]">4 Receipt</p>
-                    </div>
-                </a>
+                <div class="hidden md:block h-[2px] bg-[#ED1B24]"></div>
+                <div class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold">
+                    3 Payment
+                </div>
+                <div class="hidden md:block h-[2px] bg-[#ED1B24]"></div>
+                <div class="h-11 flex items-center justify-center border border-gray-300 bg-white rounded-sm text-sm font-semibold text-gray-600">
+                    4 Receipt
+                </div>
             </div>
         </div>
 

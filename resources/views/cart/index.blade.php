@@ -33,30 +33,25 @@
 
         {{-- Checkout Progress --}}
         <div class="mb-8">
-            <p class="text-[36px] font-bold mb-5">Your Cart</p>
-            
+            <p class="text-3xl font-bold mb-5">Your Cart</p>
+
             {{-- Steps --}}
-            <div class="flex">
-                <a href="#">
-                    <div class="h-[52px] flex items-center justify-center border border-black-400 bg-gray-300">
-                        <p class="py-[15px] px-[80px]">1 Summary</p>
-                    </div>
-                </a>
-                <a href="#">
-                    <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                        <p class="py-[15px] px-[80px]">2 Address</p>
-                    </div>
-                </a>
-                <a href="#">
-                    <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                        <p class="py-[15px] px-[80px]">3 Payment</p>
-                    </div>
-                </a>
-                <a href="#">
-                    <div class="h-[52px] flex items-center justify-center border border-gray-400">
-                        <p class="py-[15px] px-[80px]">4 Receipt</p>
-                    </div>
-                </a>
+            <div class="grid grid-cols-2 md:grid-cols-7 gap-2 md:gap-3 items-center">
+                <div class="h-11 flex items-center justify-center border border-[#ED1B24] bg-[#ED1B24] text-white rounded-sm text-sm font-semibold">
+                    1 Summary
+                </div>
+                <div class="hidden md:block h-[2px] bg-[#ED1B24]"></div>
+                <div class="h-11 flex items-center justify-center border border-gray-300 bg-white rounded-sm text-sm font-semibold text-gray-600">
+                    2 Address
+                </div>
+                <div class="hidden md:block h-[2px] bg-gray-300"></div>
+                <div class="h-11 flex items-center justify-center border border-gray-300 bg-white rounded-sm text-sm font-semibold text-gray-600">
+                    3 Payment
+                </div>
+                <div class="hidden md:block h-[2px] bg-gray-300"></div>
+                <div class="h-11 flex items-center justify-center border border-gray-300 bg-white rounded-sm text-sm font-semibold text-gray-600">
+                    4 Receipt
+                </div>
             </div>
         </div>
 
