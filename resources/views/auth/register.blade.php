@@ -98,10 +98,10 @@
                     required
                     class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px]" />
 
-                {{-- Next Button --}}
-                <a href="{{ route('register') }}" class="bg-[#FCAE42] flex items-center justify-center h-[55px] text-[24px] text-black py-2 px-4 rounded-[10px] mt-[30px] no-underline cursor-pointer">
-                    <button type="submit">Next</button>
-                </a>
+                {{-- Register Button --}}
+                <button type="submit" class="bg-[#FCAE42] w-[395px] h-[55px] text-[24px] text-black rounded-[10px] mt-[30px] font-bold hover:bg-[#e69b32] transition-all">
+                    Register
+                </button>
             </form>
 
             {{-- Sign In Link --}}
