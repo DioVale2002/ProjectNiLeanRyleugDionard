@@ -176,7 +176,7 @@
         </div>
     </div>
 
-    @include('components.footer')
+    @include('partials.footer')
 </body>
 
 </html>
