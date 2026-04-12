@@ -1,7 +1,7 @@
 <header>
     <div class="flex items-center justify-between px-[261px] py-4">
         <a href="/">
-            <img src="{{ asset('images/Logo.png') }}" alt="Character portrait" class="h-10 object-contain" />
+            <img src="/public/images/Logo.png" alt="Character portrait" />
         </a>
 
         <div class="relative">
@@ -34,11 +34,11 @@
         </p>
 
         <a href="{{ route('account.security') }}" class="ml-4">
-            <img src="{{ asset('images/User.png') }}" alt="User profile" class="h-8 w-8 object-contain" />
+            <img src="/public/images/User.png" alt="User profile" class="h-8 w-8 object-contain" />
         </a>
 
         <a href="{{ url('/cart') }}" class="ml-4">
-            <img src="{{ asset('images/cart.png') }}" alt="Shopping cart" class="h-8 w-8 object-contain" />
+            <img src="/public/images/cart.png" alt="Shopping cart" class="h-8 w-8 object-contain" />
         </a>
     </div>
 
