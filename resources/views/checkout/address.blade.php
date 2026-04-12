@@ -1,21 +1,23 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/output.css" />
+    @vite('resources/css/app.css')
     <title>Shipping Address - NCB</title>
 </head>
+
 <body class="bg-gray-50">
 
     @include('partials.header')
 
     @if($errors->any())
-        <div class="mx-4 md:mx-10 xl:mx-[261px] mt-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg space-y-1">
-            @foreach($errors->all() as $error)
-                <p class="text-sm">{{ $error }}</p>
-            @endforeach
-        </div>
+    <div class="mx-4 md:mx-10 xl:mx-[261px] mt-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg space-y-1">
+        @foreach($errors->all() as $error)
+        <p class="text-sm">{{ $error }}</p>
+        @endforeach
+    </div>
     @endif
 
     <div class="mx-4 md:mx-10 xl:mx-[261px] py-8 mb-16">
@@ -138,4 +140,5 @@
 
     @include('partials.footer')
 </body>
+
 </html>

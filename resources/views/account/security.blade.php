@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/output.css" />
+    @vite('resources/css/app.css')
     <title>Login & Security - NCB</title>
 </head>
+
 <body class="bg-gray-50">
     @include('partials.header')
     @php $customer = Auth::guard('customer')->user(); @endphp
@@ -27,14 +29,14 @@
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
 
                     @if(session('success'))
-                        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
+                    <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
                     @endif
                     @if($errors->any())
-                        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 space-y-1">
-                            @foreach($errors->all() as $error)
-                                <p class="text-sm">{{ $error }}</p>
-                            @endforeach
-                        </div>
+                    <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 space-y-1">
+                        @foreach($errors->all() as $error)
+                        <p class="text-sm">{{ $error }}</p>
+                        @endforeach
+                    </div>
                     @endif
 
                     <form action="{{ route('account.info.update') }}" method="POST" class="space-y-5">
@@ -121,7 +123,7 @@
                     <p class="text-red-600 text-sm mb-6">Deleting your account will remove all your data permanently and cannot be undone.</p>
 
                     <form action="{{ route('account.delete') }}" method="POST"
-                          onsubmit="return confirm('Are you absolutely sure? This cannot be undone.')">
+                        onsubmit="return confirm('Are you absolutely sure? This cannot be undone.')">
                         @csrf
                         @method('DELETE')
 
@@ -144,4 +146,5 @@
     </div>
     @include('partials.footer')
 </body>
+
 </html>

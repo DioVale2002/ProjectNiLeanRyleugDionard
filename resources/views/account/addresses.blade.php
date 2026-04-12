@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/output.css" />
+    @vite('resources/css/app.css')
     <title>Addresses - NCB</title>
 </head>
+
 <body class="bg-gray-50">
     @include('partials.header')
     @php $customer = Auth::guard('customer')->user(); @endphp
@@ -26,14 +28,14 @@
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Delivery Address</h2>
 
                     @if(session('success'))
-                        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
+                    <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
                     @endif
                     @if($errors->any())
-                        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 space-y-1">
-                            @foreach($errors->all() as $error)
-                                <p class="text-sm">{{ $error }}</p>
-                            @endforeach
-                        </div>
+                    <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 space-y-1">
+                        @foreach($errors->all() as $error)
+                        <p class="text-sm">{{ $error }}</p>
+                        @endforeach
+                    </div>
                     @endif
 
                     <form action="{{ route('account.address.update') }}" method="POST" class="space-y-5">
@@ -99,4 +101,5 @@
     </div>
     @include('partials.footer')
 </body>
+
 </html>

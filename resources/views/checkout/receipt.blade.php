@@ -1,23 +1,25 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/output.css" />
+    @vite('resources/css/app.css')
     <title>Order Confirmed - NCB</title>
 </head>
+
 <body class="bg-gray-50">
 
     @include('partials.header')
 
     @php
-        $items = $order->cart->items;
-        $subtotal = (float) $items->sum('subtotal');
-        $discount = $order->voucher
-            ? ($order->voucher->voucherType === 'percentage'
-                ? $subtotal * ((float) $order->voucher->voucherAmount / 100)
-                : min($subtotal, (float) $order->voucher->voucherAmount))
-            : 0;
+    $items = $order->cart->items;
+    $subtotal = (float) $items->sum('subtotal');
+    $discount = $order->voucher
+    ? ($order->voucher->voucherType === 'percentage'
+    ? $subtotal * ((float) $order->voucher->voucherAmount / 100)
+    : min($subtotal, (float) $order->voucher->voucherAmount))
+    : 0;
     @endphp
 
     <div class="mx-[219px] mt-[100px] h-full">
@@ -90,10 +92,10 @@
                                 <span class="font-medium text-gray-900">₱{{ number_format($subtotal, 2) }}</span>
                             </div>
                             @if($discount > 0)
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Discount</span>
-                                    <span class="font-medium text-green-600">- ₱{{ number_format($discount, 2) }}</span>
-                                </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Discount</span>
+                                <span class="font-medium text-green-600">- ₱{{ number_format($discount, 2) }}</span>
+                            </div>
                             @endif
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Shipping</span>
@@ -129,10 +131,10 @@
                             <span class="font-medium text-gray-900">₱{{ number_format($subtotal, 2) }}</span>
                         </div>
                         @if($discount > 0)
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Discount</span>
-                                <span class="font-medium text-green-600">- ₱{{ number_format($discount, 2) }}</span>
-                            </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Discount</span>
+                            <span class="font-medium text-green-600">- ₱{{ number_format($discount, 2) }}</span>
+                        </div>
                         @endif
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Shipping</span>
@@ -155,4 +157,5 @@
 
     @include('partials.footer')
 </body>
+
 </html>
