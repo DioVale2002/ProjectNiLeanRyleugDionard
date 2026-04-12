@@ -1,4 +1,4 @@
-<footer class="w-screen h-[365px] bg-[#F54E4E] mt-[162px]">
+<div class="w-screen h-[365px] bg-[#F54E4E] mt-[162px]">
     <div class="flex justify-between items-center px-[124px] pt-[47px]">
         <div class="h-[196px] w-[570px]">
             <img src="{{ asset('images/NCB-LOGO 1.png') }}" alt="Logo" />
@@ -43,4 +43,4 @@
             <a href="#"><img src="{{ asset('images/Youtube.png') }}" alt="Youtube" /></a>
         </div>
     </div>
-</footer>
+</div>
