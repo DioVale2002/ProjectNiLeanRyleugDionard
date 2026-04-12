@@ -9,7 +9,7 @@
 </head>
 
 <body class="">
-    @include('components.header')
+    @include('partials.header')
 
     @php
     $customer = Auth::guard('customer')->user();
