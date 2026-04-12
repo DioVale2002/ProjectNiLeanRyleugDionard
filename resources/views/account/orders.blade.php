@@ -1,101 +1,159 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/userAccount.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @vite('resources/css/app.css')
     <title>My Orders</title>
 </head>
-<body>
-    <header class="header">
-        <a href="#"><img class="logo" src="/images/Logo(1).png" alt="logo"></a>
-        <input class="search-bar" type="text" placeholder="Search ">
-        <div class="navigation">
-            <p>Welcome, {{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }}!</p>
-            <a href="#"><img src="/images/User.png" alt="Profile Picture"></a>
-            <a href="#"><img src="/images/cart.png" alt="cart"></a>
+
+<body class="">
+    <div class="flex items-center justify-between px-[261px]">
+        <a href="/"><img src="{{ asset('assets/Logo.png') }}" alt="Logo" class="" /></a>
+        <div class="relative">
+            <input
+                type="text"
+                placeholder="Search"
+                class="w-[908px] h-[36.74px] px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors" />
+            <button class="absolute right-0 top-0 h-full px-4 text-gray-500 hover:text-gray-700 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.352 4.35a1 1 0 01-1.414 1.414l-4.352-4.35A6 6 0 012 8z" clip-rule="evenodd" />
+                </svg>
+            </button>
         </div>
-    </header>
-    <nav class="navbar">
-        <div class="navlinks-container">
-            <a href="#">BOOKS</a>
-            <a href="#">E-BOOKS</a>
-            <a href="#">BEST SELLERS</a>
-            <a href="#">NEW</a>
-            <a href="#">COLLECTIONS</a>
-        </div> 
-    </nav> 
+        <p class="ml-4 text-gray-700 font-bold">{{ Auth::guard('customer')->user()->first_name }}</p>
+        <a href="{{ route('account.security') }}" class="ml-4">
+            <img src="{{ asset('assets/User.png') }}" alt="User profile" />
+        </a>
+        <a href="{{ route('cart.index') }}" class="ml-4">
+            <img src="{{ asset('assets/cart.png') }}" alt="Shopping cart" />
+        </a>
+    </div>
 
-    <main>
-        <div class="accountheader">
-            <h1>Welcome</h1>
-            <p>{{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }}, Email: {{ Auth::guard('customer')->user()->email }}</p>
+    <div class="h-12 w-screen bg-[#FCAE42] px-[261px] flex items-center justify-between">
+        <a href="#" class="ml-7 text-black text-[20px] font-bold">Books</a>
+        <a href="#" class="text-black text-[20px] font-bold">E-Books</a>
+        <a href="#" class="text-black text-[20px] font-bold">Best Sellers</a>
+        <a href="#" class="text-black text-[20px] font-bold">New</a>
+        <a href="#" class="text-black text-[20px] font-bold">Collections</a>
+        <a href="#" class="text-black text-[20px] font-bold">Sale</a>
+    </div>
+
+    <div class="ml-[282px] mt-[50px] mb-[50px]">
+        <p class="text-[36px] text-black font-bold">Your Account</p>
+        <div class="flex">
+            <p class="text-[17px] text-black/50 mr-1">{{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }},</p>
+            <p class="text-[17px] text-black/50 mr-1">Email:</p>
+            <p class="text-[17px] text-black/50">{{ Auth::guard('customer')->user()->email }}</p>
+        </div>
+    </div>
+
+    <div class="flex mx-[282px] mb-[80px]">
+        <div class="w-[342px]">
+
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->routeIs('account.orders') ? 'bg-[#ED1B24]/30' : '' }}" href="{{ route('account.orders') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="{{ asset('assets/userAcc-img/delivery.png') }}" alt="" />
+                </div>
+                <p class="text-black font-bold text-[25px] ml-3.5">My Orders</p>
+            </a>
+
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->routeIs('account.addresses') ? 'bg-[#ED1B24]/20' : '' }}" href="{{ route('account.addresses') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="{{ asset('assets/userAcc-img/adress.png') }}" alt="" />
+                </div>
+                <p class="text-black font-bold text-[25px] ml-3.5">Your Addresses</p>
+            </a>
+
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->routeIs('account.security') ? 'bg-[#ED1B24]/20' : '' }}" href="{{ route('account.security') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="{{ asset('assets/userAcc-img/login.png') }}" alt="" />
+                </div>
+                <p class="text-black font-bold text-[25px] ml-3.5">Login & Security</p>
+            </a>
+
+            <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->routeIs('account.archived') ? 'bg-[#ED1B24]/20' : '' }}" href="{{ route('account.archived') }}">
+                <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                    <img class="w-[50px] mx-2 my-2" src="{{ asset('assets/userAcc-img/archive.png') }}" alt="" />
+                </div>
+                <p class="text-black font-bold text-[25px] ml-3.5">Archive Orders</p>
+            </a>
+
+            <hr class="my-4 border-gray-300" />
+
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="w-full flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md cursor-pointer">
+                    <div class="w-[70px] bg-white rounded-sm border border-black/30">
+                        <img class="w-[50px] mx-2 my-2" src="{{ asset('assets/userAcc-img/logout.png') }}" alt="" />
+                    </div>
+                    <p class="text-black font-bold text-[25px] ml-3.5">Log Out</p>
+                </button>
+            </form>
         </div>
 
-        <div class="mainContainer">
-            <div class="sideNav">
-                    <a href="{{ route('account.orders') }}" class="sideNavLink active">
-                        <img src="/images/Icon Delivery.png" class="navIcon" alt="Icon Delivery">
-                        <p>My Orders</p>
-                    </a>
-                    <a href="{{ route('account.addresses') }}" class="sideNavLink">
-                        <img src="/images/AdressIcon.png" class="navIcon" alt="Adresses Icon">
-                        <p>Addresses</p>
-                    </a>
-                    <a href="{{ route('account.security') }}" class="sideNavLink">
-                        <img src="/images/SecurityIcon.png" class="navIcon" alt="Login & Security Icon">
-                        <p>Login & Security</p>
-                    </a>
-                    <a href="{{ route('account.archived') }}" class="sideNavLink">
-                        <img src="/images/ArchiveIcon.png" class="navIcon" alt="Archive Orders Icon">
-                        <p>Archived Orders</p>
-                    </a>
-                    <div class="divider"></div>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="sideNavLink">
-                            <img src="/images/LogoutIcon(1).png" class="navIcon" alt="Logout Icon">
-                            <p>Logout</p>
-                        </button>
-                    </form>
-            </div>
+        <div class="border border-black/50 rounded-lg ml-[63px] w-[1000px] h-full">
+            <div class="mx-7 mt-7 pb-7">
+                <h1 class="font-bold text-[32px] mb-4">Your Orders</h1>
+                <hr class="my-4 border-gray-300" />
 
-            <div class="mainContent">
-                <h1>Your Orders</h1>
-                <div class="divider"></div>
-                
                 @if($orders->isEmpty())
-                    <h3 style="color: red; margin-top: 50px;">No Orders yet.</h3>
+                <div class="text-center py-10">
+                    <h3 class="text-red-500 font-bold text-2xl">No Active Orders.</h3>
+                </div>
                 @else
-                    @foreach($orders as $order)
-                        <div style="border: 1px solid #ccc; padding: 15px; margin: 20px 0; border-radius: 5px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h3>Order #{{ $order->order_id }}</h3>
-                                    <p>Date: {{ $order->order_date->format('M d, Y') }}</p>
-                                    <p>Status: <strong style="color: {{ $order->order_status == 'Pending' ? 'orange' : 'blue' }}">{{ $order->order_status }}</strong></p>
-                                </div>
-                                <div style="text-align: right;">
-                                    <h3>₱{{ number_format($order->total_price, 2) }}</h3>
-                                    <p>{{ $order->paymentMethod->methodName }}</p>
+                @foreach($orders as $order)
+                <div class="mb-12 border-b border-gray-300 pb-8 last:border-b-0">
+                    <p class="font-bold text-[20px]">Order #{{ $order->order_id }}</p>
+                    <div class="flex gap-2 items-center">
+                        <p class="font-[15px]">{{ $order->cart->items->count() }} Products |</p>
+                        <p class="font-[15px]">{{ Auth::guard('customer')->user()->first_name }} {{ Auth::guard('customer')->user()->last_name }} |</p>
+                        <p class="font-[15px]">{{ $order->order_date->format('H:i') }} |</p>
+                        <p class="font-[15px]">{{ $order->order_date->format('M d Y') }}</p>
+                    </div>
+                    <hr class="my-4 border-gray-300" />
+                    <div class="flex items-center">
+                        <div class="mr-6 space-y-1">
+                            <p class="text-gray-600">Status:</p>
+                            <p class="text-gray-600">Date of Order:</p>
+                            <p class="text-gray-600">Payment Method:</p>
+                            <p class="font-bold mt-2">Total:</p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="font-bold {{ $order->order_status == 'Pending' ? 'text-[#EA8C51]' : 'text-blue-500' }}">
+                                {{ $order->order_status }}
+                            </p>
+                            <p>{{ $order->order_date->format('M d Y') }}</p>
+                            <p>{{ $order->paymentMethod->methodName ?? 'N/A' }}</p>
+                            <p class="font-bold mt-2">₱{{ number_format($order->total_price, 2) }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 grid grid-cols-2 gap-6">
+                        @foreach($order->cart->items as $item)
+                        <div class="flex items-start">
+                            <div class="bg-[#E1F0F0] w-[103px] flex items-center justify-center rounded-sm p-3 shrink-0">
+                                <img class="w-[80px] h-[100px] object-cover" src="{{ asset('assets/Example.png') }}" alt="{{ $item->product->Title }}" />
+                            </div>
+                            <div class="ml-4 flex flex-col justify-between h-full">
+                                <p class="font-semibold text-sm line-clamp-2 uppercase">{{ $item->product->Title }}</p>
+                                <p class="text-sm text-gray-500 mt-1">by {{ $item->product->Author }}</p>
+                                <div class="mt-auto pt-2">
+                                    <p class="text-sm text-gray-700">Quantity: {{ $item->quantity }}</p>
+                                    <p class="font-bold text-sm">₱{{ number_format($item->subtotal, 2) }}</p>
                                 </div>
                             </div>
-                            
-                            <div class="divider"></div>
-                            
-                            <h4>Items:</h4>
-                            @foreach($order->cart->items as $item)
-                                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                    <p>{{ $item->product->Title }} by {{ $item->product->Author }}</p>
-                                    <p>{{ $item->quantity }} x ₱{{ number_format($item->unitPrice, 2) }} = ₱{{ number_format($item->subtotal, 2) }}</p>
-                                </div>
-                            @endforeach
                         </div>
-                    @endforeach
+                        @endforeach
+                    </div>
+                </div>
+                @endforeach
                 @endif
+
             </div>
         </div>
-    </main>
+    </div>
 </body>
+
 </html>

@@ -10,7 +10,7 @@
 
 <body class="">
     <div class="flex items-center justify-between px-[261px]">
-        <a href="/"><img src="{{ asset('assets/Logo.png') }}" alt="Logo" class="" /></a>
+        <a href="/"><img src="/public/assets/Logo.png" alt="Logo" class="" /></a>
         <div class="relative">
             <input
                 type="text"
