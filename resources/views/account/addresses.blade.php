@@ -26,9 +26,11 @@
 
     <div class="flex mx-[282px] mb-[80px]">
 
-        @include('partials.account-nav', ['active' => 'addresses'])
+        <div class="shrink-0">
+            @include('partials.account-nav', ['active' => 'addresses'])
+        </div>
 
-        <div class="border border-black/50 rounded-lg ml-[63px] w-[900px] h-full">
+        <div class="border border-black/50 rounded-lg ml-[63px] w-[900px] shrink-0 h-full">
             <div class="m-7">
                 <p class="font-bold text-[32px]">My Address</p>
                 <hr class="my-4 border-gray-300" />
@@ -50,16 +52,16 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="flex items-center">
-                        <div class="mt-6 mr-4 flex flex-col justify-center" style="gap: 4.5rem;">
-                            <label class="text-[20px] font-bold" for="country">Country</label>
-                            <label class="text-[20px] font-bold" for="province">Province</label>
-                            <label class="text-[20px] font-bold" for="city">City</label>
-                            <label class="text-[20px] font-bold" for="barangay">Barangay</label>
-                            <label class="text-[20px] font-bold" for="zip_postal_code">Zip/Postal Code</label>
+                    <div class="flex mt-6">
+                        <div class="mr-4 flex flex-col justify-center gap-12 w-[180px] shrink-0">
+                            <label class="text-[20px] font-bold h-[54px] flex items-center" for="country">Country</label>
+                            <label class="text-[20px] font-bold h-[54px] flex items-center" for="province">Province</label>
+                            <label class="text-[20px] font-bold h-[54px] flex items-center" for="city">City</label>
+                            <label class="text-[20px] font-bold h-[54px] flex items-center" for="barangay">Barangay</label>
+                            <label class="text-[20px] font-bold h-[54px] flex items-center" for="zip_postal_code">Zip/Postal Code</label>
                         </div>
 
-                        <div class="mt-6 ml-7 flex flex-col items-center justify-center gap-12">
+                        <div class="ml-7 flex flex-col justify-center gap-12">
                             <input
                                 class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4"
                                 type="text"
@@ -93,7 +95,7 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-end mt-6 mr-7">
+                    <div class="flex justify-end mt-12 mr-7">
                         <button
                             type="submit"
                             class="bg-[#ED1B24] text-white font-bold py-3 px-24 rounded-md hover:bg-[#c1101a]">
