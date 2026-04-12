@@ -8,7 +8,7 @@
     <title>User Account - Address</title>
 </head>
 
-<body class="">
+<body class="bg-white">
     @include('partials.header')
 
     @php
