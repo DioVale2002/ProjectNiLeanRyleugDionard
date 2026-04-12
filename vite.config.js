@@ -10,4 +10,14 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    // THIS IS THE WSL NETWORK BRIDGE
+    server: {
+        host: '0.0.0.0', // Tells Linux to open the door to Windows
+        hmr: {
+            host: 'localhost', // Tells Firefox exactly where to connect for live updates
+        },
+        watch: {
+            usePolling: true, // Forces Vite to notice when you save a file in VS Code
+        }
+    },
 });
