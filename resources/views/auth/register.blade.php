@@ -80,6 +80,24 @@
                     required
                     class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px]" />
 
+                {{-- Password --}}
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px]" />
+
+                {{-- Confirm Password --}}
+                <input
+                    id="password_confirmation"
+                    type="password"
+                    name="password_confirmation"
+                    placeholder="Confirm Password"
+                    required
+                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px]" />
+
                 {{-- Next Button --}}
                 <a href="{{ route('register') }}" class="bg-[#FCAE42] flex items-center justify-center h-[55px] text-[24px] text-black py-2 px-4 rounded-[10px] mt-[30px] no-underline cursor-pointer">
                     <button type="submit">Next</button>
