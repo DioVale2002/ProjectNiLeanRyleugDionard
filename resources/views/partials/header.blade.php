@@ -1,51 +1,53 @@
-{{-- Shared customer-facing header matching reference design --}}
-<div>
-    {{-- Top Header Section --}}
+<header>
     <div class="flex items-center justify-between px-[261px] py-4">
-        <a href="{{ route('catalog.index') }}" class="">
-            <img src="/images/Logo.png" alt="NCB Logo" class="h-10" />
+        <a href="/">
+            <img src="{{ asset('images/Logo.png') }}" alt="Character portrait" class="h-10 object-contain" />
         </a>
-        <form action="{{ route('catalog.index') }}" method="GET" class="relative">
-            @if(request('genre'))
-                <input type="hidden" name="genre" value="{{ request('genre') }}">
-            @endif
-            <input
-                type="text"
-                name="search"
-                placeholder="Search"
-                value="{{ request('search') }}"
-                class="w-[908px] h-[36.74px] px-4 py-2 text-gray-700 bg-white border border-black-300 rounded-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-            />
-            <button class="absolute right-0 top-0 h-full px-4 text-gray-500 hover:text-gray-700 focus:outline-none" type="submit">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.352 4.35a1 1 0 01-1.414 1.414l-4.352-4.35A6 6 0 012 8z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </form>
 
-        <div class="flex items-center gap-4">
-            @auth('customer')
-                <span class="text-gray-700 font-bold">{{ Auth::guard('customer')->user()->first_name }}</span>
-                <a href="{{ route('account.orders') }}" class="text-gray-700 hover:text-gray-900 transition">
-                    <img src="/images/User.png" alt="User profile" class="h-6 w-6" />
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="text-gray-700 font-bold hover:text-gray-900 transition">Login</a>
-                <img src="/images/User.png" alt="User" class="h-6 w-6 opacity-50" />
-            @endauth
-            <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-gray-900 transition">
-                <img src="/images/cart.png" alt="Shopping cart" class="h-6 w-6" />
-            </a>
+        <div class="relative">
+            <form action="/catalog" method="GET" class="m-0">
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search"
+                    class="w-[908px] h-[36.74px] px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors" />
+
+                <button
+                    type="submit"
+                    class="absolute right-0 top-0 h-full px-4 text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                            fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.352 4.35a1 1 0 01-1.414 1.414l-4.352-4.35A6 6 0 012 8z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </form>
         </div>
+
+        <p class="ml-4 text-gray-700 font-bold">
+            {{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->first_name : 'Guest' }}
+        </p>
+
+        <a href="{{ route('account.security') }}" class="ml-4">
+            <img src="{{ asset('images/User.png') }}" alt="User profile" class="h-8 w-8 object-contain" />
+        </a>
+
+        <a href="{{ url('/cart') }}" class="ml-4">
+            <img src="{{ asset('images/cart.png') }}" alt="Shopping cart" class="h-8 w-8 object-contain" />
+        </a>
     </div>
 
-    {{-- Yellow Navigation Bar --}}
     <div class="h-12 w-screen bg-[#FCAE42] px-[261px] flex items-center justify-between">
-        <a href="{{ route('catalog.index') }}" class="text-black text-[20px] font-bold">Books</a>
-        <a href="#" class="text-black text-[20px] font-bold">E-Books</a>
-        <a href="#" class="text-black text-[20px] font-bold">Best Sellers</a>
-        <a href="#" class="text-black text-[20px] font-bold">New</a>
-        <a href="#" class="text-black text-[20px] font-bold">Collections</a>
-        <a href="#" class="text-black text-[20px] font-bold">Sale</a>
+        <a href="/catalog" class="ml-7 text-black text-[20px] font-bold hover:opacity-80 transition">Books</a>
+        <a href="#" class="text-black text-[20px] font-bold hover:opacity-80 transition">E-Books</a>
+        <a href="#" class="text-black text-[20px] font-bold hover:opacity-80 transition">Best Sellers</a>
+        <a href="#" class="text-black text-[20px] font-bold hover:opacity-80 transition">New</a>
+        <a href="#" class="text-black text-[20px] font-bold hover:opacity-80 transition">Collections</a>
+        <a href="#" class="text-black text-[20px] font-bold hover:opacity-80 transition">Sale</a>
     </div>
-</div>
+</header>
