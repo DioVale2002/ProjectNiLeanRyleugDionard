@@ -34,11 +34,11 @@
         </p>
 
         <a href="{{ route('account.security') }}" class="ml-4">
-            <img src="/public/images/User.png" alt="User profile" class="h-8 w-8 object-contain" />
+            <img src="/images/User.png" alt="User profile" />
         </a>
 
         <a href="{{ url('/cart') }}" class="ml-4">
-            <img src="/public/images/cart.png" alt="Shopping cart" class="h-8 w-8 object-contain" />
+            <img src="public/images/cart.png" alt="Shopping cart" />
         </a>
     </div>
 
