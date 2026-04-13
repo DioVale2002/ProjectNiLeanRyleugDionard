@@ -234,7 +234,7 @@
             <div class="w-full flex justify-center px-[22px] py-[9px] mb-4 mt-auto">
                 <form action="{{ route('cart.add') }}" method="POST" class="w-full">
                     @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->product_ID }}">
+                    <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
                     <input type="hidden" name="quantity" value="1">
                     <button type="submit" class="bg-white text-black border-[#FCAE42] border-2 w-full py-[10px] transition-colors hover:bg-[#FCAE42] hover:text-white hover:font-bold">
                         ADD TO CART
