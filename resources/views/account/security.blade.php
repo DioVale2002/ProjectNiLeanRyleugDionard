@@ -3,145 +3,184 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @vite(['resources/css/app.css'])
     <title>Login & Security - NCB</title>
+    @vite(['resources/css/app.css'])
 </head>
 <body class="bg-gray-50">
-    @include('partials.header')
-    @php $customer = Auth::guard('customer')->user(); @endphp
 
-    <div class="mx-4 md:mx-10 xl:mx-[261px] py-8">
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Your Account</h1>
-            <p class="text-gray-600">Welcome back, <span class="font-semibold">{{ $customer->first_name }} {{ $customer->last_name }}</span></p>
+    @include('partials.header')
+
+    @php 
+        $customer = Auth::guard('customer')->user(); 
+    @endphp
+
+    {{-- Header Section (Original Figma Design) --}}
+    <div class="ml-[282px] mt-[50px] mb-[50px]">
+        <p class="text-[36px] text-black font-bold">Your Account</p>
+        <div class="flex">
+            <p class="text-[17px] text-black/50 mr-1">{{ $customer->first_name }} {{ $customer->last_name }},</p>
+            <p class="text-[17px] text-black/50 mr-1">Email:</p>
+            <p class="text-[17px] text-black/50">{{ $customer->email }}</p>
+        </div>
+    </div>
+
+    <div class="flex mx-[282px] mb-[80px]">
+        
+        {{-- Navigation Sidebar --}}
+        <div class="w-[342px]">
+            @include('partials.account-nav', ['active' => 'security'])
         </div>
 
-        <div class="flex flex-col xl:flex-row gap-8">
-            {{-- Sidebar Navigation --}}
-            @include('partials.account-nav', ['active' => 'security'])
+        {{-- Main Content --}}
+        <div class="flex flex-col gap-7">
 
-            {{-- Main Content --}}
-            <div class="flex-1 min-w-0 space-y-6">
-                {{-- Personal Information --}}
-                <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+            {{-- Flash Messages --}}
+            @if(session('success'))
+                <div class="ml-[63px] w-[900px] bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                    @if(session('success'))
-                        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
-                    @endif
-                    @if($errors->any())
-                        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 space-y-1">
-                            @foreach($errors->all() as $error)
-                                <p class="text-sm">{{ $error }}</p>
-                            @endforeach
-                        </div>
-                    @endif
+            @if($errors->any())
+                <div class="ml-[63px] w-[900px] bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
+                    <ul class="list-disc ml-5">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                    <form action="{{ route('account.info.update') }}" method="POST" class="space-y-5">
+            {{-- CARD 1: Personal Information --}}
+            <div class="border border-black/50 rounded-lg ml-[63px] w-[900px] h-full bg-white">
+                <div class="m-7">
+                    <p class="font-bold text-[32px]">Your Personal Information</p>
+                    <hr class="my-4 border-gray-300" />
+                    
+                    <form action="{{ route('account.info.update') }}" method="POST">
                         @csrf
                         @method('PUT')
-
-                        {{-- Name Fields --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
-                                <input type="text" name="first_name" value="{{ old('first_name', $customer->first_name) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" required />
+                        
+                        <div class="mt-6 flex flex-col gap-6">
+                            {{-- Row: First Name --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="first_name">First Name</label>
+                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="text" name="first_name" id="first_name" value="{{ old('first_name', $customer->first_name) }}" required />
                             </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
-                                <input type="text" name="last_name" value="{{ old('last_name', $customer->last_name) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" required />
+
+                            {{-- Row: Last Name --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="last_name">Last Name</label>
+                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="text" name="last_name" id="last_name" value="{{ old('last_name', $customer->last_name) }}" required />
+                            </div>
+
+                            {{-- Row: Contact Number --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="contact_num">Contact Number</label>
+                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="text" name="contact_num" id="contact_num" value="{{ old('contact_num', $customer->contact_num) }}" required />
+                            </div>
+
+                            {{-- Row: Email --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="email">Email</label>
+                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="email" name="email" id="email" value="{{ old('email', $customer->email) }}" required />
                             </div>
                         </div>
 
-                        {{-- Contact & Email --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Contact Number</label>
-                                <input type="tel" name="contact_num" value="{{ old('contact_num', $customer->contact_num) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" required />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                                <input type="email" name="email" value="{{ old('email', $customer->email) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" required />
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end pt-4 border-t border-gray-200">
-                            <button type="submit"
-                                class="bg-[#ED1B24] text-white font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition">
-                                Save Changes
+                        <div class="flex justify-end mt-8 mr-7">
+                            <button type="submit" class="bg-[#ED1B24] text-white font-bold py-3 px-24 rounded-md hover:bg-[#c1101a] transition-colors">
+                                Save
                             </button>
                         </div>
                     </form>
                 </div>
+            </div>
 
-                {{-- Change Password --}}
-                <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Change Password</h2>
-                    <p class="text-gray-600 text-sm mb-6">Leave blank to keep your current password</p>
-
-                    <form action="{{ route('account.info.update') }}" method="POST" class="space-y-5">
+            {{-- CARD 2: Change Password (Placeholder for future OTP) --}}
+            <div class="border border-black/50 rounded-lg ml-[63px] w-[900px] h-full bg-white">
+                <div class="m-7">
+                    <p class="font-bold text-[32px]">Change Password</p>
+                    <p class="text-[16px] text-gray-500 mb-2">Leave blank to keep your current password. (Will be replaced with OTP system later)</p>
+                    <hr class="my-4 border-gray-300" />
+                    
+                    <form action="{{ route('account.info.update') }}" method="POST">
                         @csrf
                         @method('PUT')
+                        
+                        <div class="mt-6 flex flex-col gap-6">
+                            {{-- Row: Current Password --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="current_password">Current Password</label>
+                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="password" name="current_password" id="current_password" />
+                            </div>
 
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Current Password</label>
-                            <input type="password" name="current_password"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
+                            {{-- Row: New Password --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="new_password">New Password</label>
+                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="password" name="new_password" id="new_password" />
+                            </div>
+
+                            {{-- Row: Confirm Password --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="new_password_confirmation">Confirm Password</label>
+                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="password" name="new_password_confirmation" id="new_password_confirmation" />
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
-                                <input type="password" name="new_password"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
-                                <input type="password" name="new_password_confirmation"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent" />
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end pt-4 border-t border-gray-200">
-                            <button type="submit"
-                                class="bg-[#ED1B24] text-white font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition">
+                        <div class="flex justify-end mt-8 mr-7">
+                            <button type="submit" class="bg-[#ED1B24] text-white font-bold py-3 px-10 rounded-md hover:bg-[#c1101a] transition-colors">
                                 Update Password
                             </button>
                         </div>
                     </form>
                 </div>
+            </div>
 
-                {{-- Delete Account --}}
-                <div class="bg-red-50 border border-red-200 rounded-lg p-6 shadow-sm">
-                    <h2 class="text-2xl font-bold text-red-700 mb-2">Delete Account</h2>
-                    <p class="text-red-600 text-sm mb-6">Deleting your account will remove all your data permanently and cannot be undone.</p>
-
-                    <form action="{{ route('account.delete') }}" method="POST"
-                          onsubmit="return confirm('Are you absolutely sure? This cannot be undone.')">
+            {{-- CARD 3: Delete Account (Password Placeholder) --}}
+            <div class="border border-red-500 rounded-lg ml-[63px] w-[900px] h-full bg-white">
+                <div class="m-7">
+                    <p class="font-bold text-[32px] text-[#ED1B24]">Delete Account</p>
+                    <p class="text-[16px] text-[#ED1B24]">
+                        Deleting your account will remove all your data permanently and cannot be undone.
+                    </p>
+                    <hr class="my-4 border-red-300" />
+                    
+                    <form action="{{ route('account.delete') }}" method="POST" onsubmit="return confirm('Are you absolutely sure? This cannot be undone.')">
                         @csrf
                         @method('DELETE')
-
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Enter Password to Confirm</label>
-                            <input type="password" name="password"
-                                class="w-full px-4 py-3 border border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" required />
+                        
+                        <div class="mt-6 flex flex-col gap-6">
+                            {{-- Row: Enter Password --}}
+                            <div class="flex items-center">
+                                <label class="text-[20px] font-bold w-[220px]" for="password">Confirm Password</label>
+                                <input class="border border-red-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
+                                       type="password" name="password" id="password" placeholder="Enter your password to confirm deletion" required />
+                            </div>
                         </div>
 
-                        <div class="flex justify-end pt-4 border-t border-red-200 mt-6">
-                            <button type="submit"
-                                class="bg-red-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition">
+                        <div class="flex justify-end mt-8 mr-7">
+                            <button type="submit" class="bg-[#ED1B24] text-white font-bold mr-6 py-3 px-10 rounded-md hover:bg-[#c1101a] transition-colors">
+                                Send OTP
+                            </button>
+                            <button type="submit" class="bg-[#ED1B24] text-white font-bold py-3 px-10 rounded-md hover:bg-[#c1101a] transition-colors">
                                 Delete My Account
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
+
     @include('partials.footer')
+
 </body>
 </html>
