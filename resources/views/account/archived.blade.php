@@ -3,83 +3,122 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Archive Orders - NCB</title>
     @vite(['resources/css/app.css'])
-    <title>Archived Orders - NCB</title>
 </head>
 <body class="bg-gray-50">
-    @include('partials.header')
-    @php $customer = Auth::guard('customer')->user(); @endphp
 
-    <div class="mx-4 md:mx-10 xl:mx-[261px] py-8">
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Your Account</h1>
-            <p class="text-gray-600">Welcome back, <span class="font-semibold">{{ $customer->first_name }} {{ $customer->last_name }}</span></p>
+    @include('partials.header')
+
+    @php 
+        $customer = Auth::guard('customer')->user(); 
+    @endphp
+
+    {{-- Header Section (Original Design layout) --}}
+    <div class="ml-[282px] mt-[50px] mb-[50px]">
+        <p class="text-[36px] text-black font-bold">Your Account</p>
+        <div class="flex">
+            <p class="text-[17px] text-black/50 mr-1">{{ $customer->first_name }} {{ $customer->last_name }},</p>
+            <p class="text-[17px] text-black/50 mr-1">Email:</p>
+            <p class="text-[17px] text-black/50">{{ $customer->email }}</p>
+        </div>
+    </div>
+
+    <div class="flex mx-[282px] mb-[80px]">
+        
+        {{-- Navigation Sidebar --}}
+        <div class="w-[342px]">
+            @include('partials.account-nav', ['active' => 'archived'])
         </div>
 
-        <div class="flex flex-col xl:flex-row gap-8">
-            {{-- Sidebar Navigation --}}
-            @include('partials.account-nav', ['active' => 'archived'])
+        {{-- Main Content: Archived Order List --}}
+        <div class="border border-black/50 rounded-lg ml-[63px] w-[1000px] h-full bg-white shadow-sm">
+            <div class="mx-7 mt-7 pb-7">
+                <h2 class="text-[25px] font-bold mb-6">Archive Orders</h2>
 
-            {{-- Main Content --}}
-            <div class="flex-1 min-w-0">
-                <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Archived Orders</h2>
+                @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
-                    @if(session('success'))
-                        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">{{ session('success') }}</div>
-                    @endif
-                    @if(session('error'))
-                        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">{{ session('error') }}</div>
-                    @endif
-
-                    @if($orders->isEmpty())
-                        <div class="text-center py-12">
-                            <p class="text-gray-500 text-lg">No Orders yet</p>
-                        </div>
-                    @else
-                        <div class="space-y-4">
-                            @foreach($orders as $order)
-                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition bg-gray-50">
-                                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
-                                        <div>
-                                            <div class="flex items-center gap-3">
-                                                <p class="font-bold text-lg text-gray-900">Order #{{ str_pad((string) $order->order_id, 8, '0', STR_PAD_LEFT) }}</p>
-                                                <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full inline-flex items-center">Completed</span>
-                                            </div>
-                                            <p class="text-sm text-gray-600 mt-2">{{ $order->order_date->format('M d, Y') }} • {{ $order->cart->items->count() }} item{{ $order->cart->items->count() !== 1 ? 's' : '' }}</p>
-                                        </div>
-                                        <div class="text-right">
-                                            <p class="text-2xl font-bold text-[#ED1B24]">₱{{ number_format($order->total_price, 2) }}</p>
-                                            <p class="text-sm text-gray-600">{{ $order->paymentMethod->methodName }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="border-t border-gray-200 pt-4">
-                                        <div class="flex flex-wrap gap-3">
-                                            @foreach($order->cart->items->take(4) as $item)
-                                                <div class="w-[108px]">
-                                                    <div class="bg-white rounded-lg w-[108px] h-[144px] flex items-center justify-center mb-2 overflow-hidden border border-gray-200">
-                                                        <img src="/images/SampleBook.png" alt="{{ $item->product->Title }}" class="w-[92px] h-[124px] object-cover" />
-                                                    </div>
-                                                    <p class="text-xs font-medium text-gray-700 truncate">{{ $item->product->Title }}</p>
-                                                    <p class="text-xs text-gray-500">Qty: {{ $item->quantity }}</p>
-                                                </div>
-                                            @endforeach
-                                            @if($order->cart->items->count() > 4)
-                                                <div class="w-[108px] h-[144px] flex items-center justify-center bg-gray-200 rounded-lg border border-gray-300">
-                                                    <p class="text-sm font-medium text-gray-700">+{{ $order->cart->items->count() - 4 }} more</p>
-                                                </div>
-                                            @endif
-                                        </div>
+                @if($orders->isEmpty())
+                    <div class="text-center py-12">
+                        <p class="text-gray-500 text-lg">No archived orders found.</p>
+                    </div>
+                @else
+                    @foreach($orders as $order)
+                        <div class="border border-gray-300 rounded-md p-5 mb-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-bold text-[20px]">Order #{{ str_pad($order->order_id, 8, '0', STR_PAD_LEFT) }}</p>
+                                    <div class="flex gap-2 items-center text-sm text-gray-600">
+                                        <p>{{ $order->cart->items->count() }} Products |</p>
+                                        <p>{{ $customer->first_name }} {{ $customer->last_name }} |</p>
+                                        <p>{{ $order->order_date->format('H:i') }} |</p>
+                                        <p>{{ $order->order_date->format('M d, Y') }}</p>
                                     </div>
                                 </div>
-                            @endforeach
+                                <div class="text-right">
+                                    <p class="font-bold text-[24px] text-[#ED1B24]">₱{{ number_format($order->total_price, 2) }}</p>
+                                    <p class="text-sm text-gray-500">{{ $order->paymentMethod->methodName }}</p>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 border-gray-200" />
+
+                            <div class="flex items-center text-[15px]">
+                                <div class="mr-8 text-gray-500 space-y-1">
+                                    <p>Status:</p>
+                                    <p>Date of Delivery:</p>
+                                    <p>Delivered to:</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p @class([
+                                        'font-bold',
+                                        'text-green-600' => $order->order_status === 'Completed',
+                                        'text-red-600' => in_array($order->order_status, ['Cancelled', 'Failed']),
+                                    ])>
+                                        {{ $order->order_status }}
+                                    </p>
+                                    <p>{{ $order->order_date->format('M d, Y') }}</p>
+                                    <p class="truncate w-[600px]">{{ $order->address->city ?? 'N/A' }}, {{ $order->address->province ?? '' }}</p>
+                                </div>
+                            </div>
+
+                            {{-- Product Preview Grid with 80x100 images --}}
+                            <div class="mt-8 grid grid-cols-2 gap-6">
+                                @foreach($order->cart->items as $item)
+                                    <div class="flex items-center">
+                                        {{-- Updated container and image to 80x100 --}}
+                                        <div class="bg-[#E1F0F0] w-[103px] h-[120px] flex items-center justify-center rounded-sm border border-gray-100">
+                                            <img 
+                                                class="w-[80px] h-[100px] object-cover shadow-sm" 
+                                                src="/images/SampleBook.png" 
+                                                alt="{{ $item->product->Title }}"
+                                            />
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="font-medium text-sm leading-tight h-10 overflow-hidden">{{ $item->product->Title }}</p>
+                                            <p class="text-xs text-gray-500 mt-1 font-bold">Qty: {{ $item->quantity }}</p>
+                                            <p class="text-xs text-gray-700">₱{{ number_format($item->unitPrice, 2) }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    @endif
-                </div>
+                    @endforeach
+
+                    {{-- Pagination --}}
+                    <div class="mt-6">
+                        {{ $orders->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
+
     @include('partials.footer')
+
 </body>
 </html>
