@@ -51,7 +51,7 @@
                 @if($orders->isEmpty())
                     <div class="text-center py-12">
                         <p class="text-gray-500 text-lg">No active orders yet.</p>
-                        <a href="{{ route('catalog.index') }}" class="text-[#ED1B24] font-bold hover:underline">Start Shopping →</a>
+                        <a href="{{ route('catalog.index') }}" class="text-[#ED1B24] font-bold hover:underline">Start Shopping</a>
                     </div>
                 @else
                     @foreach($orders as $order)

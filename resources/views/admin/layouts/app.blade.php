@@ -31,7 +31,7 @@
             <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/stock*') ? 'bg-[#ED1B24]/20' : '' }}"
                href="{{ route('admin.stock.index') }}">
                 <div class="w-[70px] bg-white rounded-sm border border-black/30">
-                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/stockBanner.png" alt="" />
+                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/package.png" alt="" />
                 </div>
                 <p class="font-bold text-[25px] ml-3.5">Stock</p>
             </a>
@@ -47,7 +47,7 @@
             <a class="flex items-center hover:bg-[#ED1B24]/30 p-1.5 rounded-md mb-[17px] {{ request()->is('admin/orders*') ? 'bg-[#ED1B24]/20' : '' }}"
                href="{{ route('admin.orders.index') }}">
                 <div class="w-[70px] bg-white rounded-sm border border-black/30">
-                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/pie-graph.png" alt="" />
+                    <img class="w-[50px] mx-2 my-2" src="/images/Admin-img/delivery-man.png" alt="" />
                 </div>
                 <p class="font-bold text-[25px] ml-3.5">Orders</p>
             </a>

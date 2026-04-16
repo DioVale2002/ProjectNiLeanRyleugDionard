@@ -100,7 +100,7 @@
                                 Back to Cart
                             </a>
                             <button type="submit" class="bg-[#ED1B24] text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-700 transition ml-auto">
-                                Continue to Payment →
+                                Continue to Payment
                             </button>
                         </div>
                     </form>
