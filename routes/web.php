@@ -80,3 +80,7 @@ Route::middleware('auth:customer')->group(function () {
 
     Route::post('/orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
 });
+
+Route::get('/landingpage', function () {
+    return view('catalog.landingpage');
+});
