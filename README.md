@@ -72,10 +72,19 @@ cd ProjectNiLeanRyleugDionard
 composer install
 ```
 
+### 2b. Install Node.js dependencies and build assets
+
+```bash
+npm install
+npm run build
+```
+
+> **Note:** For development with live reloading, run `npm run dev` instead of `npm run build`.
+
 ### 3. Set up environment
 
 ```bash
-cp .env .env.example
+cp .env.example .env
 ```
 
 Open `.env` and set your database credentials:
@@ -107,7 +116,15 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 
-### 5. Generate app key and run migrations
+### 5. Set up testing environment
+
+```bash
+cp .env .env.testing
+```
+
+Edit `.env.testing` and change `DB_DATABASE=ncb_oims` to `DB_DATABASE=testing`.
+
+### 7. Generate app key and run migrations
 
 ```bash
 php artisan key:generate
@@ -115,7 +132,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-### 6. Start the server
+### 7. Start the server
 
 ```bash
 php artisan serve
@@ -423,18 +440,13 @@ ProjectNiLeanRyleugDionard/
 - Revenue/order KPI cards with period filter (daily/monthly/yearly/custom)
 - Sales performance table by day
 - Top-selling and low-selling books reports
-- Stock insight cards and stock movement counters
-
----
-
-## Testing
-
-### Setup
-
-Make sure the `testing` database exists and `ncb_user` has access:
+- Stock insight cards and stock movement counters (should already be set up from installation step 4):
 
 ```bash
 sudo mysql -u root -e "CREATE DATABASE IF NOT EXISTS testing; GRANT ALL PRIVILEGES ON testing.* TO 'ncb_user'@'localhost'; FLUSH PRIVILEGES;"
+```
+
+Make sure `.env.testing` is configured (done in installation step 5).o mysql -u root -e "CREATE DATABASE IF NOT EXISTS testing; GRANT ALL PRIVILEGES ON testing.* TO 'ncb_user'@'localhost'; FLUSH PRIVILEGES;"
 ```
 
 Make sure `.env.testing` exists:
