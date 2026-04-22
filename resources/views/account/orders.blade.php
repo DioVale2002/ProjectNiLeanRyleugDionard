@@ -34,6 +34,20 @@
                         <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">{{ session('error') }}</div>
                     @endif
 
+                    @if(isset($notifications) && $notifications->isNotEmpty())
+                        <div class="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                            <p class="mb-3 text-sm font-semibold text-gray-700">Recent Notifications</p>
+                            <div class="space-y-2">
+                                @foreach($notifications as $notification)
+                                    <div class="rounded-md bg-white px-3 py-2 text-sm text-gray-700 border border-gray-100">
+                                        <p class="font-semibold">{{ $notification->data['title'] ?? 'Notification' }}</p>
+                                        <p>{{ $notification->data['body'] ?? '' }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     @if($orders->isEmpty())
                         <div class="text-center py-12">
                             <p class="text-gray-500 text-lg">No Orders yet</p>
@@ -48,13 +62,7 @@
                                             <div class="flex items-center gap-3">
                                                 <p class="font-bold text-lg text-gray-900">Order #{{ str_pad((string) $order->order_id, 8, '0', STR_PAD_LEFT) }}</p>
                                                 <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full inline-flex items-center">
-                                                    @if($order->order_status === 'Pending')
-                                        Pending
-                                                    @elseif($order->order_status === 'Completed')
-                                        Completed
-                                                    @else
-                                        {{ $order->order_status }}
-                                                    @endif
+                                                    {{ $order->order_status }}
                                                 </span>
                                             </div>
                                             <p class="text-sm text-gray-600 mt-2">{{ $order->order_date->format('M d, Y') }} • {{ $order->cart->items->count() }} item{{ $order->cart->items->count() !== 1 ? 's' : '' }}</p>
@@ -83,8 +91,18 @@
                                             @endif
                                         </div>
 
-                                        @if($order->order_status === 'Processing')
-                                            <div class="mt-4 flex justify-end">
+                                        <div class="mt-4 flex flex-wrap justify-end gap-2">
+                                            @if(in_array($order->order_status, ['Pending', 'Processing'], true))
+                                                <form action="{{ route('account.orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Cancel this order?')">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="rounded-md bg-gray-700 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-900">
+                                                        Cancel order
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            @if(in_array($order->order_status, ['Processing', 'Shipped', 'Delivered'], true))
                                                 <form action="{{ route('account.orders.received', $order) }}" method="POST" onsubmit="return confirm('Confirm that you received this order?')">
                                                     @csrf
                                                     @method('PATCH')
@@ -92,8 +110,12 @@
                                                         I received this order
                                                     </button>
                                                 </form>
-                                            </div>
-                                        @endif
+                                            @endif
+
+                                            <a href="{{ route('checkout.receipt', $order) }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
+                                                View receipt
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach

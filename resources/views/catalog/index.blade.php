@@ -28,76 +28,53 @@
 
         {{-- Filters section --}}
         <form action="{{ route('catalog.index') }}" method="GET" class="mb-8">
-            <div class="w-[1195px] h-full bg-white border border-gray-400 mx-auto">
-                <div class="grid grid-cols-8 p-7 gap-4">
-                    {{-- Genre filter --}}
-                    <div class="relative w-full">
-                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
-                            <span class="truncate pointer-events-none">GENRE</span>
-                        </button>
-                    </div>
+            <div class="w-[1195px] h-full bg-white border border-gray-400 mx-auto p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search title, author, ISBN, keyword" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24]" />
 
-                    {{-- Price filter --}}
-                    <div class="relative w-full">
-                        <input
-                            type="number"
-                            name="min_price"
-                            value="{{ request('min_price') }}"
-                            placeholder="MIN PRICE"
-                            min="0"
-                            class="w-full px-2 py-2 text-[#ED1B24] bg-white border border-[#ED1B24] flex justify-center items-center text-center font-bold"
-                        />
-                    </div>
+                    <select name="genre" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24] bg-white">
+                        <option value="">All Categories (Genre)</option>
+                        @foreach($genres as $genre)
+                            <option value="{{ $genre }}" {{ request('genre') === $genre ? 'selected' : '' }}>{{ $genre }}</option>
+                        @endforeach
+                    </select>
 
-                    {{-- Max price --}}
-                    <div class="relative w-full">
-                        <input
-                            type="number"
-                            name="max_price"
-                            value="{{ request('max_price') }}"
-                            placeholder="MAX PRICE"
-                            min="0"
-                            class="w-full px-2 py-2 text-[#ED1B24] bg-white border border-[#ED1B24] flex justify-center items-center text-center font-bold"
-                        />
-                    </div>
+                    <select name="subject" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24] bg-white">
+                        <option value="">All Subjects</option>
+                        @foreach($subjects as $subject)
+                            <option value="{{ $subject }}" {{ request('subject') === $subject ? 'selected' : '' }}>{{ $subject }}</option>
+                        @endforeach
+                    </select>
 
-                    {{-- Search box --}}
-                    <div class="relative w-full">
-                        <input
-                            type="text"
-                            name="search"
-                            value="{{ request('search') }}"
-                            placeholder="SEARCH"
-                            class="w-full px-2 py-2 text-[#ED1B24] bg-white border border-[#ED1B24] text-center font-bold"
-                        />
-                    </div>
+                    <select name="branch" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24] bg-white">
+                        <option value="">All Branches</option>
+                        @foreach($branches as $branch)
+                            <option value="{{ $branch }}" {{ request('branch') === $branch ? 'selected' : '' }}>{{ $branch }}</option>
+                        @endforeach
+                    </select>
 
-                    {{-- Remaining filter placeholders --}}
-                    <div class="relative w-full">
-                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
-                            <span class="truncate pointer-events-none">FORMAT</span>
-                        </button>
-                    </div>
+                    <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min Price" min="0" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24]" />
+                    <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max Price" min="0" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24]" />
 
-                    <div class="relative w-full">
-                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
-                            <span class="truncate pointer-events-none">RATING</span>
-                        </button>
-                    </div>
+                    <select name="format" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24] bg-white">
+                        <option value="">All Formats</option>
+                        @foreach($formats as $format)
+                            <option value="{{ $format }}" {{ request('format') === $format ? 'selected' : '' }}>{{ $format }}</option>
+                        @endforeach
+                    </select>
 
-                    <div class="relative w-full">
-                        <button type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
-                            <span class="truncate pointer-events-none">AGE</span>
-                        </button>
-                    </div>
+                    <select name="language" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24] bg-white">
+                        <option value="">All Languages</option>
+                        @foreach($languages as $language)
+                            <option value="{{ $language }}" {{ request('language') === $language ? 'selected' : '' }}>{{ $language }}</option>
+                        @endforeach
+                    </select>
 
-                    {{-- FILTER Button --}}
-                    <button type="submit" class="text-white bg-[#ED1B24] font-bold px-2 py-2 w-full border border-[#ED1B24] flex items-center justify-center gap-2 hover:bg-red-700 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                        </svg>
-                        FILTER
-                    </button>
+                    <input type="date" name="publication_date_from" value="{{ request('publication_date_from') }}" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24]" />
+                    <input type="date" name="publication_date_to" value="{{ request('publication_date_to') }}" class="w-full px-3 py-2 border border-[#ED1B24] text-[#ED1B24]" />
+
+                    <button type="submit" class="text-white bg-[#ED1B24] font-bold px-3 py-2 border border-[#ED1B24] hover:bg-red-700 transition-colors">Apply Filters</button>
+                    <a href="{{ route('catalog.index') }}" class="text-center bg-white text-[#ED1B24] font-bold px-3 py-2 border border-[#ED1B24] hover:bg-red-50 transition-colors">Reset</a>
                 </div>
             </div>
         </form>

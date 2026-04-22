@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
+use App\Notifications\OrderStatusNotification;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\PaymentMethod;
@@ -12,6 +13,9 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -35,6 +39,37 @@ class OrderController extends Controller
 
         if ($voucherId) {
             $voucher = Voucher::findOrFail($voucherId);
+
+            if (!$voucher->is_active) {
+                throw ValidationException::withMessages([
+                    'voucher_id' => 'Selected voucher is inactive.',
+                ]);
+            }
+
+            if ($voucher->valid_from && now()->toDateString() < $voucher->valid_from->toDateString()) {
+                throw ValidationException::withMessages([
+                    'voucher_id' => 'Selected voucher is not active yet.',
+                ]);
+            }
+
+            if ($voucher->valid_until && now()->toDateString() > $voucher->valid_until->toDateString()) {
+                throw ValidationException::withMessages([
+                    'voucher_id' => 'Selected voucher has already expired.',
+                ]);
+            }
+
+            if ($voucher->minimum_order_amount !== null && $subtotal < (float) $voucher->minimum_order_amount) {
+                throw ValidationException::withMessages([
+                    'voucher_id' => 'This voucher requires a minimum order amount of ₱' . number_format((float) $voucher->minimum_order_amount, 2) . '.',
+                ]);
+            }
+
+            if ($voucher->max_uses !== null && (int) $voucher->voucherUsed >= (int) $voucher->max_uses) {
+                throw ValidationException::withMessages([
+                    'voucher_id' => 'Selected voucher has reached its usage limit.',
+                ]);
+            }
+
             if ($voucher->voucherType === 'percentage') {
                 $discount = $subtotal * ((float) $voucher->voucherAmount / 100);
             } else {
@@ -53,6 +88,19 @@ class OrderController extends Controller
     protected function placeOrder($customer, Cart $cart, ?int $addressId, int $paymentMethodId, ?int $voucherId): Order
     {
         $pricing = $this->computeDiscountedTotal($cart, $voucherId);
+
+        if ($voucherId && $pricing['voucher'] && $pricing['voucher']->per_customer_limit !== null) {
+            $perCustomerUsage = Order::query()
+                ->where('cus_id', $customer->cus_id)
+                ->where('voucher_id', $voucherId)
+                ->count();
+
+            if ($perCustomerUsage >= (int) $pricing['voucher']->per_customer_limit) {
+                throw ValidationException::withMessages([
+                    'voucher_id' => 'You have already reached your usage limit for this voucher.',
+                ]);
+            }
+        }
 
         return DB::transaction(function () use ($customer, $cart, $addressId, $paymentMethodId, $voucherId, $pricing) {
             if ($voucherId && $pricing['voucher']) {
@@ -88,6 +136,12 @@ class OrderController extends Controller
 
             $cart->update(['status' => 'checked_out']);
 
+            $customer->notify(new OrderStatusNotification(
+                $order,
+                'Order Confirmation',
+                'Your order has been placed successfully and is now pending processing.'
+            ));
+
             return $order;
         });
     }
@@ -105,12 +159,26 @@ class OrderController extends Controller
             session(['checkout.voucher_id' => $selectedVoucherId]);
         }
 
-        $pricing = $this->computeDiscountedTotal($cart, $selectedVoucherId ? (int) $selectedVoucherId : null);
+        try {
+            $pricing = $this->computeDiscountedTotal($cart, $selectedVoucherId ? (int) $selectedVoucherId : null);
+        } catch (ValidationException $exception) {
+            return redirect()->route('cart.index')
+                ->withErrors($exception->errors())
+                ->withInput(['voucher_id' => $selectedVoucherId]);
+        } catch (Throwable $exception) {
+            Log::error('Unable to load checkout address step.', [
+                'customer_id' => $customer->cus_id,
+                'voucher_id' => $selectedVoucherId,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->route('cart.index')->with('error', 'We could not load that voucher right now. Please try again.');
+        }
 
         return view('checkout.address', [
             'cart' => $cart,
             'address' => $customer->address,
-            'vouchers' => Voucher::all(),
+            'vouchers' => Voucher::query()->availableForCheckout()->orderBy('voucherName')->get(),
             'selectedVoucherId' => $selectedVoucherId,
             'subtotal' => $pricing['subtotal'],
             'discount' => $pricing['discount'],
@@ -173,7 +241,21 @@ class OrderController extends Controller
         }
 
         $selectedVoucherId = session('checkout.voucher_id');
-        $pricing = $this->computeDiscountedTotal($cart, $selectedVoucherId ? (int) $selectedVoucherId : null);
+        try {
+            $pricing = $this->computeDiscountedTotal($cart, $selectedVoucherId ? (int) $selectedVoucherId : null);
+        } catch (ValidationException $exception) {
+            return redirect()->route('cart.index')
+                ->withErrors($exception->errors())
+                ->withInput(['voucher_id' => $selectedVoucherId]);
+        } catch (Throwable $exception) {
+            Log::error('Unable to load checkout payment step.', [
+                'customer_id' => $customer->cus_id,
+                'voucher_id' => $selectedVoucherId,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->route('cart.index')->with('error', 'We could not load that voucher right now. Please try again.');
+        }
 
         return view('checkout.payment', [
             'cart' => $cart,
@@ -207,13 +289,28 @@ class OrderController extends Controller
 
         session(['checkout.paymentMethod_id' => (int) $validated['paymentMethod_id']]);
 
-        $order = $this->placeOrder(
-            $customer,
-            $cart,
-            (int) $addressId,
-            (int) $validated['paymentMethod_id'],
-            $voucherId ? (int) $voucherId : null
-        );
+        try {
+            $order = $this->placeOrder(
+                $customer,
+                $cart,
+                (int) $addressId,
+                (int) $validated['paymentMethod_id'],
+                $voucherId ? (int) $voucherId : null
+            );
+        } catch (ValidationException $exception) {
+            return redirect()->route('cart.index')
+                ->withErrors($exception->errors())
+                ->withInput(['voucher_id' => $voucherId, 'paymentMethod_id' => $validated['paymentMethod_id']]);
+        } catch (Throwable $exception) {
+            Log::error('Checkout payment failed.', [
+                'customer_id' => $customer->cus_id,
+                'voucher_id' => $voucherId,
+                'payment_method_id' => $validated['paymentMethod_id'],
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->route('checkout.payment')->with('error', 'Something went wrong while placing your order. Please try again.');
+        }
 
         session()->forget('checkout');
 

@@ -52,7 +52,7 @@ class Order extends Model
     // Scopes for filtering orders
     public function scopeActive($query)
     {
-        return $query->whereIn('order_status', ['Pending', 'Processing']);
+        return $query->whereIn('order_status', ['Pending', 'Processing', 'Shipped', 'Delivered']);
     }
 
     public function scopeArchived($query)

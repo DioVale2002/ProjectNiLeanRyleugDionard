@@ -92,6 +92,24 @@
                                         </form>
                                     @endif
 
+                                    @if($order->order_status === 'Processing')
+                                        <form action="{{ route('admin.orders.event', $order) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="event" value="ship" />
+                                            <button type="submit" class="h-[32px] rounded-md bg-blue-500 px-3 text-xs text-white">Ship</button>
+                                        </form>
+                                    @endif
+
+                                    @if($order->order_status === 'Shipped')
+                                        <form action="{{ route('admin.orders.event', $order) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="event" value="deliver" />
+                                            <button type="submit" class="h-[32px] rounded-md bg-green-600 px-3 text-xs text-white">Deliver</button>
+                                        </form>
+                                    @endif
+
                                     @if($isTimedOut)
                                         <form action="{{ route('admin.orders.event', $order) }}" method="POST">
                                             @csrf
@@ -101,7 +119,7 @@
                                         </form>
                                     @endif
 
-                                    @if(in_array($order->order_status, ['Pending', 'Processing'], true))
+                                    @if(in_array($order->order_status, ['Pending', 'Processing', 'Shipped'], true))
                                         <form action="{{ route('admin.orders.event', $order) }}" method="POST" onsubmit="return confirm('Cancel this order?')">
                                             @csrf
                                             @method('PATCH')
@@ -110,7 +128,7 @@
                                         </form>
                                     @endif
 
-                                    @if(!in_array($order->order_status, ['Pending', 'Processing'], true) && !$isTimedOut)
+                                    @if(!in_array($order->order_status, ['Pending', 'Processing', 'Shipped'], true) && !$isTimedOut)
                                         <span class="text-xs text-gray-400">No actions</span>
                                     @endif
                                 </div>

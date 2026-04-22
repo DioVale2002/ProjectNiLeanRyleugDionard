@@ -71,8 +71,18 @@
                 </tr>
             </table>
 
+            @if($product->Description)
+                <div class="mt-6">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">Description</p>
+                    <p class="text-[#5D5454] text-[16px]">{{ $product->Description }}</p>
+                </div>
+            @endif
+
             @if($product->Review)
-                <p class="text-[#5D5454] text-[16px] mt-6">{{ $product->Review }}</p>
+                <div class="mt-6">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">Reviews</p>
+                    <p class="text-[#5D5454] text-[16px]">{{ $product->Review }}</p>
+                </div>
             @endif
 
             {{-- Add to cart --}}
