@@ -65,10 +65,12 @@
         </svg>
       </button>
       <div id="price-options" class="mt-3 filter-content">
-        <div class="flex items-center mb-2">
+        <div class="flex flex-col mb-2">
+            <label for="min_price" class="block text-sm font-medium text-gray-700">Min Price</label>
           <input type="number" name="min_price" id="min" placeholder="Min" value="{{ request('min_price') }}" class="w-full px-2 py-1 border border-gray-300 rounded-sm" />
         </div>
-        <div class="flex items-center mb-2">
+        <div class="flex flex-col mb-2">
+            <label for="max_price" class="block text-sm font-medium text-gray-700">Max Price</label>
           <input type="number" name="max_price" id="max" placeholder="Max" value="{{ request('max_price') }}" class="w-full px-2 py-1 border border-gray-300 rounded-sm" />
         </div>
         <button type="submit" class="bg-[#FCAE42] text-black border-[#FCAE42] border-2 w-full transition-colors hover:bg-yellow-500 hover:text-white hover:font-bold hover:cursor-pointer mt-1">
@@ -85,10 +87,12 @@
         </svg>
       </button>
       <div id="date-options" class="mt-3 filter-content">
-        <div class="flex items-center mb-2">
+        <div class="flex flex-col mb-2">
+          <label class="block text-sm font-medium text-gray-700" for="mindate">Min date</label>
           <input type="date" name="min_date" id="mindate" value="{{ request('min_date') }}" class="w-full max-w-full px-1 py-1 text-[13px] border border-gray-300 rounded-sm" />
         </div>
-        <div class="flex items-center mb-2">
+        <div class="flex flex-col mb-2">
+          <label class="block text-sm font-medium text-gray-700" for="maxdate">Max date</label>
           <input type="date" name="max_date" id="maxdate" value="{{ request('max_date') }}" class="w-full max-w-full px-1 py-1 text-[13px] border border-gray-300 rounded-sm" />
         </div>
         <button type="submit" class="bg-[#FCAE42] text-black border-[#FCAE42] border-2 w-full transition-colors hover:bg-yellow-500 hover:text-white hover:font-bold hover:cursor-pointer mt-1">
