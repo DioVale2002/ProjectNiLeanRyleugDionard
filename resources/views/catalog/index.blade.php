@@ -1,409 +1,320 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Products - NCB</title>
     @vite(['resources/css/app.css'])
+    <title>Products - NCB</title>
+  </head>
 
-</head>
-<body class="bg-gray-50">
-
+  <body class="bg-gray-50 flex flex-col min-h-screen">
+    
     @include('partials.header')
 
-    <form action="{{ route('catalog.index') }}" method="GET" id="filter-form" class="w-[1195px] h-full bg-white border border-gray-400 mx-auto mt-[20px]">
-        <div class="grid grid-cols-4 p-7 gap-4">
-            
-            <div class="relative w-full dropdown-wrapper">
-                <button id="genre-btn" type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer">
-                    <span id="genre-btn-text" class="truncate pointer-events-none">
-                        {{ request('genre') ? 'GENRE - ' . count(request('genre')) . ' SELECTED' : 'GENRE' }}
-                    </span>
-                </button>
-                <div id="genre-popup" class="hidden absolute top-full left-0 mt-1 w-[150%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="genre[]" value="Fiction" class="custom-checkbox" {{ in_array('Fiction', request('genre', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Fiction</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="genre[]" value="Non-Fiction" class="custom-checkbox" {{ in_array('Non-Fiction', request('genre', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Non-Fiction</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="genre[]" value="Fantasy" class="custom-checkbox" {{ in_array('Fantasy', request('genre', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Fantasy</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative w-full dropdown-wrapper">
-                <button id="language-btn" type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer overflow-hidden">
-                    <span id="language-btn-text" class="truncate pointer-events-none">
-                        {{ request('language') ? 'LANGUAGE - ' . count(request('language')) . ' SELECTED' : 'LANGUAGE' }}
-                    </span>
-                </button>
-                <div id="language-popup" class="hidden absolute top-full left-0 mt-1 w-[120%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="flex flex-col gap-4">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="language[]" value="English" class="custom-checkbox" {{ in_array('English', request('language', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">English</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="language[]" value="Tagalog" class="custom-checkbox" {{ in_array('Tagalog', request('language', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Tagalog</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="language[]" value="Bisaya" class="custom-checkbox" {{ in_array('Bisaya', request('language', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Bisaya</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative w-full dropdown-wrapper">
-                <button id="price-btn" type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer overflow-hidden">
-                    <span id="price-btn-text" class="truncate pointer-events-none">
-                        {{ request('min_price') || request('max_price') ? 'PRICE - ₱'.request('min_price', 0).' TO ₱'.request('max_price', 5000) : 'PRICE' }}
-                    </span>
-                </button>
-                <div id="price-popup" class="hidden absolute top-full left-0 mt-1 w-[140%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="flex flex-col gap-5">
-                        <div class="flex justify-between items-center gap-2 text-white font-bold">
-                            <div class="flex flex-col w-1/2">
-                                <label class="text-[10px] uppercase mb-1">Min (₱)</label>
-                                <input type="number" name="min_price" id="price-min-input" value="{{ request('min_price', 0) }}" min="0" max="5000" class="w-full bg-white text-black font-bold px-2 py-1 outline-none text-center" />
-                            </div>
-                            <span class="mt-4">-</span>
-                            <div class="flex flex-col w-1/2">
-                                <label class="text-[10px] uppercase mb-1">Max (₱)</label>
-                                <input type="number" name="max_price" id="price-max-input" value="{{ request('max_price', 5000) }}" min="0" max="5000" class="w-full bg-white text-black font-bold px-2 py-1 outline-none text-center" />
-                            </div>
-                        </div>
-
-                        <div class="relative w-full h-6 flex items-center">
-                            <div class="absolute w-full h-1 bg-white/40 rounded"></div>
-                            <div id="price-progress" class="absolute h-1 bg-white rounded" style="left: 0%; right: 0%"></div>
-                            <input type="range" id="price-min-range" min="0" max="5000" value="{{ request('min_price', 0) }}" class="absolute w-full h-full pointer-events-none custom-range" />
-                            <input type="range" id="price-max-range" min="0" max="5000" value="{{ request('max_price', 5000) }}" class="absolute w-full h-full pointer-events-none custom-range" />
-                        </div>
-
-                        <div class="flex flex-col gap-2">
-                            <button id="price-apply" type="submit" class="w-full bg-white text-[#ED1B24] font-bold py-1 hover:bg-gray-200 transition-colors">APPLY</button>
-                            <button id="price-clear" type="button" class="hidden w-full bg-transparent text-white border border-white font-bold py-1 hover:bg-red-800 transition-colors text-xs">CLEAR</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative w-full dropdown-wrapper">
-                <button id="pub-date-btn" type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer overflow-hidden">
-                    <span id="pub-date-btn-text" class="truncate pointer-events-none">
-                        {{ request('year_start') || request('year_end') ? 'PUB DATE - ' . request('year_start', 'ANY') . ' TO ' . request('year_end', 'ANY') : 'PUBLICATION YEAR' }}
-                    </span>
-                </button>
-                <div id="pub-date-popup" class="hidden absolute top-full left-0 mt-1 w-[120%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="flex flex-col gap-3">
-                        <span class="text-white font-bold uppercase tracking-wide text-sm mb-1">Custom Range</span>
-                        <div class="flex items-center gap-2">
-                            <input type="number" name="year_start" id="pub-year-start" value="{{ request('year_start') }}" placeholder="2010" min="1900" max="2026" class="w-full bg-white text-black font-bold px-2 py-1 outline-none text-center placeholder-gray-400" />
-                            <span class="text-white font-bold">-</span>
-                            <input type="number" name="year_end" id="pub-year-end" value="{{ request('year_end') }}" placeholder="2024" min="1900" max="2026" class="w-full bg-white text-black font-bold px-2 py-1 outline-none text-center placeholder-gray-400" />
-                        </div>
-                        <button id="pub-date-apply" type="submit" class="w-full bg-white text-[#ED1B24] font-bold py-1 mt-2 hover:bg-gray-200 transition-colors">APPLY</button>
-                        <button id="pub-date-clear" type="button" class="hidden w-full bg-transparent text-white border border-white font-bold py-1 mt-1 hover:bg-red-800 transition-colors text-xs">CLEAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative w-full dropdown-wrapper">
-                <button id="format-btn" type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer overflow-hidden">
-                    <span id="format-btn-text" class="truncate pointer-events-none">
-                        {{ request('format') ? 'FORMAT - ' . count(request('format')) . ' SELECTED' : 'FORMAT' }}
-                    </span>
-                </button>
-                <div id="format-popup" class="hidden absolute top-full left-0 mt-1 w-[120%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="flex flex-col gap-4">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="format[]" value="Hardcover" class="custom-checkbox" {{ in_array('Hardcover', request('format', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Hardcover</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="format[]" value="E-Book" class="custom-checkbox" {{ in_array('E-Book', request('format', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">E-Book/ Digital</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="format[]" value="Paperback" class="custom-checkbox" {{ in_array('Paperback', request('format', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Paperback</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="format[]" value="Box Set" class="custom-checkbox" {{ in_array('Box Set', request('format', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Box Set/ Collection</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative w-full dropdown-wrapper">
-                <button id="rating-btn" type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer overflow-hidden">
-                    <span id="rating-btn-text" class="truncate pointer-events-none">
-                        {{ request('rating') ? 'RATING - ' . count(request('rating')) . ' SELECTED' : 'RATING' }}
-                    </span>
-                </button>
-                <div id="rating-popup" class="hidden absolute top-full left-0 mt-1 w-[120%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="flex flex-col gap-4">
-                        @for($i = 5; $i >= 1; $i--)
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="rating[]" value="{{ $i }}" class="custom-checkbox" {{ in_array($i, request('rating', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">{{ $i }} Stars</span>
-                        </label>
-                        @endfor
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative w-full dropdown-wrapper">
-                <button id="age-btn" type="button" class="text-[#ED1B24] bg-white font-bold w-full px-2 py-2 border border-[#ED1B24] flex justify-center items-center z-10 relative cursor-pointer overflow-hidden">
-                    <span id="age-btn-text" class="truncate pointer-events-none">
-                        {{ request('age') ? 'AGE - ' . count(request('age')) . ' SELECTED' : 'AGE GROUP' }}
-                    </span>
-                </button>
-                <div id="age-popup" class="hidden absolute top-full left-0 mt-1 w-[120%] bg-[#ED1B24] p-5 z-50 shadow-lg">
-                    <div class="flex flex-col gap-4">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="age[]" value="Children" class="custom-checkbox" {{ in_array('Children', request('age', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Children (0-12)</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="age[]" value="Teens" class="custom-checkbox" {{ in_array('Teens', request('age', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Teens (13-18)</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="age[]" value="YA" class="custom-checkbox" {{ in_array('YA', request('age', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Young Adult</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="age[]" value="Adult" class="custom-checkbox" {{ in_array('Adult', request('age', [])) ? 'checked' : '' }} />
-                            <span class="text-white font-bold uppercase tracking-wide">Adult</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="text-white bg-[#ED1B24] font-bold px-2 py-2 w-full border border-[#ED1B24] flex items-center justify-center gap-2 hover:bg-red-700 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                </svg>
-                FILTER
-            </button>
+    {{-- Success Message for Cart --}}
+    @if(session('success'))
+        <div class="mx-[237px] mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            {{ session('success') }}
         </div>
-    </form>
+    @endif
 
-    <p class="text-[35px] font-bold text-black mt-[38px] ml-[245px]">Suggested Books</p>
+    <div class="flex mt-[30px] mb-12 mx-[237px]">
+      
+      {{-- LEFT SIDEBAR: Filters --}}
+      <div class="p-4 w-[200px] mr-[40px]">
+  <div class="flex mb-5">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18l-7 8v6l-4 2v-8L3 4z" />
+    </svg>
+    <p class="font-semibold">SEARCH FILTER</p>
+  </div>
+
+  <form action="{{ route('catalog.index') }}" method="GET" id="filter-form">
     
-    <div class="grid grid-cols-5 gap-y-8 mt-[57px] mb-6 px-[237px]">
-        @foreach($products as $product)
-        <div class="h-full w-[265px] border border-gray-400 shadow-md relative bg-white flex flex-col">
-            <a href="{{ route('catalog.show', $product) }}">
+    <div class="mb-5 border-b border-gray-200 pb-3">
+      <button type="button" class="filter-toggle flex justify-between items-center w-full font-semibold text-black cursor-pointer" aria-controls="category-options">
+        Category
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-200 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="category-options" class="mt-3 filter-content">
+        @foreach($genres ?? [] as $index => $genre)
+          <div class="flex items-center mb-2 {{ $index >= 3 ? 'hidden extra-item' : '' }}">
+            <input type="checkbox" id="genre-{{ Str::slug($genre) }}" name="genre[]" value="{{ $genre }}" class="mr-2" onchange="this.form.submit()" {{ in_array($genre, request('genre', [])) ? 'checked' : '' }} />
+            <label for="genre-{{ Str::slug($genre) }}" class="text-black">{{ $genre }}</label>
+          </div>
+        @endforeach
+        
+        @if(isset($genres) && count($genres) > 3)
+          <button type="button" class="show-more-btn ml-6 mt-1 flex items-center gap-4 cursor-pointer text-gray-500 hover:text-black">
+            <span class="more-text">More</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 more-icon transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        @endif
+      </div>
+    </div>
+
+    <div class="mb-5 border-b border-gray-200 pb-3">
+      <button type="button" class="filter-toggle flex justify-between items-center w-full font-semibold text-black cursor-pointer" aria-controls="price-options">
+        Price Range
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-200 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="price-options" class="mt-3 filter-content">
+        <div class="flex items-center mb-2">
+          <input type="number" name="min_price" id="min" placeholder="Min" value="{{ request('min_price') }}" class="w-full px-2 py-1 border border-gray-300 rounded-sm" />
+        </div>
+        <div class="flex items-center mb-2">
+          <input type="number" name="max_price" id="max" placeholder="Max" value="{{ request('max_price') }}" class="w-full px-2 py-1 border border-gray-300 rounded-sm" />
+        </div>
+        <button type="submit" class="bg-[#FCAE42] text-black border-[#FCAE42] border-2 w-full transition-colors hover:bg-yellow-500 hover:text-white hover:font-bold hover:cursor-pointer mt-1">
+          Apply
+        </button>
+      </div>
+    </div>
+
+    <div class="mb-5 border-b border-gray-200 pb-3">
+      <button type="button" class="filter-toggle flex justify-between items-center w-full font-semibold text-black cursor-pointer" aria-controls="date-options">
+        Publication Date
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-200 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="date-options" class="mt-3 filter-content">
+        <div class="flex items-center mb-2">
+          <input type="date" name="min_date" id="mindate" value="{{ request('min_date') }}" class="w-full max-w-full px-1 py-1 text-[13px] border border-gray-300 rounded-sm" />
+        </div>
+        <div class="flex items-center mb-2">
+          <input type="date" name="max_date" id="maxdate" value="{{ request('max_date') }}" class="w-full max-w-full px-1 py-1 text-[13px] border border-gray-300 rounded-sm" />
+        </div>
+        <button type="submit" class="bg-[#FCAE42] text-black border-[#FCAE42] border-2 w-full transition-colors hover:bg-yellow-500 hover:text-white hover:font-bold hover:cursor-pointer mt-1">
+          Apply
+        </button>
+      </div>
+    </div>
+
+    <div class="mb-5 border-b border-gray-200 pb-3">
+      <button type="button" class="filter-toggle flex justify-between items-center w-full font-semibold text-black cursor-pointer" aria-controls="rating-options">
+        Rating
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-200 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="rating-options" class="mt-3 filter-content">
+        @for($i = 5; $i >= 1; $i--)
+          <label class="flex items-center gap-2 cursor-pointer mt-1">
+            <input type="radio" name="rating" value="{{ $i }}" class="hidden peer" onchange="this.form.submit()" {{ request('rating') == $i ? 'checked' : '' }} />
+            <div class="px-2 py-1 flex gap-2 items-center rounded-md peer-checked:bg-[#FCAE42] transition-colors w-[130px]">
+              @for($j = 1; $j <= 5; $j++)
+                  <img src="{{ asset($j <= $i ? 'images/StarVal.png' : 'images/StarNone.png') }}" class="w-[14px] h-[14px]" />
+              @endfor
+            </div>
+          </label>
+        @endfor
+      </div>
+    </div>
+
+    <div class="mb-5 border-b border-gray-200 pb-3">
+      <button type="button" class="filter-toggle flex justify-between items-center w-full font-semibold text-black cursor-pointer" aria-controls="language-options">
+        Language
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-200 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="language-options" class="mt-3 filter-content">
+        <div class="flex items-center mb-2">
+          <input type="checkbox" id="English" name="language[]" value="English" class="mr-2" onchange="this.form.submit()" {{ in_array('English', request('language', [])) ? 'checked' : '' }} />
+          <label for="English" class="text-black">English</label>
+        </div>
+        <div class="flex items-center mb-2">
+          <input type="checkbox" id="Tagalog" name="language[]" value="Tagalog" class="mr-2" onchange="this.form.submit()" {{ in_array('Tagalog', request('language', [])) ? 'checked' : '' }} />
+          <label for="Tagalog" class="text-black">Tagalog</label>
+        </div>
+        <div class="flex items-center mb-2">
+          <input type="checkbox" id="Bisaya" name="language[]" value="Bisaya" class="mr-2" onchange="this.form.submit()" {{ in_array('Bisaya', request('language', [])) ? 'checked' : '' }} />
+          <label for="Bisaya" class="text-black">Bisaya</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-5 border-b border-gray-200 pb-3">
+      <button type="button" class="filter-toggle flex justify-between items-center w-full font-semibold text-black cursor-pointer" aria-controls="format-options">
+        Format
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-200 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="format-options" class="mt-3 filter-content">
+        <div class="flex items-center mb-2">
+          <input type="checkbox" id="Paperback" name="format[]" value="Paperback" class="mr-2" onchange="this.form.submit()" {{ in_array('Paperback', request('format', [])) ? 'checked' : '' }} />
+          <label for="Paperback" class="text-black">Paperback</label>
+        </div>
+        <div class="flex items-center mb-2">
+          <input type="checkbox" id="Ebook" name="format[]" value="Ebook" class="mr-2" onchange="this.form.submit()" {{ in_array('Ebook', request('format', [])) ? 'checked' : '' }} />
+          <label for="Ebook" class="text-black">Ebook</label>
+        </div>
+        <div class="flex items-center mb-2">
+          <input type="checkbox" id="Hardcover" name="format[]" value="Hardcover" class="mr-2" onchange="this.form.submit()" {{ in_array('Hardcover', request('format', [])) ? 'checked' : '' }} />
+          <label for="Hardcover" class="text-black">Hardcover</label>
+        </div>
+        
+        <button type="button" class="ml-6 mt-1 flex items-center gap-4 cursor-pointer text-gray-500">
+          More
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    {{-- DYNAMIC AGE GROUP FILTER--}}
+    <div class="mb-5 border-b border-gray-200 pb-3">
+    <button type="button" class="filter-toggle flex justify-between items-center w-full font-semibold text-black cursor-pointer" aria-controls="age-options">
+        Age Group
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-200 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+    <div id="age-options" class="mt-3 filter-content">
+        @foreach($ageGroups ?? [] as $index => $age)
+        <div class="flex items-center mb-2 {{ $index >= 3 ? 'hidden extra-item' : '' }}">
+            <input type="checkbox" id="age-{{ Str::slug($age) }}" name="agegroup[]" value="{{ $age }}" class="mr-2 cursor-pointer" onchange="this.form.submit()" {{ in_array($age, request('agegroup', [])) ? 'checked' : '' }} />
+            <label for="age-{{ Str::slug($age) }}" class="text-black cursor-pointer">{{ $age }}</label>
+        </div>
+        @endforeach
+
+        @if(isset($ageGroups) && count($ageGroups) > 3)
+        <button type="button" class="show-more-btn ml-6 mt-1 flex items-center gap-4 cursor-pointer text-gray-700 hover:text-black hover:font-bold">
+            <span class="more-text">More</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 more-icon transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+            </svg>
+        </button>
+        @endif
+    </div>
+    </div>
+
+    <a href="{{ route('catalog.index') }}" class="block text-center bg-[#F54E4E] text-white border-[#FCAE42] mt-6 border-2 py-2 w-full transition-colors hover:bg-red-600 hover:text-white hover:font-bold hover:cursor-pointer">
+      Clear All
+    </a>
+  </form>
+</div>
+
+      {{-- RIGHT SIDE: Products Grid --}}
+      <div class="flex-1">
+        <p class="text-[30px] font-bold text-black mb-7">Suggested Books</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+          @forelse($products as $product)
+            {{-- Product Card --}}
+            <div class="h-full w-[265px] border border-gray-400 shadow-md relative hover:border-[#F54E4E] transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl bg-white flex flex-col">
+              <a href="{{ route('catalog.show', $product) }}">
                 <div class="flex justify-center items-center pt-6">
-                    <img src="{{ asset('images/SampleBook.png') }}" alt="{{ $product->Title }}" class="w-[180px] h-[240px] object-cover" />
+                  <img src="{{ asset('images/SampleBook.png') }}" alt="{{ $product->Title }}" class="w-[180px] h-[240px] object-cover" />
                 </div>
                 <p class="text-black text-[15px] mt-[18px] mx-[20px] font-bold h-10 overflow-hidden leading-tight">
-                    {{ $product->Title }}
+                  {{ $product->Title }}
                 </p>
-                <p class="text-gray-500 text-[11px] mt-[7px] mx-[20px] truncate">{{ $product->Author }}</p>
-            </a>
-
-            {{-- Accurate Star Logic with Laravel Asset Helper --}}
-            <div class="flex items-center mt-1 mx-[20px]">
-                @php
-                    $currentRating = round($product->Rating ?? 5); 
-                @endphp
+                <p class="text-gray-500 text-[11px] mt-[7px] mx-[20px] truncate">
+                  {{ $product->Author }}
+                </p>
+              </a>
+              
+              {{-- Dynamic Stars --}}
+              <div class="flex items-center mt-2 mx-[20px]">
+                @php $currentRating = round($product->Rating ?? 5); @endphp
                 @for($i = 1; $i <= 5; $i++)
-                    @if($i <= $currentRating)
-                        <img src="{{ asset('images/StarVal.png') }}" class="w-3 h-3" alt="Star" />
-                    @else
-                        <img src="{{ asset('images/StarNone.png') }}" class="w-3 h-3" alt="Empty Star" />
-                    @endif
+                    <img src="{{ asset($i <= $currentRating ? 'images/StarVal.png' : 'images/StarNone.png') }}" alt="Star" class="w-[14px] h-[14px]" />
                 @endfor
-            </div>
-
-            <p class="text-black text-[15px] font-bold mt-[10px] mx-[20px]">₱ {{ number_format($product->Price, 2) }}</p>
-            
-            <div class="w-full flex justify-center px-[22px] py-[9px] mb-4 mt-auto">
+              </div>
+              
+              <p class="text-black text-[15px] font-bold mt-[10px] mx-[20px]">
+                ₱ {{ number_format($product->Price, 2) }}
+              </p>
+              
+              {{-- Add to Cart Form --}}
+              <div class="w-full flex justify-center px-[22px] py-[9px] mb-4 mt-auto">
                 <form action="{{ route('cart.add') }}" method="POST" class="w-full">
                     @csrf
                     <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
                     <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="bg-white text-black border-[#FCAE42] border-2 w-full py-[10px] transition-colors hover:bg-[#FCAE42] hover:text-white hover:font-bold">
+                    <button type="submit" class="bg-white text-black border-[#FCAE42] border-2 w-full py-[10px] transition-colors hover:bg-[#FCAE42] hover:text-white hover:font-bold hover:cursor-pointer">
                         ADD TO CART
                     </button>
                 </form>
-            </div>
+              </div>
 
-            <div class="bg-[#FCAE42] w-[97px] absolute top-11">
-                <p class="text-[13px] font-bold px-[7px] py-[2px] text-center">BESTSELLER</p>
+              {{-- Sale Tag --}}
+              <div class="bg-[#FCAE42] absolute top-11 left-0 shadow-sm">
+                <p class="text-[13px] text-center font-bold px-3 py-[2px]">New Arrival</p>
+              </div>
             </div>
+          @empty
+            <div class="col-span-4 py-20 text-center">
+                <p class="text-gray-500 text-xl font-bold">No books found matching your filters.</p>
+            </div>
+          @endforelse
         </div>
-        @endforeach
-    </div>
-
-    <div class="px-[237px] mb-20">
-        {{ $products->links() }}
+        
+        {{-- Pagination --}}
+        <div class="mt-12">
+            {{ $products->links() }}
+        </div>
+      </div>
     </div>
 
     @include('partials.footer')
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        function setupDropdown(btnId, popupId, textId, checkboxName, defaultText) {
-          const btn = document.getElementById(btnId);
-          const popup = document.getElementById(popupId);
-          const btnText = document.getElementById(textId);
-          const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]`);
+        
+        // 1. Dropdown Accordion Logic
+        const toggleButtons = document.querySelectorAll(".filter-toggle");
+        toggleButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId = button.getAttribute("aria-controls");
+            const targetContent = document.getElementById(targetId);
+            const icon = button.querySelector("svg");
 
-          if (!btn || !popup) return;
-
-          btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            document.querySelectorAll('[id$="-popup"]').forEach((otherPopup) => {
-                if (otherPopup.id !== popupId) {
-                  otherPopup.classList.add("hidden");
-                }
-              });
-            popup.classList.toggle("hidden");
+            targetContent.classList.toggle("hidden");
+            icon.classList.toggle("rotate-180");
           });
+        });
 
-          document.addEventListener("click", (event) => {
-            if (!btn.contains(event.target) && !popup.contains(event.target)) {
-              popup.classList.add("hidden");
-            }
-          });
-
-          checkboxes.forEach((checkbox) => {
-            checkbox.addEventListener("change", () => {
-              const selected = Array.from(checkboxes).filter((cb) => cb.checked);
-              const count = selected.length;
-              if (count === 0) {
-                btnText.textContent = defaultText;
-              } else if (count === 1) {
-                const labelText = selected[0].nextElementSibling.textContent;
-                btnText.textContent = `${defaultText} - ${labelText}`;
-              } else {
-                btnText.textContent = `${defaultText} - ${count} SELECTED`;
-              }
-            });
-          });
-        }
-
-        // --- PRICE LOGIC ---
-        const priceBtn = document.getElementById("price-btn");
-        const pricePopup = document.getElementById("price-popup");
-        const minRange = document.getElementById("price-min-range");
-        const maxRange = document.getElementById("price-max-range");
-        const minInput = document.getElementById("price-min-input");
-        const maxInput = document.getElementById("price-max-input");
-        const progress = document.getElementById("price-progress");
-        const priceClear = document.getElementById("price-clear");
-
-        if(minRange && maxRange) {
-            const priceGap = 50; // Adjusted for PHP currency limits
-            const maxSliderValue = parseInt(minRange.max);
-
-            function updateSliderVisuals() {
-              const minVal = parseInt(minRange.value);
-              const maxVal = parseInt(maxRange.value);
-              const minPercent = (minVal / maxSliderValue) * 100;
-              const maxPercent = (maxVal / maxSliderValue) * 100;
-              progress.style.left = minPercent + "%";
-              progress.style.right = 100 - maxPercent + "%";
-              minInput.value = minVal;
-              maxInput.value = maxVal;
-            }
-
-            // Sync visual state on load
-            updateSliderVisuals();
-            if(minInput.value > 0 || maxInput.value < maxSliderValue) {
-                priceClear.classList.remove("hidden");
-            }
-
-            priceClear.addEventListener("click", () => {
-              minRange.value = 0;
-              maxRange.value = maxSliderValue;
-              updateSliderVisuals();
-              priceClear.classList.add("hidden");
-            });
-
-            minRange.addEventListener("input", () => {
-              if (parseInt(maxRange.value) - parseInt(minRange.value) < priceGap) {
-                minRange.value = parseInt(maxRange.value) - priceGap;
-              }
-              updateSliderVisuals();
-            });
-
-            maxRange.addEventListener("input", () => {
-              if (parseInt(maxRange.value) - parseInt(minRange.value) < priceGap) {
-                maxRange.value = parseInt(minRange.value) + priceGap;
-              }
-              updateSliderVisuals();
-            });
-
-            priceBtn.addEventListener("click", (e) => {
-              e.preventDefault();
-              document.querySelectorAll('[id$="-popup"]').forEach((p) => {
-                if (p.id !== "price-popup") p.classList.add("hidden");
-              });
-              pricePopup.classList.toggle("hidden");
-            });
+        // 2. Show More / Show Less Logic (Only applies to dynamic lists like Genre)
+        const showMoreBtns = document.querySelectorAll('.show-more-btn');
+        showMoreBtns.forEach((btn) => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault(); 
             
-            document.addEventListener("click", (event) => {
-                if (!priceBtn.contains(event.target) && !pricePopup.contains(event.target)) {
-                  pricePopup.classList.add("hidden");
-                }
-            });
-        }
+            const container = this.closest('.filter-content');
+            const extraItems = container.querySelectorAll('.extra-item');
+            const moreText = this.querySelector('.more-text');
+            const moreIcon = this.querySelector('.more-icon');
 
-        // --- PUBLICATION DATE LOGIC ---
-        const pubDateBtn = document.getElementById("pub-date-btn");
-        const pubDatePopup = document.getElementById("pub-date-popup");
-        const pubYearStart = document.getElementById("pub-year-start");
-        const pubYearEnd = document.getElementById("pub-year-end");
-        const pubDateClear = document.getElementById("pub-date-clear");
+            let isExpanded = false;
 
-        if(pubDateBtn) {
-            if(pubYearStart.value || pubYearEnd.value) {
-                pubDateClear.classList.remove("hidden");
-            }
-
-            pubDateBtn.addEventListener("click", (e) => {
-              e.preventDefault();
-              document.querySelectorAll('[id$="-popup"]').forEach((p) => {
-                if (p.id !== "pub-date-popup") p.classList.add("hidden");
-              });
-              pubDatePopup.classList.toggle("hidden");
-            });
-
-            document.addEventListener("click", (e) => {
-              if (!pubDateBtn.contains(e.target) && !pubDatePopup.contains(e.target)) {
-                pubDatePopup.classList.add("hidden");
+            extraItems.forEach((item) => {
+              item.classList.toggle('hidden');
+              if (!item.classList.contains('hidden')) {
+                isExpanded = true;
               }
             });
 
-            pubDateClear.addEventListener("click", () => {
-              pubYearStart.value = "";
-              pubYearEnd.value = "";
-              pubDateClear.classList.add("hidden");
-            });
-        }
+            if (isExpanded) {
+              moreText.textContent = 'Less';
+              moreIcon.classList.add('rotate-180');
+            } else {
+              moreText.textContent = 'More';
+              moreIcon.classList.remove('rotate-180');
+            }
+          });
+        });
 
-        // Initialize Dropdowns
-        setupDropdown("genre-btn", "genre-popup", "genre-btn-text", "genre[]", "GENRE");
-        setupDropdown("format-btn", "format-popup", "format-btn-text", "format[]", "FORMAT");
-        setupDropdown("language-btn", "language-popup", "language-btn-text", "language[]", "LANGUAGE");
-        setupDropdown("rating-btn", "rating-popup", "rating-btn-text", "rating[]", "RATING");
-        setupDropdown("age-btn", "age-popup", "age-btn-text", "age[]", "AGE GROUP");
       });
     </script>
-</body>
+  </body>
 </html>
