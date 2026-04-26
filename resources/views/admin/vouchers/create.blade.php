@@ -9,7 +9,7 @@
             <h2 class="text-2xl font-bold text-gray-800">Add New Voucher</h2>
             <p class="text-sm text-gray-500 mt-1">Create a new discount code.</p>
         </div>
-        <a href="{{ route('admin.vouchers.index') }}" class="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors bg-white border border-gray-200 px-4 py-2 rounded-lg shadow-sm">
+        <a href="{{ route('admin.vouchers.index') }}" class="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-[#F54E4E] transition-colors bg-white border border-gray-200 px-4 py-2 rounded-lg shadow-sm">
             Back to Vouchers
         </a>
     </div>
