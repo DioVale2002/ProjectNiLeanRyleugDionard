@@ -2,61 +2,166 @@
 @section('title', 'Edit Product')
 
 @section('content')
-<div class="mx-[70px] mt-8 pb-10 font-sans">
-    <div class="flex items-center justify-between mb-4">
-        <p class="text-xl text-black/60">Edit Product</p>
-        <a href="{{ route('admin.products.index') }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">← Back</a>
+<div class="font-sans">
+    
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Edit Product</h2>
+            <p class="text-sm text-gray-500 mt-1">Update details for ID #{{ $product->product_ID }}</p>
+        </div>
+        <a href="{{ route('admin.products.index') }}" class="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors bg-white border border-gray-200 px-4 py-2 rounded-lg shadow-sm">
+            ← Back to Inventory
+        </a>
     </div>
 
-    <div class="grid grid-cols-[1.1fr_1.1fr_1fr] gap-12">
-        <div>
-            <form action="{{ route('admin.products.update', $product) }}" method="POST" class="flex flex-col gap-5">
-                @csrf
-                @method('PUT')
-                <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Title" value="{{ old('Title', $product->Title) }}" placeholder="Product Title" required />
-                <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Author" value="{{ old('Author', $product->Author) }}" placeholder="Author" required />
-                <div class="grid grid-cols-2 gap-5">
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Price" step="0.01" min="0" value="{{ old('Price', $product->Price) }}" placeholder="Price" required />
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Stock" min="0" value="{{ old('Stock', $product->Stock) }}" placeholder="Stock" required />
-                </div>
-                <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="ISBN" value="{{ old('ISBN', $product->ISBN) }}" placeholder="ISBN" required />
-                <div class="grid grid-cols-2 gap-5">
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Publisher" value="{{ old('Publisher', $product->Publisher) }}" placeholder="Publisher" required />
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Genre" value="{{ old('Genre', $product->Genre) }}" placeholder="Genre" required />
-                </div>
-                <div class="grid grid-cols-2 gap-5">
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Rating" step="0.01" min="0" max="5" value="{{ old('Rating', $product->Rating) }}" placeholder="Rating" />
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Age_Group" value="{{ old('Age_Group', $product->Age_Group) }}" placeholder="Age Group" />
-                </div>
-                <div class="grid grid-cols-2 gap-5">
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Length" min="0" value="{{ old('Length', $product->Length) }}" placeholder="Length" />
-                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Width" min="0" value="{{ old('Width', $product->Width) }}" placeholder="Width" />
-                </div>
-                <button type="submit" class="mt-4 w-[161px] h-[36px] rounded-xl bg-[#F54E4E] text-white">Save &amp; Publish</button>
-            </form>
-        </div>
-        <div>
-            <p class="mb-2 text-[12px]">Book Short Description</p>
-            <textarea class="h-[163px] w-[375px] rounded-md border border-black/60 p-2.5" name="Review" rows="3">{{ old('Review', $product->Review) }}</textarea>
-            <p class="my-2 text-[12px]">Book Long Description</p>
-            <textarea class="h-[163px] w-[375px] rounded-md border border-black/60 p-2.5" name="LongReview" rows="3"></textarea>
-        </div>
-        <div>
-            <div class="max-w-lg rounded-2xl border border-gray-100 bg-[#F9FAFC] p-6 shadow-sm">
-                <label for="file-upload" class="relative flex h-80 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 p-8 transition-all hover:border-red-300 hover:bg-gray-100/50">
-                    <div class="mb-6 rounded-2xl bg-red-100/60 p-4">
-                        <svg class="h-14 w-14 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+    {{-- Form points to UPDATE, uses PUT method, and supports multipart/form-data for images --}}
+    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {{-- LEFT COLUMN --}}
+            <div class="lg:col-span-2 space-y-6">
+                
+                {{-- Basic Details Card --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-100 pb-2">Basic Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Product Title</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="text" name="Title" value="{{ old('Title', $product->Title) }}" required />
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Author</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="text" name="Author" value="{{ old('Author', $product->Author) }}" required />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ISBN</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="text" name="ISBN" value="{{ old('ISBN', $product->ISBN) }}" required />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Publisher</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="text" name="Publisher" value="{{ old('Publisher', $product->Publisher) }}" required />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Genre</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="text" name="Genre" value="{{ old('Genre', $product->Genre) }}" required />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="text" name="Age_Group" value="{{ old('Age_Group', $product->Age_Group) }}" />
+                        </div>
                     </div>
-                    <div class="mb-5 flex items-center gap-2.5">
-                        <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        <span class="text-2xl font-semibold text-red-500">Upload Image</span>
+                </div>
+
+                {{-- Descriptions Card --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-100 pb-2">Descriptions</h3>
+                    
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Short Description (Review)</label>
+                        <textarea class="w-full rounded-lg border border-gray-300 p-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors resize-none" name="Review" rows="3">{{ old('Review', $product->Review) }}</textarea>
                     </div>
-                    <p class="mb-1 text-center text-lg text-gray-600">Upload a cover image for your product.</p>
-                    <p class="text-center text-sm text-gray-500">File Format <strong class="font-medium text-gray-700">jpeg, png</strong> Recommended Size <strong class="font-medium text-gray-700">600×600 (1:1)</strong></p>
-                    <input id="file-upload" name="file-upload" type="file" accept="image/png, image/jpeg" class="sr-only" />
-                </label>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Long Description</label>
+                        <textarea class="w-full rounded-lg border border-gray-300 p-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors resize-none" name="LongReview" rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            {{-- RIGHT COLUMN --}}
+            <div class="space-y-6">
+                
+                {{-- Pricing & Stock Card --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-100 pb-2">Inventory & Pricing</h3>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Price (₱)</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors font-semibold" type="number" name="Price" step="0.01" min="0" value="{{ old('Price', $product->Price) }}" required />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="number" name="Stock" min="0" value="{{ old('Stock', $product->Stock) }}" required />
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Length (in)</label>
+                                <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] transition-colors" type="number" name="Length" min="0" value="{{ old('Length', $product->Length) }}" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Width (in)</label>
+                                <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] transition-colors" type="number" name="Width" min="0" value="{{ old('Width', $product->Width) }}" />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] transition-colors" type="number" name="Rating" step="0.01" min="0" max="5" value="{{ old('Rating', $product->Rating) }}" />
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Media Upload Card with JS Preview --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-100 pb-2">Product Image</h3>
+                    
+                    <label for="file-upload" class="relative flex flex-col items-center justify-center w-full h-[280px] rounded-xl border-2 border-dashed border-gray-300 transition-all hover:border-[#FCAE42] hover:bg-orange-50/50 cursor-pointer group overflow-hidden">
+                        
+                        {{-- If you have a real image column, you can show it here by default. I am using a placeholder icon --}}
+                        <div id="image-preview-container" class="absolute inset-0 flex flex-col items-center justify-center p-6 w-full h-full pointer-events-none">
+                            
+                            {{-- Placeholder state (shows before upload) --}}
+                            <div class="mb-4 rounded-full bg-orange-100 p-4 group-hover:scale-110 transition-transform">
+                                <svg class="h-8 w-8 text-[#FCAE42]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                            <span class="text-base font-semibold text-gray-700 mb-1">Click to replace image</span>
+                            <p class="text-center text-xs text-gray-500">PNG, JPG up to 2MB</p>
+                        </div>
+                        
+                        <input id="file-upload" name="image" type="file" accept="image/png, image/jpeg" class="opacity-0 w-full h-full cursor-pointer absolute inset-0" />
+                    </label>
+                </div>
+
+                {{-- Action Button --}}
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-[#FCAE42] hover:bg-yellow-500 transition-colors text-black font-bold text-lg shadow-sm flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                    Update Product
+                </button>
+
             </div>
         </div>
-    </div>
+    </form>
 </div>
+
+{{-- JS for Image Preview --}}
+<script>
+    document.getElementById('file-upload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewContainer = document.getElementById('image-preview-container');
+                previewContainer.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover" alt="Preview" />
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                        <span class="text-white font-medium px-4 py-2 bg-black/50 rounded-lg">Change Image</span>
+                    </div>
+                `;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 @endsection
