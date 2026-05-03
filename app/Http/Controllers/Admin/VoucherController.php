@@ -23,7 +23,7 @@ class VoucherController extends Controller
 
         $allVouchers = Voucher::query();
         $totalVouchers = $allVouchers->count();
-        $activeVouchers = (clone $allVouchers)->where('voucherUsed', '>', 0)->count();
+        $activeVouchers = (clone $allVouchers)->where('is_active', true)->count();
 
         return view('admin.vouchers.index', compact(
             'vouchers',

@@ -17,7 +17,7 @@
         </div>
     @endif
     @if(session('error'))
-        <div class="mx-4 md:mx-10 xl:mx-[261px] mt-4 bg-red-50 border border-red-200text-red-800 px-4 py-3 rounded-lg">
+        <div class="mx-4 md:mx-10 xl:mx-[261px] mt-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
             {{ session('error') }}
         </div>
     @endif
@@ -130,7 +130,7 @@
                         <div class="flex flex-col sm:flex-row gap-3">
                             <select id="voucher-select" name="voucher_id" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent">
                                 <option value="">-- Select a voucher --</option>
-                                @foreach(\App\Models\Voucher::all() as $voucher)
+                                @foreach($vouchers ?? [] as $voucher)
                                     <option value="{{ $voucher->voucher_id }}" {{ old('voucher_id') == $voucher->voucher_id ? 'selected' : '' }}>
                                         {{ $voucher->voucherName }} ({{ $voucher->voucherType === 'percentage'
                                             ? $voucher->voucherAmount . '% off'

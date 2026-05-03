@@ -9,13 +9,16 @@ class Product extends Model
 
     protected $fillable = [
         'Title', 'Author', 'Rating', 'Review',
+        'Description',
         'Price', 'Stock', 'ISBN', 'Publisher',
-        'Genre', 'Age_Group', 'Length', 'Width',
+        'Genre', 'Format', 'Language', 'Publication_Date', 'Subject', 'Branch',
+        'Age_Group', 'Length', 'Width',
     ];
 
     protected $casts = [
         'Rating' => 'decimal:2',
         'Price'  => 'decimal:2',
+        'Publication_Date' => 'date',
     ];
 
     public function cartItems()

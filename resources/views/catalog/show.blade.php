@@ -72,6 +72,71 @@
                       <div class="bg-white border border-[#FCAE42] border-2 w-[45px] h-[40px] flex items-center justify-center">
                         <button type="button" id="plusBtn" class="hover:cursor-pointer w-full h-full flex items-center justify-center">
                           <span class="text-black text-[30px] font-bold leading-none mb-1">+</span>
+            {{-- Metadata --}}
+            <table class="w-full mt-6 text-[16px]">
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500 w-[140px]">Genre</th>
+                    <td class="py-2">{{ $product->Genre }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">Publisher</th>
+                    <td class="py-2">{{ $product->Publisher }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">ISBN</th>
+                    <td class="py-2">{{ $product->ISBN }}</td>
+                </tr>
+                @if($product->Age_Group)
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">Age Group</th>
+                    <td class="py-2">{{ $product->Age_Group }}</td>
+                </tr>
+                @endif
+                <tr class="border-b border-gray-200">
+                    <th class="text-left py-2 text-gray-500">Availability</th>
+                    <td class="py-2 {{ $product->Stock > 0 ? 'text-green-600' : 'text-[#ED1B24]' }} font-bold">
+                        {{ $product->Stock > 0 ? $product->Stock . ' in stock' : 'Out of Stock' }}
+                    </td>
+                </tr>
+            </table>
+
+            @if($product->Description)
+                <div class="mt-6">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">Description</p>
+                    <p class="text-[#5D5454] text-[16px]">{{ $product->Description }}</p>
+                </div>
+            @endif
+
+            @if($product->Review)
+                <div class="mt-6">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">Reviews</p>
+                    <p class="text-[#5D5454] text-[16px]">{{ $product->Review }}</p>
+                </div>
+            @endif
+
+            {{-- Add to cart --}}
+            @if($product->Stock > 0)
+                @auth('customer')
+                    <p class="text-[24px] text-[#5D5454] mt-[40px] xl:mt-[47px]">Quantity:</p>
+                    <form action="{{ route('cart.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_ID" value="{{ $product->product_ID }}">
+                        <div class="flex justify-start items-center mt-[20px]">
+                            <div class="bg-white border border-[#FCAE42] border-2 w-[45px] h-[40px] flex items-center justify-center">
+                                <button type="button" onclick="decrementQty()"
+                                    class="hover:cursor-pointer w-full text-center text-black text-[30px] font-bold leading-none">-</button>
+                            </div>
+                            <input id="qty" name="quantity" type="number"
+                                class="bg-[#FCAE42] w-[85px] h-[55px] text-[24px] font-bold text-center border-none"
+                                value="1" min="1" max="{{ $product->Stock }}" />
+                            <div class="bg-white border border-[#FCAE42] border-2 w-[45px] h-[40px] flex items-center justify-center">
+                                <button type="button" onclick="incrementQty()"
+                                    class="hover:cursor-pointer w-full text-center text-black text-[30px] font-bold leading-none">+</button>
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="mt-6 bg-[#FCAE42] text-black font-bold text-[20px] py-3 px-10 w-full xl:w-auto hover:bg-[#F54E4E] hover:text-white transition-colors">
+                            ADD TO CART
                         </button>
                       </div>
                     </div>
