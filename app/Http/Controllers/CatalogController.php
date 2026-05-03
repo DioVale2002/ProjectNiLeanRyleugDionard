@@ -3,58 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $minPrice = request()->filled('min_price') ? (float) request('min_price') : null;
-        $maxPrice = request()->filled('max_price') ? (float) request('max_price') : null;
-        $publicationDateFrom = request('publication_date_from');
-        $publicationDateTo = request('publication_date_to');
-        $search = trim((string) request('search', ''));
+        $query = Product::query();
 
-        $products = Product::where('Stock', '>', 0)
-            ->when($search !== '', function ($q) use ($search) {
-                $q->where(function ($inner) use ($search) {
-                    $inner->where('Title', 'like', '%' . $search . '%')
-                        ->orWhere('Author', 'like', '%' . $search . '%')
-                        ->orWhere('ISBN', 'like', '%' . $search . '%')
-                        ->orWhere('Publisher', 'like', '%' . $search . '%')
-                        ->orWhere('Genre', 'like', '%' . $search . '%')
-                        ->orWhere('Review', 'like', '%' . $search . '%')
-                        ->orWhere('Description', 'like', '%' . $search . '%');
-                });
-            })
-            ->when(request('genre'), fn($q) => $q->where('Genre', request('genre')))
-            ->when(request('subject'), fn($q) => $q->where('Subject', request('subject')))
-            ->when(request('branch'), fn($q) => $q->where('Branch', request('branch')))
-            ->when(request('format'), fn($q) => $q->where('Format', request('format')))
-            ->when(request('language'), fn($q) => $q->where('Language', request('language')))
-            ->when($minPrice !== null, fn($q) =>
-                $q->where('Price', '>=', $minPrice)
-            )
-            ->when($maxPrice !== null, fn($q) =>
-                $q->where('Price', '<=', $maxPrice)
-            )
-            ->when($publicationDateFrom, fn($q) =>
-                $q->whereDate('Publication_Date', '>=', $publicationDateFrom)
-            )
-            ->when($publicationDateTo, fn($q) =>
-                $q->whereDate('Publication_Date', '<=', $publicationDateTo)
-            )
-            ->orderBy('Title')
-            ->paginate(12)
-            ->withQueryString();
+        // 1. Fetch dynamic genres for the sidebar filter
+        $genres = Product::select('Genre')->distinct()->whereNotNull('Genre')->pluck('Genre');        
 
-        $genres = Product::select('Genre')->distinct()->orderBy('Genre')->pluck('Genre');
-        $subjects = Product::whereNotNull('Subject')->select('Subject')->distinct()->orderBy('Subject')->pluck('Subject');
-        $branches = Product::whereNotNull('Branch')->select('Branch')->distinct()->orderBy('Branch')->pluck('Branch');
-        $formats = Product::whereNotNull('Format')->select('Format')->distinct()->orderBy('Format')->pluck('Format');
-        $languages = Product::whereNotNull('Language')->select('Language')->distinct()->orderBy('Language')->pluck('Language');
+        // 2. Text Search (if you add a search input later)
+        $query->when($request->search, function($q) use ($request) {
+            $q->where(function($sub) use ($request) {
+                $sub->where('Title', 'like', '%' . $request->search . '%')
+                    ->orWhere('Author', 'like', '%' . $request->search . '%');
+            });
+        });
 
-        return view('catalog.index', compact('products', 'genres', 'subjects', 'branches', 'formats', 'languages'));
-    }
+        // 3. Checkbox Arrays (Genre, Rating, Age)
+        // Note: Language and Format are static in Blade for now, so we comment them out here to prevent DB errors
+        $query->when($request->genre, fn($q) => $q->whereIn('Genre', $request->genre));
+        $query->when($request->rating, fn($q) => $q->where('Rating', $request->rating));        
+        $ageGroups = Product::select('Age_Group')->distinct()->whereNotNull('Age_Group')->pluck('Age_Group');        // $query->when($request->language, fn($q) => $q->whereIn('Language', $request->language));
+        // $query->when($request->format, fn($q) => $q->whereIn('Format', $request->format));
+
+        // 4. Number Ranges (Price & Publication Date)
+        $query->when($request->filled('min_price'), fn($q) => $q->where('Price', '>=', $request->min_price));
+        $query->when($request->filled('max_price'), fn($q) => $q->where('Price', '<=', $request->max_price));
+        
+        // If your database column is not 'created_at', change it to the correct date column.
+        $query->when($request->filled('min_date'), fn($q) => $q->whereDate('created_at', '>=', $request->min_date));
+        $query->when($request->filled('max_date'), fn($q) => $q->whereDate('created_at', '<=', $request->max_date));
+
+        // 5. Paginate and keep query string for pagination links
+        $products = $query->orderBy('Title')->paginate(15)->withQueryString();
+
+        // 6. Return the single, final view with all data
+        return view('catalog.index', compact('products', 'genres', 'ageGroups'));    }
 
     public function show(Product $product)
     {

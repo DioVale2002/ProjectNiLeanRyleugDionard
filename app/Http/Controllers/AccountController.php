@@ -27,15 +27,12 @@ class AccountController extends Controller
         $customer = Auth::guard('customer')->user();
         $this->applyTimeoutFailuresForCustomer($customer->cus_id);
         
-        // Get active orders (Pending, Processing)
+        // REFACTORED: Changed ->get() to ->paginate(5)
         $orders = Order::where('cus_id', $customer->cus_id)
             ->active()
             ->with(['cart.items.product', 'paymentMethod', 'address'])
             ->orderBy('order_date', 'desc')
-            ->get();
-
-        $notifications = $customer->notifications()->latest()->limit(5)->get();
-        $customer->unreadNotifications->markAsRead();
+            ->paginate(5); // Shows 5 orders per page
         
         return view('account.orders', compact('orders', 'notifications'));
     }
@@ -45,14 +42,12 @@ class AccountController extends Controller
         $customer = Auth::guard('customer')->user();
         $this->applyTimeoutFailuresForCustomer($customer->cus_id);
         
-        // Get archived orders (Completed, Cancelled, Failed)
+        // REFACTORED: Changed ->get() to ->paginate(5)
         $orders = Order::where('cus_id', $customer->cus_id)
             ->archived()
             ->with(['cart.items.product', 'paymentMethod', 'address'])
             ->orderBy('order_date', 'desc')
-            ->get();
-
-        $notifications = $customer->notifications()->latest()->limit(5)->get();
+            ->paginate(5); // Shows 5 orders per page
         
         return view('account.archived', compact('orders', 'notifications'));
     }
