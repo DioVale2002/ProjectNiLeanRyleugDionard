@@ -26,7 +26,8 @@ class CatalogController extends Controller
         // Note: Language and Format are static in Blade for now, so we comment them out here to prevent DB errors
         $query->when($request->genre, fn($q) => $q->whereIn('Genre', $request->genre));
         $query->when($request->rating, fn($q) => $q->where('Rating', $request->rating));        
-        $ageGroups = Product::select('Age_Group')->distinct()->whereNotNull('Age_Group')->pluck('Age_Group');        // $query->when($request->language, fn($q) => $q->whereIn('Language', $request->language));
+        $ageGroups = Product::select('Age_Group')->distinct()->whereNotNull('Age_Group')->pluck('Age_Group');        
+        // $query->when($request->language, fn($q) => $q->whereIn('Language', $request->language));
         // $query->when($request->format, fn($q) => $q->whereIn('Format', $request->format));
 
         // 4. Number Ranges (Price & Publication Date)
