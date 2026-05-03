@@ -23,6 +23,22 @@
                     <svg class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </div>
                 <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="voucherAmount" step="0.01" min="0" value="{{ old('voucherAmount', $voucher->voucherAmount) }}" placeholder="Amount" required />
+                <div class="grid grid-cols-2 gap-5">
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="date" name="valid_from" value="{{ old('valid_from', optional($voucher->valid_from)->toDateString()) }}" placeholder="Valid From" />
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="date" name="valid_until" value="{{ old('valid_until', optional($voucher->valid_until)->toDateString()) }}" placeholder="Valid Until" />
+                </div>
+                <div class="grid grid-cols-2 gap-5">
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="minimum_order_amount" step="0.01" min="0" value="{{ old('minimum_order_amount', $voucher->minimum_order_amount) }}" placeholder="Minimum Order Amount" />
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="max_uses" min="1" value="{{ old('max_uses', $voucher->max_uses) }}" placeholder="Max Uses" />
+                </div>
+                <div class="grid grid-cols-2 gap-5 items-center">
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="per_customer_limit" min="1" value="{{ old('per_customer_limit', $voucher->per_customer_limit) }}" placeholder="Per Customer Limit" />
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                        <input type="hidden" name="is_active" value="0" />
+                        <input type="checkbox" name="is_active" value="1" {{ old('is_active', $voucher->is_active) ? 'checked' : '' }} class="h-4 w-4" />
+                        Active Voucher
+                    </label>
+                </div>
                 <button type="submit" class="mt-5 w-[161px] h-[36px] rounded-xl bg-[#F54E4E] text-white">Save &amp; Publish</button>
             </form>
         </div>

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCartItemRequest;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\Voucher;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -38,9 +39,14 @@ class CartController extends Controller
             ->with('items.product')
             ->first();
 
+        $vouchers = Voucher::query()
+            ->availableForCheckout()
+            ->orderBy('voucherName')
+            ->get();
+
         $total = $cart ? $cart->items->sum('subtotal') : 0;
 
-        return view('cart.index', compact('cart', 'total'));
+        return view('cart.index', compact('cart', 'total', 'vouchers'));
     }
 
     public function add(StoreCartItemRequest $request)

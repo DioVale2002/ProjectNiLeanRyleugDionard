@@ -13,6 +13,12 @@ class StoreVoucherRequest extends FormRequest
             'voucherName'   => 'required|string|max:255',
             'voucherType'   => 'required|in:percentage,flat',
             'voucherAmount' => 'required|numeric|min:0',
+            'valid_from' => 'nullable|date',
+            'valid_until' => 'nullable|date|after_or_equal:valid_from',
+            'minimum_order_amount' => 'nullable|numeric|min:0',
+            'max_uses' => 'nullable|integer|min:1',
+            'per_customer_limit' => 'nullable|integer|min:1',
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

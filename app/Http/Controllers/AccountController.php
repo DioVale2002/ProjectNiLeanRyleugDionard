@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use App\Models\Order;
+use App\Notifications\OrderStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +34,7 @@ class AccountController extends Controller
             ->orderBy('order_date', 'desc')
             ->paginate(5); // Shows 5 orders per page
         
-        return view('account.orders', compact('orders'));
+        return view('account.orders', compact('orders', 'notifications'));
     }
 
     public function archived()
@@ -48,7 +49,7 @@ class AccountController extends Controller
             ->orderBy('order_date', 'desc')
             ->paginate(5); // Shows 5 orders per page
         
-        return view('account.archived', compact('orders'));
+        return view('account.archived', compact('orders', 'notifications'));
     }
 
     public function addresses()
@@ -143,13 +144,39 @@ class AccountController extends Controller
         $this->applyTimeoutFailuresForCustomer($customer->cus_id);
         $order->refresh();
 
-        if ($order->order_status !== 'Processing') {
+        if (!in_array($order->order_status, ['Shipped', 'Delivered', 'Processing'], true)) {
             return redirect()->route('account.orders')->with('error', 'This order cannot be marked as received yet.');
         }
 
         $order->update(['order_status' => 'Completed']);
+        $customer->notify(new OrderStatusNotification(
+            $order,
+            'Order Completed',
+            'Thanks for confirming delivery. Your order is now marked as completed.'
+        ));
 
         return redirect()->route('account.archived')->with('success', 'Order marked as received. Thank you!');
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        $customer = Auth::guard('customer')->user();
+
+        abort_if($order->cus_id !== $customer->cus_id, 403);
+
+        if (!in_array($order->order_status, ['Pending', 'Processing'], true)) {
+            return redirect()->route('account.orders')->with('error', 'This order can no longer be cancelled.');
+        }
+
+        $order->update(['order_status' => 'Cancelled']);
+
+        $customer->notify(new OrderStatusNotification(
+            $order,
+            'Order Cancelled',
+            'Your order was successfully cancelled.'
+        ));
+
+        return redirect()->route('account.archived')->with('success', 'Order cancelled successfully.');
     }
 
     public function deleteAccount(Request $request)

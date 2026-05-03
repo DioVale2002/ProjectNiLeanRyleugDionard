@@ -47,6 +47,7 @@
                     <th class="py-4 px-4 font-medium">Voucher Name</th>
                     <th class="py-4 px-4 font-medium">Type</th>
                     <th class="py-4 px-4 font-medium">Discount</th>
+                    <th class="py-4 px-4 font-medium">Status</th>
                     <th class="py-4 px-4 font-medium">Uses</th>
                     <th class="py-4 px-4 font-medium">Edit</th>
                     <th class="py-4 px-4 font-medium">Delete</th>
@@ -59,6 +60,11 @@
                         <td class="py-4 px-4 font-medium text-gray-900">{{ $voucher->voucherName }}</td>
                         <td class="py-4 px-4">{{ ucfirst($voucher->voucherType) }}</td>
                         <td class="py-4 px-4">{{ $voucher->voucherType === 'percentage' ? $voucher->voucherAmount . '%' : '₱' . number_format($voucher->voucherAmount, 2) }}</td>
+                        <td class="py-4 px-4">
+                            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $voucher->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600' }}">
+                                {{ $voucher->is_active ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
                         <td class="py-4 px-4">{{ $voucher->voucherUsed }}</td>
                         <td class="py-4 px-4">
                             <a href="{{ route('admin.vouchers.edit', $voucher) }}" class="text-gray-400 transition-colors hover:text-blue-600">Edit</a>
@@ -73,7 +79,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="py-10 text-center text-gray-500">No vouchers found.</td>
+                        <td colspan="8" class="py-10 text-center text-gray-500">No vouchers found.</td>
                     </tr>
                 @endforelse
             </tbody>

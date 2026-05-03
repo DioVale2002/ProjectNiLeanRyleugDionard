@@ -103,6 +103,11 @@
                                             <p class="text-xs text-gray-500 mt-1 font-bold">Qty: {{ $item->quantity }}</p>
                                             <p class="text-xs text-gray-700">₱{{ number_format($item->unitPrice, 2) }}</p>
                                         </div>
+                                        <div class="mt-4 flex justify-end">
+                                            <a href="{{ route('checkout.receipt', $order) }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
+                                                View receipt
+                                            </a>
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>

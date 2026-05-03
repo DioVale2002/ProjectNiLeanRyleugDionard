@@ -24,6 +24,15 @@
                     <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Genre" value="{{ old('Genre') }}" placeholder="Genre" required />
                 </div>
                 <div class="grid grid-cols-2 gap-5">
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Subject" value="{{ old('Subject') }}" placeholder="Subject" />
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Branch" value="{{ old('Branch') }}" placeholder="Branch" />
+                </div>
+                <div class="grid grid-cols-2 gap-5">
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Format" value="{{ old('Format') }}" placeholder="Format (Paperback, Hardcover, eBook)" />
+                    <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Language" value="{{ old('Language') }}" placeholder="Language" />
+                </div>
+                <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="date" name="Publication_Date" value="{{ old('Publication_Date') }}" placeholder="Publication Date" />
+                <div class="grid grid-cols-2 gap-5">
                     <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Rating" step="0.01" min="0" max="5" value="{{ old('Rating') }}" placeholder="Rating" />
                     <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="text" name="Age_Group" value="{{ old('Age_Group') }}" placeholder="Age Group" />
                 </div>
@@ -31,14 +40,13 @@
                     <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Length" min="0" value="{{ old('Length') }}" placeholder="Length" />
                     <input class="h-[52px] rounded-xl border border-black/50 bg-white px-[16px] py-[8px]" type="number" name="Width" min="0" value="{{ old('Width') }}" placeholder="Width" />
                 </div>
+                <textarea class="min-h-[120px] rounded-xl border border-black/50 bg-white px-[16px] py-[12px]" name="Description" rows="4" placeholder="Book Description">{{ old('Description') }}</textarea>
+                <textarea class="min-h-[100px] rounded-xl border border-black/50 bg-white px-[16px] py-[12px]" name="Review" rows="3" placeholder="Book Reviews or Notes">{{ old('Review') }}</textarea>
                 <button type="submit" class="mt-4 w-[161px] h-[36px] rounded-xl bg-[#F54E4E] text-white">Save &amp; Publish</button>
             </form>
         </div>
         <div>
-            <p class="mb-2 text-[12px]">Book Short Description</p>
-            <textarea class="h-[163px] w-[375px] rounded-md border border-black/60 p-2.5" placeholder="Your text goes here" name="Review" rows="3">{{ old('Review') }}</textarea>
-            <p class="my-2 text-[12px]">Book Long Description</p>
-            <textarea class="h-[163px] w-[375px] rounded-md border border-black/60 p-2.5" placeholder="Your text goes here" name="LongReview" rows="3"></textarea>
+            <p class="text-sm text-gray-600">Tip: include rich metadata (subject, branch, format, language, publication date) to improve customer search and filtering.</p>
         </div>
         <div>
             <div class="max-w-lg rounded-2xl border border-gray-100 bg-[#F9FAFC] p-6 shadow-sm">

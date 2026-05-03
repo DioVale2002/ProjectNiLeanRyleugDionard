@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Notifications\OrderStatusNotification;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -55,7 +56,7 @@ class OrderController extends Controller
         $completedOrders = (clone $allOrders)->where('order_status', 'Completed')->count();
         $problemOrders = (clone $allOrders)->whereIn('order_status', ['Cancelled', 'Failed'])->count();
 
-        $statusOptions = ['Pending', 'Processing', 'Completed', 'Cancelled', 'Failed'];
+        $statusOptions = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Completed', 'Cancelled', 'Failed'];
 
         return view('admin.orders.index', compact(
             'orders',
@@ -74,7 +75,7 @@ class OrderController extends Controller
     public function handleEvent(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'event' => 'required|in:start_processing,cancel,timeout_fail',
+            'event' => 'required|in:start_processing,ship,deliver,cancel,timeout_fail',
         ]);
 
         $event = $validated['event'];
@@ -84,7 +85,15 @@ class OrderController extends Controller
             $nextStatus = 'Processing';
         }
 
-        if ($event === 'cancel' && in_array($order->order_status, ['Pending', 'Processing'], true)) {
+        if ($event === 'ship' && $order->order_status === 'Processing') {
+            $nextStatus = 'Shipped';
+        }
+
+        if ($event === 'deliver' && $order->order_status === 'Shipped') {
+            $nextStatus = 'Delivered';
+        }
+
+        if ($event === 'cancel' && in_array($order->order_status, ['Pending', 'Processing', 'Shipped'], true)) {
             $nextStatus = 'Cancelled';
         }
 
@@ -103,6 +112,14 @@ class OrderController extends Controller
         $order->update([
             'order_status' => $nextStatus,
         ]);
+
+        if ($order->customer) {
+            $order->customer->notify(new OrderStatusNotification(
+                $order,
+                'Order Status Updated',
+                'Your order status is now: ' . $nextStatus . '.'
+            ));
+        }
 
         return redirect()->back()->with('success', 'Order updated successfully.');
     }
