@@ -25,6 +25,7 @@ class UpdateProductRequest extends FormRequest
             'Rating'    => 'nullable|numeric|min:0|max:5',
             'Review'    => 'nullable|string',
             'Description' => 'nullable|string',
+            'image'     => 'nullable|image|max:5120',
             'Age_Group' => 'nullable|string|max:255',
             'Length'    => 'nullable|integer|min:0',
             'Width'     => 'nullable|integer|min:0',

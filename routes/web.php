@@ -14,7 +14,7 @@ Route::middleware('guest:customer')->group(function () {
 });
 
 // Authenticated routes (logged in)
-Route::middleware('auth:customer')->group(function () {
+Route::middleware(['auth:customer', 'no-back-history'])->group(function () {
     Route::get('/dashboard', function () {
         return redirect()->route('account.orders');
     })->name('dashboard');
@@ -68,7 +68,7 @@ Route::get('/catalog', [\App\Http\Controllers\CatalogController::class, 'index']
 Route::get('/catalog/{product}', [\App\Http\Controllers\CatalogController::class, 'show'])->name('catalog.show');
 
 // Cart & Orders (auth required)
-Route::middleware('auth:customer')->group(function () {
+Route::middleware(['auth:customer', 'no-back-history'])->group(function () {
     Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
     Route::patch('/cart/update/{cartItem}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
@@ -79,6 +79,7 @@ Route::middleware('auth:customer')->group(function () {
     Route::get('/checkout/payment', [\App\Http\Controllers\OrderController::class, 'payment'])->name('checkout.payment');
     Route::post('/checkout/payment', [\App\Http\Controllers\OrderController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     Route::get('/checkout/receipt/{order}', [\App\Http\Controllers\OrderController::class, 'receipt'])->name('checkout.receipt');
+    Route::get('/checkout/receipt/{order}/pdf', [\App\Http\Controllers\OrderController::class, 'receiptPdf'])->name('checkout.receipt.pdf');
 
     Route::post('/orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
 });

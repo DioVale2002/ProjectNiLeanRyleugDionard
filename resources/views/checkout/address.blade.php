@@ -52,7 +52,7 @@
 
                     <form action="{{ route('checkout.address.save') }}" method="POST" class="space-y-5">
                         @csrf
-                        <input type="hidden" name="voucher_id" value="{{ $selectedVoucherId }}">
+                        <input type="hidden" name="voucher_code" value="{{ old('voucher_code', $voucherCode) }}">
 
                         {{-- Country --}}
                         <div>

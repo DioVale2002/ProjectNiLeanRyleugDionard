@@ -99,9 +99,9 @@
                                     <div class="flex items-center">
                                         {{-- Container maintained for spacing, Image set to 80x100 --}}
                                         <div class="bg-[#E1F0F0] w-[103px] h-[120px] flex items-center justify-center rounded-sm border border-gray-100">
-                                            <img 
-                                                class="w-[80px] h-[100px] object-cover shadow-sm" 
-                                                src="/images/SampleBook.png" 
+                                            <img
+                                                class="w-[80px] h-[100px] object-cover shadow-sm"
+                                                src="{{ $item->product->image_path ? asset('storage/' . $item->product->image_path) : asset('images/SampleBook.png') }}"
                                                 alt="{{ $item->product->Title }}"
                                             />
                                         </div>
@@ -114,9 +114,16 @@
                                 @endforeach
                             </div>
 
-                            {{-- Mark as Received Button (Active Only) --}}
-                            @if($order->order_status === 'Processing')
-                                <div class="mt-6 flex justify-end">
+                            <div class="mt-6 flex flex-wrap items-center justify-end gap-2">
+                                <a href="{{ route('checkout.receipt', $order) }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
+                                    View receipt
+                                </a>
+                                <a href="{{ route('checkout.receipt.pdf', $order) }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
+                                    Download PDF
+                                </a>
+
+                                {{-- Mark as Received Button (Active Only) --}}
+                                @if($order->order_status === 'Processing')
                                     <form action="{{ route('account.orders.received', $order) }}" method="POST" onsubmit="return confirm('Confirm receipt of this order?')">
                                         @csrf
                                         @method('PATCH')
@@ -124,8 +131,25 @@
                                             I received this order
                                         </button>
                                     </form>
-                                </div>
-                            @endif
+                                @endif
+
+                                @if(in_array($order->order_status, ['Pending', 'Processing'], true))
+                                    <form action="{{ route('account.orders.cancel', $order) }}" method="POST" class="flex items-center gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input
+                                            type="text"
+                                            name="cancellation_note"
+                                            maxlength="500"
+                                            placeholder="Reason for cancellation (optional)"
+                                            class="w-60 rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                        >
+                                        <button type="submit" class="rounded-md border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100">
+                                            Cancel order
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
                     @endforeach
 

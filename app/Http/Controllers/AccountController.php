@@ -34,7 +34,7 @@ class AccountController extends Controller
             ->orderBy('order_date', 'desc')
             ->paginate(5); // Shows 5 orders per page
         
-        return view('account.orders', compact('orders', 'notifications'));
+        return view('account.orders', compact('orders'));
     }
 
     public function archived()
@@ -49,7 +49,7 @@ class AccountController extends Controller
             ->orderBy('order_date', 'desc')
             ->paginate(5); // Shows 5 orders per page
         
-        return view('account.archived', compact('orders', 'notifications'));
+        return view('account.archived', compact('orders'));
     }
 
     public function addresses()
@@ -168,7 +168,14 @@ class AccountController extends Controller
             return redirect()->route('account.orders')->with('error', 'This order can no longer be cancelled.');
         }
 
-        $order->update(['order_status' => 'Cancelled']);
+        $validated = request()->validate([
+            'cancellation_note' => 'nullable|string|max:500',
+        ]);
+
+        $order->update([
+            'order_status' => 'Cancelled',
+            'cancellation_note' => $validated['cancellation_note'] ?? 'Cancelled by customer.',
+        ]);
 
         $customer->notify(new OrderStatusNotification(
             $order,
@@ -190,6 +197,17 @@ class AccountController extends Controller
 
         if (!Hash::check($request->password, $customer->password)) {
             return back()->withErrors(['password' => 'Incorrect password. Please try again.']);
+        }
+
+        $hasOngoingTransactions = Order::query()
+            ->where('cus_id', $customer->cus_id)
+            ->active()
+            ->exists();
+
+        if ($hasOngoingTransactions) {
+            return back()->withErrors([
+                'password' => 'Account deletion is not allowed while you still have ongoing transactions.',
+            ]);
         }
 
         // Delete the customer (address will be deleted automatically due to cascade)

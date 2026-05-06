@@ -15,6 +15,12 @@ class Order extends Model
         'voucher_id',
         'add_id',
         'paymentMethod_id',
+        'gcash_reference',
+        'gcash_proof_path',
+        'payment_review_status',
+        'cancellation_note',
+        'is_first_party_delivery',
+        'delivery_status',
         'cus_id',
         'cart_id',
     ];
@@ -22,6 +28,7 @@ class Order extends Model
     protected $casts = [
         'order_date' => 'date',
         'total_price' => 'decimal:2',
+        'is_first_party_delivery' => 'boolean',
     ];
 
     public function customer()

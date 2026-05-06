@@ -70,7 +70,7 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Long Description</label>
-                        <textarea class="w-full rounded-lg border border-gray-300 p-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors resize-none" placeholder="Full book description..." name="LongReview" rows="5"></textarea>
+                        <textarea class="w-full rounded-lg border border-gray-300 p-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors resize-none" placeholder="Full book description..." name="Description" rows="5">{{ old('Description') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,8 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Initial Stock</label>
-                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 focus:outline-none focus:border-[#FCAE42] focus:ring-1 focus:ring-[#FCAE42] transition-colors" type="number" name="Stock" min="0" value="{{ old('Stock') }}" placeholder="0" required />
+                            <input class="w-full h-11 rounded-lg border border-gray-300 px-4 bg-gray-100 text-gray-500" type="number" name="Stock" min="0" value="0" placeholder="0" readonly />
+                            <p class="text-xs text-gray-500 mt-1">New products start at 0 stock. Use Stock In module to add inventory.</p>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">

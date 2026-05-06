@@ -75,7 +75,8 @@ class OrderController extends Controller
     public function handleEvent(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'event' => 'required|in:start_processing,ship,deliver,cancel,timeout_fail',
+            'event' => 'required|in:start_processing,ship,deliver,cancel,timeout_fail,approve_payment,reject_payment,enable_first_party,delivery_preparing,delivery_out,delivery_done',
+            'cancellation_note' => 'nullable|string|max:500',
         ]);
 
         $event = $validated['event'];
@@ -97,6 +98,39 @@ class OrderController extends Controller
             $nextStatus = 'Cancelled';
         }
 
+        if ($event === 'approve_payment' && $order->payment_review_status === 'pending') {
+            $order->update(['payment_review_status' => 'approved']);
+            return redirect()->back()->with('success', 'GCash payment approved.');
+        }
+
+        if ($event === 'reject_payment' && $order->payment_review_status === 'pending') {
+            $order->update(['payment_review_status' => 'rejected']);
+            return redirect()->back()->with('success', 'GCash payment rejected.');
+        }
+
+        if ($event === 'enable_first_party' && !$order->is_first_party_delivery) {
+            $order->update([
+                'is_first_party_delivery' => true,
+                'delivery_status' => 'Preparing',
+            ]);
+            return redirect()->back()->with('success', 'First-party delivery enabled.');
+        }
+
+        if ($event === 'delivery_preparing' && $order->is_first_party_delivery) {
+            $order->update(['delivery_status' => 'Preparing']);
+            return redirect()->back()->with('success', 'Delivery status updated.');
+        }
+
+        if ($event === 'delivery_out' && $order->is_first_party_delivery) {
+            $order->update(['delivery_status' => 'Out for Delivery']);
+            return redirect()->back()->with('success', 'Delivery status updated.');
+        }
+
+        if ($event === 'delivery_done' && $order->is_first_party_delivery) {
+            $order->update(['delivery_status' => 'Delivered']);
+            return redirect()->back()->with('success', 'Delivery status updated.');
+        }
+
         if (
             $event === 'timeout_fail' &&
             $order->order_status === 'Processing' &&
@@ -111,6 +145,9 @@ class OrderController extends Controller
 
         $order->update([
             'order_status' => $nextStatus,
+            'cancellation_note' => $nextStatus === 'Cancelled'
+                ? ($validated['cancellation_note'] ?? 'Cancelled by admin.')
+                : $order->cancellation_note,
         ]);
 
         if ($order->customer) {

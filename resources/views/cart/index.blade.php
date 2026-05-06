@@ -126,18 +126,17 @@
 
                     {{-- Voucher section --}}
                     <div class="bg-white rounded-lg border border-gray-200 p-6 mt-6">
-                        <h3 class="font-semibold text-gray-900 mb-4">Apply Voucher Code</h3>
+                        <h3 class="font-semibold text-gray-900 mb-2">Apply Voucher Code</h3>
+                        <p class="text-xs text-gray-500 mb-3">Type the exact voucher name provided to you.</p>
                         <div class="flex flex-col sm:flex-row gap-3">
-                            <select id="voucher-select" name="voucher_id" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent">
-                                <option value="">-- Select a voucher --</option>
-                                @foreach($vouchers ?? [] as $voucher)
-                                    <option value="{{ $voucher->voucher_id }}" {{ old('voucher_id') == $voucher->voucher_id ? 'selected' : '' }}>
-                                        {{ $voucher->voucherName }} ({{ $voucher->voucherType === 'percentage'
-                                            ? $voucher->voucherAmount . '% off'
-                                            : '₱' . number_format($voucher->voucherAmount, 2) . ' off' }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input
+                                id="voucher-code-input"
+                                type="text"
+                                name="voucher_code"
+                                value="{{ old('voucher_code', session('checkout.voucher_code')) }}"
+                                placeholder="Enter voucher code"
+                                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent"
+                            />
                         </div>
                     </div>
                 @endif
@@ -173,7 +172,7 @@
 
                         {{-- Checkout button --}}
                         <form action="{{ route('checkout.address') }}" method="GET">
-                            <input id="voucher-id-hidden" type="hidden" name="voucher_id" value="">
+                            <input id="voucher-code-hidden" type="hidden" name="voucher_code" value="{{ old('voucher_code', session('checkout.voucher_code')) }}">
                             <button type="submit" class="w-full bg-[#ED1B24] text-white font-bold py-3 rounded-lg hover:bg-red-700 transition duration-200 text-center">
                                 Proceed to Checkout
                             </button>
@@ -193,12 +192,13 @@
 
 </body>
 <script>
-    const voucherSelect = document.getElementById('voucher-select');
-    const voucherHidden = document.getElementById('voucher-id-hidden');
-    if (voucherSelect && voucherHidden) {
-        voucherHidden.value = voucherSelect.value;
-        voucherSelect.addEventListener('change', () => {
-            voucherHidden.value = voucherSelect.value;
+    const voucherInput = document.getElementById('voucher-code-input');
+    const voucherHidden = document.getElementById('voucher-code-hidden');
+
+    if (voucherInput && voucherHidden) {
+        voucherHidden.value = voucherInput.value;
+        voucherInput.addEventListener('input', () => {
+            voucherHidden.value = voucherInput.value;
         });
     }
 </script>

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -85,6 +86,25 @@ class OrderController extends Controller
         ];
     }
 
+    protected function resolveVoucherIdFromCode(?string $voucherCode): ?int
+    {
+        if (!$voucherCode) {
+            return null;
+        }
+
+        $voucher = Voucher::query()
+            ->whereRaw('LOWER(voucherName) = ?', [Str::lower(trim($voucherCode))])
+            ->first();
+
+        if (!$voucher) {
+            throw ValidationException::withMessages([
+                'voucher_code' => 'Voucher code not found.',
+            ]);
+        }
+
+        return (int) $voucher->voucher_id;
+    }
+
     protected function placeOrder($customer, Cart $cart, ?int $addressId, int $paymentMethodId, ?int $voucherId): Order
     {
         $pricing = $this->computeDiscountedTotal($cart, $voucherId);
@@ -151,12 +171,23 @@ class OrderController extends Controller
         $customer = Auth::guard('customer')->user();
         $cart = $this->getActiveCartForCustomer($customer);
 
-        $selectedVoucherId = $request->filled('voucher_id')
-            ? (int) $request->voucher_id
-            : session('checkout.voucher_id');
+        $voucherCode = trim((string) $request->input('voucher_code', session('checkout.voucher_code', '')));
+
+        try {
+            $selectedVoucherId = $this->resolveVoucherIdFromCode($voucherCode);
+        } catch (ValidationException $exception) {
+            return redirect()->route('cart.index')
+                ->withErrors($exception->errors())
+                ->withInput(['voucher_code' => $voucherCode]);
+        }
 
         if ($selectedVoucherId) {
-            session(['checkout.voucher_id' => $selectedVoucherId]);
+            session([
+                'checkout.voucher_id' => $selectedVoucherId,
+                'checkout.voucher_code' => $voucherCode,
+            ]);
+        } else {
+            session()->forget(['checkout.voucher_id', 'checkout.voucher_code']);
         }
 
         try {
@@ -164,7 +195,7 @@ class OrderController extends Controller
         } catch (ValidationException $exception) {
             return redirect()->route('cart.index')
                 ->withErrors($exception->errors())
-                ->withInput(['voucher_id' => $selectedVoucherId]);
+                ->withInput(['voucher_code' => $voucherCode]);
         } catch (Throwable $exception) {
             Log::error('Unable to load checkout address step.', [
                 'customer_id' => $customer->cus_id,
@@ -178,7 +209,7 @@ class OrderController extends Controller
         return view('checkout.address', [
             'cart' => $cart,
             'address' => $customer->address,
-            'vouchers' => Voucher::query()->availableForCheckout()->orderBy('voucherName')->get(),
+            'voucherCode' => $voucherCode,
             'selectedVoucherId' => $selectedVoucherId,
             'subtotal' => $pricing['subtotal'],
             'discount' => $pricing['discount'],
@@ -196,8 +227,13 @@ class OrderController extends Controller
             'city' => 'nullable|string|max:255',
             'barangay' => 'nullable|string|max:255',
             'zip_postal_code' => 'nullable|string|regex:/^[0-9]+$/|max:10',
-            'voucher_id' => 'nullable|exists:vouchers,voucher_id',
+            'voucher_code' => 'nullable|string|max:255',
         ]);
+
+        $selectedVoucherId = null;
+        if (!empty($validated['voucher_code'])) {
+            $selectedVoucherId = $this->resolveVoucherIdFromCode($validated['voucher_code']);
+        }
 
         $addressData = [
             'country' => $validated['country'] ?? null,
@@ -222,7 +258,8 @@ class OrderController extends Controller
 
         session([
             'checkout.add_id' => $address->add_id,
-            'checkout.voucher_id' => $validated['voucher_id'] ?? null,
+            'checkout.voucher_id' => $selectedVoucherId,
+            'checkout.voucher_code' => $validated['voucher_code'] ?? null,
         ]);
 
         return redirect()->route('checkout.payment');
@@ -246,7 +283,7 @@ class OrderController extends Controller
         } catch (ValidationException $exception) {
             return redirect()->route('cart.index')
                 ->withErrors($exception->errors())
-                ->withInput(['voucher_id' => $selectedVoucherId]);
+                ->withInput(['voucher_code' => session('checkout.voucher_code')]);
         } catch (Throwable $exception) {
             Log::error('Unable to load checkout payment step.', [
                 'customer_id' => $customer->cus_id,
@@ -261,6 +298,7 @@ class OrderController extends Controller
             'cart' => $cart,
             'address' => $address,
             'paymentMethods' => PaymentMethod::all(),
+            'voucherCode' => session('checkout.voucher_code'),
             'selectedVoucherId' => $selectedVoucherId,
             'selectedPaymentMethodId' => session('checkout.paymentMethod_id'),
             'subtotal' => $pricing['subtotal'],
@@ -273,6 +311,8 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'paymentMethod_id' => 'required|exists:payment_methods,paymentMethod_id',
+            'payment_reference' => 'nullable|string|max:255',
+            'payment_proof' => 'nullable|image|max:5120',
         ]);
 
         $customer = Auth::guard('customer')->user();
@@ -286,6 +326,20 @@ class OrderController extends Controller
         }
 
         $voucherId = session('checkout.voucher_id');
+        $paymentMethod = PaymentMethod::findOrFail((int) $validated['paymentMethod_id']);
+        $methodName = Str::lower($paymentMethod->methodName);
+        $requiresProof = str_contains($methodName, 'gcash') || str_contains($methodName, 'maya') || str_contains($methodName, 'bank');
+
+        if ($requiresProof) {
+            $request->validate([
+                'payment_reference' => 'required|string|max:255',
+                'payment_proof' => 'required|image|max:5120',
+            ]);
+        }
+
+        $proofPath = $request->hasFile('payment_proof')
+            ? $request->file('payment_proof')->store('payment-proofs', 'public')
+            : null;
 
         session(['checkout.paymentMethod_id' => (int) $validated['paymentMethod_id']]);
 
@@ -297,10 +351,20 @@ class OrderController extends Controller
                 (int) $validated['paymentMethod_id'],
                 $voucherId ? (int) $voucherId : null
             );
+
+            $order->update([
+                'gcash_reference' => $requiresProof ? $validated['payment_reference'] : null,
+                'gcash_proof_path' => $requiresProof ? $proofPath : null,
+                'payment_review_status' => $requiresProof ? 'pending' : 'approved',
+            ]);
         } catch (ValidationException $exception) {
             return redirect()->route('cart.index')
                 ->withErrors($exception->errors())
-                ->withInput(['voucher_id' => $voucherId, 'paymentMethod_id' => $validated['paymentMethod_id']]);
+                ->withInput([
+                    'voucher_code' => session('checkout.voucher_code'),
+                    'paymentMethod_id' => $validated['paymentMethod_id'],
+                    'payment_reference' => $validated['payment_reference'] ?? null,
+                ]);
         } catch (Throwable $exception) {
             Log::error('Checkout payment failed.', [
                 'customer_id' => $customer->cus_id,
@@ -325,6 +389,20 @@ class OrderController extends Controller
         $order->load(['cart.items.product', 'paymentMethod', 'address', 'voucher']);
 
         return view('checkout.receipt', compact('order'));
+    }
+
+    public function receiptPdf(Order $order)
+    {
+        $customer = Auth::guard('customer')->user();
+        abort_if($order->cus_id !== $customer->cus_id, 403);
+
+        $order->load(['cart.items.product', 'paymentMethod', 'address', 'voucher', 'customer']);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('checkout.receipt-pdf', [
+            'order' => $order,
+        ]);
+
+        return $pdf->download('receipt-order-' . $order->order_id . '.pdf');
     }
 
     public function store(PlaceOrderRequest $request)

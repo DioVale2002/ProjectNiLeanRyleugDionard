@@ -49,6 +49,14 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        $customer = Customer::query()->where('email', $credentials['email'])->first();
+
+        if (!$customer) {
+            return back()->withErrors([
+                'email' => 'Account not found.',
+            ])->onlyInput('email');
+        }
+
         if (Auth::guard('customer')->attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('dashboard')->with('success', 'Login successful!');

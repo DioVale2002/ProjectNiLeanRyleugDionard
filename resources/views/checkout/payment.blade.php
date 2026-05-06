@@ -46,7 +46,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {{-- Payment Methods Form --}}
             <div class="lg:col-span-2">
-                <form action="{{ route('checkout.payment.confirm') }}" method="POST" class="space-y-6">
+                <form action="{{ route('checkout.payment.confirm') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
                     {{-- Payment Methods (Updated to match your custom design) --}}
@@ -87,6 +87,34 @@
                         </div>
                     </div>
 
+                    <div id="proof-fields" class="hidden bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Payment Proof</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="payment_reference" class="block text-sm font-semibold text-gray-700 mb-2">Reference Number</label>
+                                <input
+                                    id="payment_reference"
+                                    name="payment_reference"
+                                    type="text"
+                                    value="{{ old('payment_reference') }}"
+                                    placeholder="Enter transaction/reference number"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ED1B24] focus:border-transparent"
+                                />
+                            </div>
+                            <div>
+                                <label for="payment_proof" class="block text-sm font-semibold text-gray-700 mb-2">Upload Screenshot / Image Proof</label>
+                                <input
+                                    id="payment_proof"
+                                    name="payment_proof"
+                                    type="file"
+                                    accept="image/png,image/jpeg,image/webp"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white"
+                                />
+                                <p class="text-xs text-gray-500 mt-2">Your payment will be reviewed by admin before processing.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Address Summary --}}
                     <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-gray-900 mb-4">Delivery Address</h3>
@@ -124,6 +152,12 @@
                             <span class="text-gray-600">Discount</span>
                             <span class="font-medium text-green-600">- ₱{{ number_format($discount, 2) }}</span>
                         </div>
+                        @if(!empty($voucherCode))
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Voucher</span>
+                                <span class="font-medium text-gray-900">{{ $voucherCode }}</span>
+                            </div>
+                        @endif
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Shipping</span>
                             <span class="font-medium text-gray-900">TBD</span>
@@ -140,5 +174,25 @@
     </div>
 
     @include('partials.footer')
+    <script>
+        const proofFields = document.getElementById('proof-fields');
+        const methodRadios = document.querySelectorAll('input[name="paymentMethod_id"]');
+
+        const toggleProofFields = () => {
+            const checked = document.querySelector('input[name="paymentMethod_id"]:checked');
+            if (!checked || !proofFields) {
+                return;
+            }
+
+            const label = document.querySelector('label[for="' + checked.id + '"]');
+            const labelText = (label ? label.textContent : '').toLowerCase();
+            const requiresProof = labelText.includes('gcash') || labelText.includes('maya') || labelText.includes('bank');
+
+            proofFields.classList.toggle('hidden', !requiresProof);
+        };
+
+        methodRadios.forEach((radio) => radio.addEventListener('change', toggleProofFields));
+        toggleProofFields();
+    </script>
 </body>
 </html>

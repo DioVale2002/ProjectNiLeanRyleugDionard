@@ -12,7 +12,7 @@ class Product extends Model
         'Description',
         'Price', 'Stock', 'ISBN', 'Publisher',
         'Genre', 'Format', 'Language', 'Publication_Date', 'Subject', 'Branch',
-        'Age_Group', 'Length', 'Width',
+        'Age_Group', 'Length', 'Width', 'image_path',
     ];
 
     protected $casts = [

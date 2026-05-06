@@ -75,6 +75,10 @@
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Payment Method</p>
                             <p class="text-lg font-semibold text-gray-900">{{ $order->paymentMethod->methodName }}</p>
+                            @if($order->gcash_reference)
+                                <p class="text-xs text-gray-600 mt-1">Reference: {{ $order->gcash_reference }}</p>
+                                <p class="text-xs text-gray-600">Review status: {{ ucfirst($order->payment_review_status) }}</p>
+                            @endif
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Customer</p>
@@ -112,6 +116,12 @@
                     <a href="{{ route('account.orders') }}" class="bg-[#ED1B24] text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-700 transition text-center">
                         View My Orders
                     </a>
+                    <a href="{{ route('checkout.receipt.pdf', $order) }}" class="bg-gray-100 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-200 transition text-center">
+                        Download PDF
+                    </a>
+                    <button type="button" onclick="window.print()" class="bg-gray-100 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-200 transition text-center">
+                        Print Receipt
+                    </button>
                     <a href="{{ route('catalog.index') }}" class="bg-gray-100 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-200 transition text-center">
                         Continue Shopping
                     </a>

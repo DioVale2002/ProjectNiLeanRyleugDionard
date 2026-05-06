@@ -217,7 +217,7 @@
             <div class="h-full w-[265px] border border-gray-400 shadow-md relative hover:border-[#F54E4E] transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl bg-white flex flex-col">
               <a href="{{ route('catalog.show', $product) }}">
                 <div class="flex justify-center items-center pt-6">
-                  <img src="{{ asset('images/SampleBook.png') }}" alt="{{ $product->Title }}" class="w-[180px] h-[240px] object-cover" />
+                  <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : asset('images/SampleBook.png') }}" alt="{{ $product->Title }}" class="w-[180px] h-[240px] object-cover" />
                 </div>
                 <p class="text-black text-[15px] mt-[18px] mx-[20px] font-bold h-10 overflow-hidden leading-tight">
                   {{ $product->Title }}
@@ -251,10 +251,15 @@
                 </form>
               </div>
 
-              {{-- Sale Tag --}}
+              {{-- Sale / Stock Tags --}}
               <div class="bg-[#FCAE42] absolute top-11 left-0 shadow-sm">
                 <p class="text-[13px] text-center font-bold px-3 py-[2px]">New Arrival</p>
               </div>
+              @if($product->Stock > 0 && $product->Stock <= 5)
+                <div class="bg-red-500 absolute top-2 left-0 shadow-sm">
+                  <p class="text-[12px] text-center font-bold px-3 py-[2px] text-white">Low Stock</p>
+                </div>
+              @endif
             </div>
           @empty
             <div class="col-span-4 py-20 text-center">

@@ -44,9 +44,9 @@
             <img
                 class="w-[50px] mx-2 my-2"
                 src="{{ asset('images/userAcc-img/archive.png') }}"
-                alt="Archive Orders" />
+                alt="Order History" />
         </div>
-        <p class="text-black font-bold text-[25px] ml-3.5">Archive Orders</p>
+        <p class="text-black font-bold text-[25px] ml-3.5">Order History</p>
     </a>
 
     <hr class="my-4 border-gray-300" />

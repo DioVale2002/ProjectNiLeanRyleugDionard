@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Archive Orders - NCB</title>
+    <title>Order History - NCB</title>
     @vite(['resources/css/app.css'])
 </head>
 <body class="bg-gray-50">
@@ -34,7 +34,7 @@
         {{-- Main Content: Archived Order List --}}
         <div class="border border-black/50 rounded-lg ml-[63px] w-[1000px] h-full bg-white shadow-sm">
             <div class="mx-7 mt-7 pb-7">
-                <h2 class="text-[25px] font-bold mb-6">Archive Orders</h2>
+                <h2 class="text-[25px] font-bold mb-6">Order History</h2>
 
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -92,9 +92,9 @@
                                     <div class="flex items-center">
                                         {{-- Updated container and image to 80x100 --}}
                                         <div class="bg-[#E1F0F0] w-[103px] h-[120px] flex items-center justify-center rounded-sm border border-gray-100">
-                                            <img 
-                                                class="w-[80px] h-[100px] object-cover shadow-sm" 
-                                                src="/images/SampleBook.png" 
+                                            <img
+                                                class="w-[80px] h-[100px] object-cover shadow-sm"
+                                                src="{{ $item->product->image_path ? asset('storage/' . $item->product->image_path) : asset('images/SampleBook.png') }}"
                                                 alt="{{ $item->product->Title }}"
                                             />
                                         </div>
@@ -103,9 +103,12 @@
                                             <p class="text-xs text-gray-500 mt-1 font-bold">Qty: {{ $item->quantity }}</p>
                                             <p class="text-xs text-gray-700">₱{{ number_format($item->unitPrice, 2) }}</p>
                                         </div>
-                                        <div class="mt-4 flex justify-end">
+                                        <div class="mt-4 flex justify-end gap-2">
                                             <a href="{{ route('checkout.receipt', $order) }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
                                                 View receipt
+                                            </a>
+                                            <a href="{{ route('checkout.receipt.pdf', $order) }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
+                                                Download PDF
                                             </a>
                                         </div>
                                     </div>

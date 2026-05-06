@@ -12,6 +12,8 @@ class PaymentMethodSeeder extends Seeder
      */
     public function run(): void
     {
+        \App\Models\PaymentMethod::query()->delete();
+
         \App\Models\PaymentMethod::insert([
             ['methodName' => 'Cash on Delivery', 'created_at' => now(), 'updated_at' => now()],
             ['methodName' => 'GCash', 'created_at' => now(), 'updated_at' => now()],

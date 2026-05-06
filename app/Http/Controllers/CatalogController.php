@@ -9,10 +9,15 @@ class CatalogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::query()->whereDoesntHave('archives');
 
         // 1. Fetch dynamic genres for the sidebar filter
-        $genres = Product::select('Genre')->distinct()->whereNotNull('Genre')->pluck('Genre');        
+        $genres = Product::query()
+            ->whereDoesntHave('archives')
+            ->select('Genre')
+            ->distinct()
+            ->whereNotNull('Genre')
+            ->pluck('Genre');
 
         // 2. Text Search (if you add a search input later)
         $query->when($request->search, function($q) use ($request) {
@@ -26,7 +31,12 @@ class CatalogController extends Controller
         // Note: Language and Format are static in Blade for now, so we comment them out here to prevent DB errors
         $query->when($request->genre, fn($q) => $q->whereIn('Genre', $request->genre));
         $query->when($request->rating, fn($q) => $q->where('Rating', $request->rating));        
-        $ageGroups = Product::select('Age_Group')->distinct()->whereNotNull('Age_Group')->pluck('Age_Group');        
+        $ageGroups = Product::query()
+            ->whereDoesntHave('archives')
+            ->select('Age_Group')
+            ->distinct()
+            ->whereNotNull('Age_Group')
+            ->pluck('Age_Group');
         // $query->when($request->language, fn($q) => $q->whereIn('Language', $request->language));
         // $query->when($request->format, fn($q) => $q->whereIn('Format', $request->format));
 
@@ -46,6 +56,8 @@ class CatalogController extends Controller
 
     public function show(Product $product)
     {
+        abort_if($product->archives()->exists(), 404);
+
         return view('catalog.show', compact('product'));
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\StockIn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -68,6 +69,13 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $validated = $request->validated();
+        $validated['Stock'] = 0;
+
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('products', 'public');
+        }
+
+        unset($validated['image']);
 
         DB::transaction(function () use ($validated) {
             $product = Product::create($validated);
@@ -96,7 +104,20 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product->update($request->validated());
+        $validated = $request->validated();
+
+        if ($request->hasFile('image')) {
+            if ($product->image_path) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+
+            $validated['image_path'] = $request->file('image')->store('products', 'public');
+        }
+
+        unset($validated['image']);
+
+        $product->update($validated);
+
         return redirect()->route('admin.products.index')
             ->with('success', 'Product updated successfully.');
     }
