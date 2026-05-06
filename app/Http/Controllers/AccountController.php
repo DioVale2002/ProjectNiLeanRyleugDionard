@@ -31,7 +31,7 @@ class AccountController extends Controller
         $orders = Order::where('cus_id', $customer->cus_id)
             ->active()
             ->with(['cart.items.product', 'paymentMethod', 'address'])
-            ->orderBy('order_date', 'desc')
+            ->orderByDesc('created_at')
             ->paginate(5); // Shows 5 orders per page
         
         return view('account.orders', compact('orders'));
@@ -46,7 +46,7 @@ class AccountController extends Controller
         $orders = Order::where('cus_id', $customer->cus_id)
             ->archived()
             ->with(['cart.items.product', 'paymentMethod', 'address'])
-            ->orderBy('order_date', 'desc')
+            ->orderByDesc('created_at')
             ->paginate(5); // Shows 5 orders per page
         
         return view('account.archived', compact('orders'));

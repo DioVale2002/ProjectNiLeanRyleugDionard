@@ -39,8 +39,8 @@
             <div><strong>Customer:</strong> {{ $order->customer->first_name }} {{ $order->customer->last_name }}</div>
             <div><strong>Email:</strong> {{ $order->customer->email }}</div>
             <div><strong>Payment:</strong> {{ $order->paymentMethod->methodName }}</div>
-            @if($order->gcash_reference)
-                <div><strong>GCash Ref:</strong> {{ $order->gcash_reference }}</div>
+            @if($order->payment_reference)
+                <div><strong>Payment Ref:</strong> {{ $order->payment_reference }}</div>
                 <div><strong>Review:</strong> {{ ucfirst($order->payment_review_status) }}</div>
             @endif
             <div><strong>Status:</strong> {{ $order->order_status }}</div>

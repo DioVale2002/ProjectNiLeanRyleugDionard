@@ -47,7 +47,7 @@ class OrderController extends Controller
             $ordersQuery->where('order_status', $status);
         }
 
-        $orders = $ordersQuery->orderByDesc('order_date')->orderByDesc('order_id')->paginate(12)->withQueryString();
+        $orders = $ordersQuery->orderByDesc('created_at')->orderByDesc('order_id')->paginate(12)->withQueryString();
 
         $allOrders = Order::query();
         $totalOrders = $allOrders->count();
@@ -75,7 +75,7 @@ class OrderController extends Controller
     public function handleEvent(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'event' => 'required|in:start_processing,ship,deliver,cancel,timeout_fail,approve_payment,reject_payment,enable_first_party,delivery_preparing,delivery_out,delivery_done',
+            'event' => 'required|in:start_processing,ship,deliver,cancel,timeout_fail,approve_payment,reject_payment,enable_first_party,delivery_preparing,delivery_out',
             'cancellation_note' => 'nullable|string|max:500',
         ]);
 
@@ -123,11 +123,6 @@ class OrderController extends Controller
 
         if ($event === 'delivery_out' && $order->is_first_party_delivery) {
             $order->update(['delivery_status' => 'Out for Delivery']);
-            return redirect()->back()->with('success', 'Delivery status updated.');
-        }
-
-        if ($event === 'delivery_done' && $order->is_first_party_delivery) {
-            $order->update(['delivery_status' => 'Delivered']);
             return redirect()->back()->with('success', 'Delivery status updated.');
         }
 

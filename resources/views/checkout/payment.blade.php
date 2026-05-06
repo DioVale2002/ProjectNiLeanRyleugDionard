@@ -88,7 +88,7 @@
                     </div>
 
                     <div id="proof-fields" class="hidden bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Payment Proof</h3>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Payment Reference & Proof</h3>
                         <div class="space-y-4">
                             <div>
                                 <label for="payment_reference" class="block text-sm font-semibold text-gray-700 mb-2">Reference Number</label>
@@ -110,7 +110,7 @@
                                     accept="image/png,image/jpeg,image/webp"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white"
                                 />
-                                <p class="text-xs text-gray-500 mt-2">Your payment will be reviewed by admin before processing.</p>
+                                <p class="text-xs text-gray-500 mt-2">Required for GCash, Maya, and bank transfer. Your payment will be reviewed by admin before processing.</p>
                             </div>
                         </div>
                     </div>

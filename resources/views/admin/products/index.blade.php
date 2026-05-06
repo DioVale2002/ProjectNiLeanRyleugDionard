@@ -152,5 +152,64 @@
         <span class="text-sm text-gray-500 font-medium">Showing {{ $products->count() }} of {{ $products->total() }} items</span>
         <div>{{ $products->links() }}</div>
     </div>
+
+    {{-- Archived Products --}}
+    <div class="mt-10">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-lg font-bold text-gray-800">Archived Products</h3>
+                <p class="text-sm text-gray-500">{{ $archivedCount }} archived item{{ $archivedCount === 1 ? '' : 's' }}</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto w-full rounded-xl bg-white shadow-sm border border-gray-200">
+            <table class="w-full whitespace-nowrap border-collapse text-left">
+                <thead class="bg-gray-50/50">
+                    <tr class="border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="py-4 pl-6 pr-4">ID</th>
+                        <th class="py-4 px-4">Product Name</th>
+                        <th class="py-4 px-4">Archived Date</th>
+                        <th class="py-4 px-4">Stock</th>
+                        <th class="py-4 px-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm text-gray-600 divide-y divide-gray-100">
+                    @forelse($archivedProducts as $archive)
+                        @php
+                            $archivedProduct = $archive->product;
+                        @endphp
+                        <tr class="transition-colors hover:bg-gray-50">
+                            <td class="py-4 pl-6 pr-4 font-medium text-gray-500">#{{ $archivedProduct?->product_ID ?? '—' }}</td>
+                            <td class="py-4 px-4 font-semibold text-gray-900">{{ $archivedProduct?->Title ?? 'Product removed' }}</td>
+                            <td class="py-4 px-4 text-gray-500">{{ $archive->archived_date?->format('M j, Y') ?? '—' }}</td>
+                            <td class="py-4 px-4">{{ $archivedProduct?->Stock ?? 0 }}</td>
+                            <td class="py-4 px-4 text-right">
+                                @if($archivedProduct)
+                                    <form action="{{ route('admin.products.unarchive', $archivedProduct) }}" method="POST" onsubmit="return confirm('Unarchive this product?')">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors">
+                                            Unarchive
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-xs text-gray-400 font-medium">—</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="py-10 text-center text-sm text-gray-500">No archived products.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+            <span class="text-sm text-gray-500 font-medium">Showing {{ $archivedProducts->count() }} of {{ $archivedProducts->total() }} items</span>
+            <div>{{ $archivedProducts->links() }}</div>
+        </div>
+    </div>
 </div>
 @endsection

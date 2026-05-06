@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('gcash_reference')->nullable()->after('paymentMethod_id');
-            $table->string('gcash_proof_path')->nullable()->after('gcash_reference');
-            $table->enum('payment_review_status', ['pending', 'approved', 'rejected'])->default('pending')->after('gcash_proof_path');
+            $table->string('payment_reference')->nullable()->after('paymentMethod_id');
+            $table->string('payment_proof_path')->nullable()->after('payment_reference');
+            $table->enum('payment_review_status', ['pending', 'approved', 'rejected'])->default('pending')->after('payment_proof_path');
             $table->text('cancellation_note')->nullable()->after('payment_review_status');
             $table->boolean('is_first_party_delivery')->default(false)->after('cancellation_note');
             $table->enum('delivery_status', ['N/A', 'Preparing', 'Out for Delivery', 'Delivered'])
@@ -24,8 +24,8 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn([
-                'gcash_reference',
-                'gcash_proof_path',
+                'payment_reference',
+                'payment_proof_path',
                 'payment_review_status',
                 'cancellation_note',
                 'is_first_party_delivery',

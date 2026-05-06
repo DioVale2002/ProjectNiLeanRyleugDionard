@@ -20,6 +20,15 @@ use Throwable;
 
 class OrderController extends Controller
 {
+    protected function requiresPaymentProof(string $methodName): bool
+    {
+        $methodName = Str::lower($methodName);
+
+        return str_contains($methodName, 'gcash')
+            || str_contains($methodName, 'maya')
+            || str_contains($methodName, 'bank');
+    }
+
     protected function getActiveCartForCustomer($customer): Cart
     {
         $cart = Cart::where('cus_id', $customer->cus_id)
@@ -327,8 +336,7 @@ class OrderController extends Controller
 
         $voucherId = session('checkout.voucher_id');
         $paymentMethod = PaymentMethod::findOrFail((int) $validated['paymentMethod_id']);
-        $methodName = Str::lower($paymentMethod->methodName);
-        $requiresProof = str_contains($methodName, 'gcash') || str_contains($methodName, 'maya') || str_contains($methodName, 'bank');
+        $requiresProof = $this->requiresPaymentProof($paymentMethod->methodName);
 
         if ($requiresProof) {
             $request->validate([
@@ -353,8 +361,8 @@ class OrderController extends Controller
             );
 
             $order->update([
-                'gcash_reference' => $requiresProof ? $validated['payment_reference'] : null,
-                'gcash_proof_path' => $requiresProof ? $proofPath : null,
+                'payment_reference' => $requiresProof ? $validated['payment_reference'] : null,
+                'payment_proof_path' => $requiresProof ? $proofPath : null,
                 'payment_review_status' => $requiresProof ? 'pending' : 'approved',
             ]);
         } catch (ValidationException $exception) {

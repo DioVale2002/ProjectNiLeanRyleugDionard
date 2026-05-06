@@ -62,8 +62,8 @@
                                     <div class="flex gap-2 items-center text-sm text-gray-600">
                                         <p>{{ $order->cart->items->count() }} Products |</p>
                                         <p>{{ $customer->first_name }} {{ $customer->last_name }} |</p>
-                                        <p>{{ $order->order_date->format('H:i') }} |</p>
-                                        <p>{{ $order->order_date->format('M d, Y') }}</p>
+                                        <p>{{ $order->created_at->format('H:i') }} |</p>
+                                        <p>{{ $order->created_at->format('M d, Y') }}</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -77,7 +77,6 @@
                             <div class="flex items-center text-[15px]">
                                 <div class="mr-8 text-gray-500 space-y-1">
                                     <p>Status:</p>
-                                    <p>Date of Delivery:</p>
                                     <p>Delivered to:</p>
                                 </div>
                                 <div class="space-y-1">
@@ -88,7 +87,6 @@
                                     ])>
                                         {{ $order->order_status }}
                                     </p>
-                                    <p>{{ $order->order_date->addDays(3)->format('M d, Y') }} (Est.)</p>
                                     <p class="truncate w-[600px]">{{ $order->address->city ?? 'No city provided' }}</p>
                                 </div>
                             </div>

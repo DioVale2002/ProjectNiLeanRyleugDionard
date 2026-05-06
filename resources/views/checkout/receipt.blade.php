@@ -75,8 +75,8 @@
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Payment Method</p>
                             <p class="text-lg font-semibold text-gray-900">{{ $order->paymentMethod->methodName }}</p>
-                            @if($order->gcash_reference)
-                                <p class="text-xs text-gray-600 mt-1">Reference: {{ $order->gcash_reference }}</p>
+                            @if($order->payment_reference)
+                                <p class="text-xs text-gray-600 mt-1">Reference: {{ $order->payment_reference }}</p>
                                 <p class="text-xs text-gray-600">Review status: {{ ucfirst($order->payment_review_status) }}</p>
                             @endif
                         </div>

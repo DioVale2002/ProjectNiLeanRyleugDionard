@@ -47,6 +47,8 @@ Route::get('/', function () {
 // Admin - Inventory Management
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+    Route::patch('products/{product}/unarchive', [\App\Http\Controllers\Admin\ProductController::class, 'unarchive'])
+        ->name('products.unarchive');
     Route::resource('vouchers', \App\Http\Controllers\Admin\VoucherController::class);
     Route::get('analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])
         ->name('analytics.index');

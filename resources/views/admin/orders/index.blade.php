@@ -148,20 +148,20 @@
                         @endphp
                         <tr class="transition-colors hover:bg-gray-50/50 group">
                             <td class="py-4 pl-6 pr-4 font-semibold text-gray-800">#{{ $order->order_id }}</td>
-                            <td class="py-4 px-4 font-medium text-gray-500">{{ optional($order->order_date)->format('M j, Y') ?? '—' }}</td>
+                            <td class="py-4 px-4 font-medium text-gray-500">{{ optional($order->created_at)->format('M j, Y · H:i') ?? '—' }}</td>
                             <td class="py-4 px-4">
                                 <p class="font-medium text-gray-900">{{ trim(($order->customer->first_name ?? '') . ' ' . ($order->customer->last_name ?? '')) ?: '—' }}</p>
                                 <p class="text-xs text-gray-400 mt-0.5">{{ $order->customer->email ?? 'No email' }}</p>
                             </td>
                             <td class="py-4 px-4">
                                 <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">{{ $order->paymentMethod->methodName ?? '—' }}</span>
-                                @if($order->gcash_reference)
-                                    <p class="mt-1 text-xs text-gray-500">Ref: {{ $order->gcash_reference }}</p>
+                                @if($order->payment_reference)
+                                    <p class="mt-1 text-xs text-gray-500">Ref: {{ $order->payment_reference }}</p>
                                     <p class="text-xs font-semibold {{ $order->payment_review_status === 'approved' ? 'text-green-600' : ($order->payment_review_status === 'rejected' ? 'text-red-600' : 'text-yellow-600') }}">
                                         {{ strtoupper($order->payment_review_status) }}
                                     </p>
-                                    @if($order->gcash_proof_path)
-                                        <a href="{{ asset('storage/' . $order->gcash_proof_path) }}" target="_blank" class="text-xs text-blue-600 hover:underline">View proof</a>
+                                    @if($order->payment_proof_path)
+                                        <a href="{{ asset('storage/' . $order->payment_proof_path) }}" target="_blank" class="text-xs text-blue-600 hover:underline">View proof</a>
                                     @endif
                                 @endif
                             </td>
@@ -211,8 +211,12 @@
                                         </form>
                                     @endif
 
-                                    {{-- Payment Review Actions for GCash --}}
-                                    @if($order->gcash_reference && $order->payment_review_status === 'pending')
+                                    {{-- Payment Review Actions for proof-based methods --}}
+                                    @if(
+                                        $order->payment_reference
+                                        && $order->payment_review_status === 'pending'
+                                        && !in_array($order->order_status, ['Cancelled', 'Failed', 'Completed'], true)
+                                    )
                                         <form action="{{ route('admin.orders.event', $order) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
@@ -232,7 +236,7 @@
                                     @endif
 
                                     {{-- First-party delivery actions --}}
-                                    @if(!$order->is_first_party_delivery)
+                                    @if(!in_array($order->order_status, ['Completed', 'Cancelled', 'Failed'], true) && !$order->is_first_party_delivery)
                                         <form action="{{ route('admin.orders.event', $order) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
@@ -241,7 +245,7 @@
                                                 First-party
                                             </button>
                                         </form>
-                                    @else
+                                    @elseif(!in_array($order->order_status, ['Completed', 'Cancelled', 'Failed'], true))
                                         <form action="{{ route('admin.orders.event', $order) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
@@ -256,14 +260,6 @@
                                             <input type="hidden" name="event" value="delivery_out" />
                                             <button type="submit" class="h-[34px] rounded-lg border border-gray-300 bg-white hover:bg-gray-100 transition-colors px-3 text-xs font-bold text-gray-700 shadow-sm">
                                                 Out
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('admin.orders.event', $order) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="event" value="delivery_done" />
-                                            <button type="submit" class="h-[34px] rounded-lg border border-gray-300 bg-white hover:bg-gray-100 transition-colors px-3 text-xs font-bold text-gray-700 shadow-sm">
-                                                Delivered
                                             </button>
                                         </form>
                                     @endif

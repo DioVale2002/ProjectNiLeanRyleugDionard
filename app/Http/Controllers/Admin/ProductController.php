@@ -20,7 +20,7 @@ class ProductController extends Controller
         $stock = trim((string) $request->query('stock', ''));
         $status = (string) $request->query('status', 'all');
 
-        $productsQuery = Product::query();
+        $productsQuery = Product::query()->whereDoesntHave('archives');
 
         if ($search !== '') {
             $productsQuery->where(function ($query) use ($search) {
@@ -43,21 +43,38 @@ class ProductController extends Controller
 
         $products = $productsQuery->orderBy('Title')->paginate(10)->withQueryString();
 
-        $allProducts = Product::query();
+        $archivedProductsQuery = Archive::query()->with('product');
+
+        if ($search !== '') {
+            $archivedProductsQuery->whereHas('product', function ($query) use ($search) {
+                $query->where('Title', 'like', "%{$search}%")
+                    ->orWhere('Author', 'like', "%{$search}%");
+            });
+        }
+
+        $archivedProducts = $archivedProductsQuery
+            ->orderByDesc('archived_date')
+            ->paginate(10, ['*'], 'archived_page')
+            ->withQueryString();
+
+        $allProducts = Product::query()->whereDoesntHave('archives');
         $totalProducts = $allProducts->count();
         $activeProducts = (clone $allProducts)->where('Stock', '>', 0)->count();
         $lowStockProducts = (clone $allProducts)->where('Stock', '<=', 5)->count();
         $ratingOneProducts = (clone $allProducts)->where('Rating', '<=', 1)->count();
+        $archivedCount = Archive::query()->count();
 
         return view('admin.products.index', compact(
             'products',
+            'archivedProducts',
             'search',
             'stock',
             'status',
             'totalProducts',
             'activeProducts',
             'lowStockProducts',
-            'ratingOneProducts'
+            'ratingOneProducts',
+            'archivedCount'
         ));
     }
 
@@ -136,5 +153,13 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product archived successfully.');
+    }
+
+    public function unarchive(Product $product)
+    {
+        Archive::query()->where('archivedProduct', $product->product_ID)->delete();
+
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Product unarchived successfully.');
     }
 }
