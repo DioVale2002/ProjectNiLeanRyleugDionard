@@ -7,6 +7,7 @@ use App\Notifications\OrderStatusNotification;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\Sale;
 use App\Models\StockOut;
 use App\Models\Voucher;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -95,6 +97,23 @@ class OrderController extends Controller
         ];
     }
 
+    protected function resolveAddressId($customer, ?int $addressId): ?int
+    {
+        if ($addressId === null) {
+            return null;
+        }
+
+        $address = $customer->address()->where('add_id', $addressId)->first();
+
+        if (!$address) {
+            throw ValidationException::withMessages([
+                'add_id' => 'Selected address is invalid.',
+            ]);
+        }
+
+        return (int) $address->add_id;
+    }
+
     protected function resolveVoucherIdFromCode(?string $voucherCode): ?int
     {
         if (!$voucherCode) {
@@ -116,6 +135,10 @@ class OrderController extends Controller
 
     protected function placeOrder($customer, Cart $cart, ?int $addressId, int $paymentMethodId, ?int $voucherId): Order
     {
+        if ($addressId !== null) {
+            $addressId = $this->resolveAddressId($customer, $addressId);
+        }
+
         $pricing = $this->computeDiscountedTotal($cart, $voucherId);
 
         if ($voucherId && $pricing['voucher'] && $pricing['voucher']->per_customer_limit !== null) {
@@ -143,11 +166,23 @@ class OrderController extends Controller
                 'voucher_id'       => $voucherId,
                 'add_id'           => $addressId,
                 'paymentMethod_id' => $paymentMethodId,
+                'is_first_party_delivery' => true,
+                'delivery_status' => 'Preparing',
                 'cus_id'           => $customer->cus_id,
                 'cart_id'          => $cart->cart_id,
             ]);
 
             foreach ($cart->items as $item) {
+                $product = Product::where('product_ID', $item->product_ID)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$product || $product->Stock < $item->quantity) {
+                    throw ValidationException::withMessages([
+                        'cart' => 'One or more items in your cart are no longer available in the requested quantity.',
+                    ]);
+                }
+
                 Sale::create([
                     'order_id'    => $order->order_id,
                     'product_id'  => $item->product_ID,
@@ -158,9 +193,10 @@ class OrderController extends Controller
                 StockOut::create([
                     'stockOut_date' => now()->toDateString(),
                     'productOut'    => $item->product_ID,
+                    'quantity'      => $item->quantity,
                 ]);
 
-                $item->product->decrement('Stock', $item->quantity);
+                $product->decrement('Stock', $item->quantity);
             }
 
             $cart->update(['status' => 'checked_out']);
@@ -334,6 +370,8 @@ class OrderController extends Controller
             ]);
         }
 
+        $addressId = $this->resolveAddressId($customer, (int) $addressId);
+
         $voucherId = session('checkout.voucher_id');
         $paymentMethod = PaymentMethod::findOrFail((int) $validated['paymentMethod_id']);
         $requiresProof = $this->requiresPaymentProof($paymentMethod->methodName);
@@ -366,6 +404,10 @@ class OrderController extends Controller
                 'payment_review_status' => $requiresProof ? 'pending' : 'approved',
             ]);
         } catch (ValidationException $exception) {
+            if ($proofPath) {
+                Storage::disk('public')->delete($proofPath);
+            }
+
             return redirect()->route('cart.index')
                 ->withErrors($exception->errors())
                 ->withInput([
@@ -374,6 +416,10 @@ class OrderController extends Controller
                     'payment_reference' => $validated['payment_reference'] ?? null,
                 ]);
         } catch (Throwable $exception) {
+            if ($proofPath) {
+                Storage::disk('public')->delete($proofPath);
+            }
+
             Log::error('Checkout payment failed.', [
                 'customer_id' => $customer->cus_id,
                 'voucher_id' => $voucherId,

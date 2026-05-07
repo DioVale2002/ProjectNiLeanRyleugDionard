@@ -39,8 +39,14 @@
             </div>
             @endif
 
-            {{-- Form --}}
-            <form action="{{ route('register') }}" method="POST" class="flex flex-col mt-2">
+            @if(session('success'))
+            <div class="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 w-[395px]">
+                <p class="text-green-700 text-sm font-bold">{{ session('success') }}</p>
+            </div>
+            @endif
+
+            {{-- OTP Request Form --}}
+            <form action="{{ route('register.otp.request') }}" method="POST" class="flex flex-col mt-2">
                 @csrf
 
                 {{-- First Name --}}
@@ -84,27 +90,35 @@
                     required
                     class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" />
 
-                {{-- Password (Will likely be removed when you transition fully to OTP) --}}
-                <input
-                    id="password"
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    required
-                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" />
-
-                {{-- Confirm Password --}}
-                <input
-                    id="password_confirmation"
-                    type="password"
-                    name="password_confirmation"
-                    placeholder="Confirm Password"
-                    required
-                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" />
-
-                {{-- Register Button --}}
+                {{-- Send OTP Button --}}
                 <button type="submit" class="bg-[#FCAE42] w-[395px] h-[55px] text-[24px] text-black font-bold rounded-[10px] mt-[30px] hover:bg-[#e09b3b] transition-colors">
-                    Register
+                    Send OTP
+                </button>
+            </form>
+
+            {{-- OTP Verify Form --}}
+            <form action="{{ route('register.otp.verify') }}" method="POST" class="flex flex-col mt-2">
+                @csrf
+
+                <input
+                    id="verify_email"
+                    type="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    placeholder="Email"
+                    required
+                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" />
+
+                <input
+                    id="otp_code"
+                    type="text"
+                    name="otp_code"
+                    placeholder="OTP Code"
+                    required
+                    class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" />
+
+                <button type="submit" class="bg-[#FCAE42] w-[395px] h-[55px] text-[24px] text-black font-bold rounded-[10px] mt-[30px] hover:bg-[#e09b3b] transition-colors">
+                    Verify & Register
                 </button>
             </form>
 

@@ -290,6 +290,7 @@ class InventoryTest extends TestCase
         ]);
         $this->assertDatabaseHas('stock_in', [
             'productIn' => $product->product_ID,
+            'quantity' => 5,
         ]);
     }
 
@@ -311,6 +312,7 @@ class InventoryTest extends TestCase
         ]);
         $this->assertDatabaseHas('stock_out', [
             'productOut' => $product->product_ID,
+            'quantity' => 4,
         ]);
     }
 

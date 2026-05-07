@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CustomerOtpMail;
 use App\Models\Address;
+use App\Models\CustomerActionOtp;
 use App\Models\Order;
 use App\Notifications\OrderStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class AccountController extends Controller
 {
@@ -101,13 +105,8 @@ class AccountController extends Controller
             'last_name' => 'required|string|max:255',
             'contact_num' => 'required|string|regex:/^[0-9+\-\s()]+$/|max:20',
             'email' => 'required|string|email|max:255|unique:customers,email,' . $customer->cus_id . ',cus_id',
-            'current_password' => 'nullable|required_with:new_password',
-            'new_password' => 'nullable|string|min:8|confirmed',
         ], [
             'contact_num.regex' => 'Contact number must contain only numbers and valid phone characters (+, -, spaces, parentheses).',
-            'new_password.confirmed' => 'Password confirmation does not match.',
-            'new_password.min' => 'New password must be at least 8 characters.',
-            'current_password.required_with' => 'Current password is required when setting a new password.',
         ]);
 
         // Update basic information
@@ -118,21 +117,60 @@ class AccountController extends Controller
             'email' => $validated['email'],
         ]);
 
-        // Handle password change
-        if (!empty($validated['new_password'])) {
-            // Verify current password
-            if (!Hash::check($request->current_password, $customer->password)) {
-                return back()->withErrors(['current_password' => 'Current password is incorrect.'])->withInput();
-            }
+        return redirect()->route('account.security')->with('success', 'Account information updated successfully!');
+    }
 
-            $customer->update([
-                'password' => Hash::make($validated['new_password']),
+    public function requestDeleteOtp(Request $request)
+    {
+        $customer = Auth::guard('customer')->user();
+
+        $hasOngoingTransactions = Order::query()
+            ->where('cus_id', $customer->cus_id)
+            ->active()
+            ->exists();
+
+        if ($hasOngoingTransactions) {
+            return back()->withErrors([
+                'otp_code' => 'Account deletion is not allowed while you still have ongoing transactions.',
             ]);
-
-            return redirect()->route('account.security')->with('success', 'Account information and password updated successfully!');
         }
 
-        return redirect()->route('account.security')->with('success', 'Account information updated successfully!');
+        $email = Str::lower(trim($customer->email));
+        // Rate limiting disabled for local development
+        // $minuteKey = 'delete-otp-minute:' . $email;
+        // $hourKey = 'delete-otp-hour:' . $email;
+        // if (RateLimiter::tooManyAttempts($minuteKey, 1) || RateLimiter::tooManyAttempts($hourKey, 5)) {
+        //     return back()->withErrors([
+        //         'otp_code' => 'Too many OTP requests. Please try again later.',
+        //     ]);
+        // }
+        // RateLimiter::hit($minuteKey, 60);
+        // RateLimiter::hit($hourKey, 3600);
+
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $expiresAt = now()->addMinutes(5);
+
+        CustomerActionOtp::query()
+            ->where('email', $email)
+            ->where('action', 'delete')
+            ->whereNull('consumed_at')
+            ->update(['consumed_at' => now()]);
+
+        CustomerActionOtp::create([
+            'email' => $email,
+            'action' => 'delete',
+            'code_hash' => hash('sha256', $code),
+            'expires_at' => $expiresAt,
+        ]);
+
+        Mail::to($customer->email)->send(new CustomerOtpMail(
+            'Confirm account deletion',
+            'Use this code to delete your account:',
+            $code,
+            5
+        ));
+
+        return back()->with('success', 'We sent a deletion code to your email.');
     }
 
     public function markReceived(Order $order)
@@ -190,13 +228,21 @@ class AccountController extends Controller
     {
         $customer = Auth::guard('customer')->user();
 
-        // Validate password confirmation
         $request->validate([
-            'password' => 'required',
+            'otp_code' => 'required|string',
         ]);
 
-        if (!Hash::check($request->password, $customer->password)) {
-            return back()->withErrors(['password' => 'Incorrect password. Please try again.']);
+        $email = Str::lower(trim($customer->email));
+        $otp = CustomerActionOtp::query()
+            ->where('email', $email)
+            ->where('action', 'delete')
+            ->whereNull('consumed_at')
+            ->where('expires_at', '>=', now())
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (!$otp || !hash_equals($otp->code_hash, hash('sha256', trim($request->otp_code)))) {
+            return back()->withErrors(['otp_code' => 'Invalid or expired code.']);
         }
 
         $hasOngoingTransactions = Order::query()
@@ -206,9 +252,11 @@ class AccountController extends Controller
 
         if ($hasOngoingTransactions) {
             return back()->withErrors([
-                'password' => 'Account deletion is not allowed while you still have ongoing transactions.',
+                'otp_code' => 'Account deletion is not allowed while you still have ongoing transactions.',
             ]);
         }
+
+        $otp->update(['consumed_at' => now()]);
 
         // Delete the customer (address will be deleted automatically due to cascade)
         $customer->delete();

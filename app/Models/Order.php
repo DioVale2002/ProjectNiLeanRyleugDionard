@@ -21,6 +21,7 @@ class Order extends Model
         'cancellation_note',
         'is_first_party_delivery',
         'delivery_status',
+        'resolved_at',
         'cus_id',
         'cart_id',
     ];
@@ -29,6 +30,7 @@ class Order extends Model
         'order_date' => 'date',
         'total_price' => 'decimal:2',
         'is_first_party_delivery' => 'boolean',
+        'resolved_at' => 'datetime',
     ];
 
     public function customer()

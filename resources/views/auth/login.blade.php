@@ -35,34 +35,51 @@
             </div>
         @endif
 
-        {{-- Functional Form --}}
-        <form class="flex flex-col" method="POST" action="{{ route('login') }}">
-            @csrf
+        @if(session('success'))
+          <div class="mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-[10px] w-[395px]">
+            <p class="text-sm font-bold">{{ session('success') }}</p>
+          </div>
+        @endif
 
-            <input class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" 
-                   type="email" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus>
-            
-            {{-- This acts as your password field for now, but retains your OTP placeholder text --}}
-            <input class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" 
-                   type="password" name="password" placeholder="OTP Code" required>
-            
-            {{-- Placeholder OTP Button (Changed to type="button" so it doesn't trigger the login) --}}
-            <button class="bg-[#FCAE42] h-[55px] text-[24px] text-black font-bold py-2 px-4 rounded-[10px] mt-[30px] hover:bg-[#e09b3b] transition-colors" 
-                    type="button" onclick="alert('OTP generation logic will be implemented here later.')">
-                Send OTP
-            </button>
-            
-            {{-- Log In Button (Changed from <a> tag to <button type="submit"> to submit the Laravel form) --}}
-            <button class="bg-[#FCAE42] h-[55px] text-[24px] text-center text-black font-bold py-2 px-4 rounded-[10px] mt-[20px] hover:bg-[#e09b3b] transition-colors" 
-                    type="submit">
-                Log In
-            </button>
+        {{-- OTP Request Form --}}
+        <form class="flex flex-col" method="POST" action="{{ route('login.otp.request') }}">
+          @csrf
+
+          <input class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" 
+               type="email" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus>
+
+          <button class="bg-[#FCAE42] h-[55px] text-[24px] text-black font-bold py-2 px-4 rounded-[10px] mt-[30px] hover:bg-[#e09b3b] transition-colors" 
+              type="submit">
+            Send OTP
+          </button>
         </form>
 
-        <div class="flex mt-6 mb-14">
+        {{-- OTP Verify Form --}}
+        <form class="flex flex-col" method="POST" action="{{ route('login.otp.verify') }}">
+          @csrf
+
+          <input class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" 
+               type="email" name="email" value="{{ old('email') }}" placeholder="Email" required>
+
+          <input class="border border-gray-400 rounded-[10px] w-[395px] h-[55px] mt-[20px] p-5 text-[24px] focus:outline-none focus:border-[#ED1B24]" 
+               type="text" name="otp_code" placeholder="OTP Code" required>
+
+          <button class="bg-[#FCAE42] h-[55px] text-[24px] text-center text-black font-bold py-2 px-4 rounded-[10px] mt-[20px] hover:bg-[#e09b3b] transition-colors" 
+              type="submit">
+            Log In
+          </button>
+        </form>
+
+        <div class="flex mt-6">
             <p class="text-[15px] mr-0.5">Don’t have an account?</p>
             <a href="{{ route('register') }}" class="text-[15px] text-[#ED1B24] font-bold hover:underline">Sign Up</a>
         </div>
+
+        @if(env('ADMIN_PASSWORD_LOGIN_KEY'))
+          <div class="mb-14">
+            <a href="{{ route('login.password') }}" class="text-[13px] text-gray-500 hover:text-gray-700 hover:underline">Admin password login</a>
+          </div>
+        @endif
       </div>
     </div>
 

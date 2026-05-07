@@ -2,15 +2,21 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes (not logged in)
 Route::middleware('guest:customer')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register/otp/request', [AuthController::class, 'requestRegisterOtp'])->name('register.otp.request');
+    Route::post('/register/otp/verify', [AuthController::class, 'verifyRegisterOtp'])->name('register.otp.verify');
     
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login/otp', [AuthController::class, 'verifyOtp'])->name('login.otp.verify');
+    Route::post('/login/otp/request', [AuthController::class, 'requestOtp'])->name('login.otp.request');
+
+    Route::get('/login/password', [AuthController::class, 'showPasswordLogin'])->name('login.password');
+    Route::post('/login/password', [AuthController::class, 'passwordLogin'])->name('login.password.submit');
 });
 
 // Authenticated routes (logged in)
@@ -35,8 +41,17 @@ Route::middleware(['auth:customer', 'no-back-history'])->group(function () {
     
     // Delete account
     Route::delete('/account/delete', [AccountController::class, 'deleteAccount'])->name('account.delete');
+    Route::post('/account/delete/otp', [AccountController::class, 'requestDeleteOtp'])
+        ->name('account.delete.otp.request');
     
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])
+        ->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
+        ->name('notifications.read-all');
 });
 
 // Redirect root to login
@@ -56,6 +71,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('orders.index');
     Route::patch('orders/{order}/event', [\App\Http\Controllers\Admin\OrderController::class, 'handleEvent'])
         ->name('orders.event');
+    Route::patch('orders/{order}/resolve', [\App\Http\Controllers\Admin\OrderController::class, 'resolveProblem'])
+        ->name('orders.resolve');
 
     Route::get('stock', [\App\Http\Controllers\Admin\StockController::class, 'index'])
         ->name('stock.index');

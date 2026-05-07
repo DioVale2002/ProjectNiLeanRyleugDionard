@@ -11,6 +11,7 @@ class StockOut extends Model
     protected $fillable = [
         'stockOut_date',
         'productOut',
+        'quantity',
     ];
 
     protected $casts = [

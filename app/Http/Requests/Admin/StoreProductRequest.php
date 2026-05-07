@@ -13,7 +13,7 @@ class StoreProductRequest extends FormRequest
             'Title'     => 'required|string|max:255',
             'Author'    => 'required|string|max:255',
             'Price'     => 'required|numeric|min:0',
-            'Stock'     => 'nullable|integer|min:0',
+            'Stock'     => 'required|integer|min:0',
             'ISBN'      => 'required|string|unique:products,ISBN',
             'Publisher' => 'required|string|max:255',
             'Genre'     => 'required|string|max:255',

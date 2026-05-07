@@ -87,9 +87,59 @@ class CatalogTest extends TestCase
         $this->createProduct(['Title' => 'Fantasy Book', 'Genre' => 'Fantasy']);
         $this->createProduct(['Title' => 'Horror Book', 'Genre' => 'Horror']);
 
-        $response = $this->get('/catalog?genre=Fantasy');
+        $response = $this->get('/catalog?genre[]=Fantasy');
         $response->assertSee('Fantasy Book');
         $response->assertDontSee('Horror Book');
+    }
+
+    public function test_catalog_filters_by_publication_date_range()
+    {
+        $this->createProduct([
+            'Title' => 'Old Release',
+            'Publication_Date' => '2020-01-01',
+        ]);
+        $this->createProduct([
+            'Title' => 'New Release',
+            'Publication_Date' => '2024-01-01',
+        ]);
+
+        $response = $this->get('/catalog?min_date=2023-01-01');
+
+        $response->assertSee('New Release');
+        $response->assertDontSee('Old Release');
+    }
+
+    public function test_catalog_can_filter_by_rating()
+    {
+        $this->createProduct(['Title' => 'Five Star', 'Rating' => 5]);
+        $this->createProduct(['Title' => 'Three Star', 'Rating' => 3]);
+
+        $response = $this->get('/catalog?rating=5');
+
+        $response->assertSee('Five Star');
+        $response->assertDontSee('Three Star');
+    }
+
+    public function test_catalog_can_filter_by_price_range()
+    {
+        $this->createProduct(['Title' => 'Budget Book', 'Price' => 100]);
+        $this->createProduct(['Title' => 'Premium Book', 'Price' => 500]);
+
+        $response = $this->get('/catalog?min_price=200');
+
+        $response->assertSee('Premium Book');
+        $response->assertDontSee('Budget Book');
+    }
+
+    public function test_catalog_can_filter_by_age_group()
+    {
+        $this->createProduct(['Title' => 'Kids Pick', 'Age_Group' => 'Kids']);
+        $this->createProduct(['Title' => 'Adult Pick', 'Age_Group' => 'Adults']);
+
+        $response = $this->get('/catalog?agegroup[]=Kids');
+
+        $response->assertSee('Kids Pick');
+        $response->assertDontSee('Adult Pick');
     }
 
     public function test_guest_can_view_product_detail()
@@ -116,7 +166,7 @@ class CatalogTest extends TestCase
         $product = $this->createProduct();
 
         $response = $this->get("/catalog/{$product->product_ID}");
-        $response->assertSee('LOGIN TO BUY');
+        $response->assertSee('Log in to Buy');
     }
 
     public function test_authenticated_customer_sees_add_to_cart_on_detail()
@@ -127,6 +177,6 @@ class CatalogTest extends TestCase
         $this->actingAs($customer, 'customer');
 
         $response = $this->get("/catalog/{$product->product_ID}");
-        $response->assertSee('ADD TO CART');
+        $response->assertSee('Add to Cart');
     }
 }

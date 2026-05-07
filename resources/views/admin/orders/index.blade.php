@@ -173,6 +173,9 @@
                                 @if($order->is_first_party_delivery)
                                     <div class="mt-1 text-xs font-semibold text-indigo-600">Delivery: {{ $order->delivery_status }}</div>
                                 @endif
+                                @if($order->resolved_at)
+                                    <div class="mt-1 text-xs font-semibold text-green-600">Resolved {{ $order->resolved_at->format('M j, Y') }}</div>
+                                @endif
                                 @if($order->cancellation_note)
                                     <div class="mt-1 text-xs text-gray-500">Note: {{ $order->cancellation_note }}</div>
                                 @endif
@@ -195,6 +198,16 @@
                                             <button type="submit" class="flex items-center gap-1.5 h-[34px] rounded-lg bg-[#FCAE42] hover:bg-yellow-500 transition-colors px-3 text-xs font-bold text-black shadow-sm" title="Process Order">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
                                                 Process
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    @if(in_array($order->order_status, ['Cancelled', 'Failed'], true) && !$order->resolved_at)
+                                        <form action="{{ route('admin.orders.resolve', $order) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="flex items-center gap-1.5 h-[34px] rounded-lg bg-green-600 hover:bg-green-700 transition-colors px-3 text-xs font-bold text-white shadow-sm" title="Mark as resolved">
+                                                Resolve
                                             </button>
                                         </form>
                                     @endif
@@ -236,16 +249,7 @@
                                     @endif
 
                                     {{-- First-party delivery actions --}}
-                                    @if(!in_array($order->order_status, ['Completed', 'Cancelled', 'Failed'], true) && !$order->is_first_party_delivery)
-                                        <form action="{{ route('admin.orders.event', $order) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="event" value="enable_first_party" />
-                                            <button type="submit" class="h-[34px] rounded-lg bg-indigo-500 hover:bg-indigo-600 transition-colors px-3 text-xs font-bold text-white shadow-sm">
-                                                First-party
-                                            </button>
-                                        </form>
-                                    @elseif(!in_array($order->order_status, ['Completed', 'Cancelled', 'Failed'], true))
+                                    @if($order->order_status === 'Processing' && $order->is_first_party_delivery)
                                         <form action="{{ route('admin.orders.event', $order) }}" method="POST">
                                             @csrf
                                             @method('PATCH')

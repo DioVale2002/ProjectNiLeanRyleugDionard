@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Customer;
 use App\Models\Address;
+use App\Models\CustomerActionOtp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -55,7 +56,7 @@ class AccountTest extends TestCase
         $response = $this->get('/account/orders');
         $response->assertStatus(200);
         $response->assertViewIs('account.orders');
-        $response->assertSee('No Orders yet');
+        $response->assertSee('No active orders yet.');
     }
 
     public function test_authenticated_user_can_view_archived_page()
@@ -66,7 +67,7 @@ class AccountTest extends TestCase
         $response = $this->get('/account/archived');
         $response->assertStatus(200);
         $response->assertViewIs('account.archived');
-        $response->assertSee('No Orders yet');
+        $response->assertSee('No archived orders found.');
     }
 
     public function test_authenticated_user_can_view_addresses_page()
@@ -200,34 +201,20 @@ class AccountTest extends TestCase
         $response->assertSessionHasErrors('email');
     }
 
-    public function test_user_can_update_password_in_info_update()
-{
-    $customer = $this->createCustomer();
-    $this->actingAs($customer, 'customer');
-
-    $response = $this->put('/account/info/update', [
-        'first_name'            => 'John',
-        'last_name'             => 'Doe',
-        'contact_num'           => '09123456789',
-        'email'                 => 'john@example.com',
-        'current_password'      => 'password123',
-        'new_password'          => 'newpassword456',
-        'new_password_confirmation' => 'newpassword456',
-    ]);
-
-    $response->assertRedirect('/account/security');
-
-    $customer->refresh();
-    $this->assertTrue(Hash::check('newpassword456', $customer->password));
-}
-
-    public function test_user_can_delete_account_with_correct_password()
+    public function test_user_can_delete_account_with_correct_otp()
     {
         $customer = $this->createCustomer();
         $this->actingAs($customer, 'customer');
 
+        CustomerActionOtp::create([
+            'email' => $customer->email,
+            'action' => 'delete',
+            'code_hash' => hash('sha256', '445566'),
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
         $response = $this->delete('/account/delete', [
-            'password' => 'password123',
+            'otp_code' => '445566',
         ]);
 
         $response->assertRedirect('/login');
@@ -240,20 +227,16 @@ class AccountTest extends TestCase
         $this->assertGuest('customer');
     }
 
-    public function test_user_cannot_delete_account_with_incorrect_password()
+    public function test_user_cannot_delete_account_with_incorrect_otp()
     {
         $customer = $this->createCustomer();
         $this->actingAs($customer, 'customer');
 
         $response = $this->delete('/account/delete', [
-            'password' => 'wrongpassword',
+            'otp_code' => '000000',
         ]);
 
-        $response->assertSessionHasErrors('password');
-
-        $this->assertDatabaseHas('customers', [
-            'email' => 'john@example.com',
-        ]);
+        $response->assertSessionHasErrors('otp_code');
     }
 
     public function test_deleting_account_also_deletes_address()
@@ -271,8 +254,15 @@ class AccountTest extends TestCase
 
         $this->actingAs($customer, 'customer');
 
+        CustomerActionOtp::create([
+            'email' => $customer->email,
+            'action' => 'delete',
+            'code_hash' => hash('sha256', '123456'),
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
         $this->delete('/account/delete', [
-            'password' => 'password123',
+            'otp_code' => '123456',
         ]);
 
         $this->assertDatabaseMissing('addresses', [

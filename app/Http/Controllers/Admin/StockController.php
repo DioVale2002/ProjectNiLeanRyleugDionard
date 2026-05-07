@@ -72,6 +72,7 @@ class StockController extends Controller
             StockIn::create([
                 'stockIn_date' => $request->stockIn_date,
                 'productIn'    => $request->productIn,
+                'quantity'     => $request->quantity,
             ]);
 
             Product::where('product_ID', $request->productIn)
@@ -97,6 +98,7 @@ class StockController extends Controller
             StockOut::create([
                 'stockOut_date' => $request->stockOut_date,
                 'productOut'    => $request->productOut,
+                'quantity'      => $request->quantity,
             ]);
 
             $product->decrement('Stock', $request->quantity);

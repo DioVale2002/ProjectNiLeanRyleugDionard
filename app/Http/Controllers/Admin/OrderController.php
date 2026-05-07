@@ -54,7 +54,10 @@ class OrderController extends Controller
         $pendingOrders = (clone $allOrders)->where('order_status', 'Pending')->count();
         $processingOrders = (clone $allOrders)->where('order_status', 'Processing')->count();
         $completedOrders = (clone $allOrders)->where('order_status', 'Completed')->count();
-        $problemOrders = (clone $allOrders)->whereIn('order_status', ['Cancelled', 'Failed'])->count();
+        $problemOrders = (clone $allOrders)
+            ->whereIn('order_status', ['Cancelled', 'Failed'])
+            ->whereNull('resolved_at')
+            ->count();
 
         $statusOptions = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Completed', 'Cancelled', 'Failed'];
 
@@ -75,7 +78,7 @@ class OrderController extends Controller
     public function handleEvent(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'event' => 'required|in:start_processing,ship,deliver,cancel,timeout_fail,approve_payment,reject_payment,enable_first_party,delivery_preparing,delivery_out',
+            'event' => 'required|in:start_processing,ship,deliver,cancel,timeout_fail,approve_payment,reject_payment,delivery_preparing,delivery_out',
             'cancellation_note' => 'nullable|string|max:500',
         ]);
 
@@ -118,11 +121,25 @@ class OrderController extends Controller
 
         if ($event === 'delivery_preparing' && $order->is_first_party_delivery) {
             $order->update(['delivery_status' => 'Preparing']);
+            if ($order->customer) {
+                $order->customer->notify(new OrderStatusNotification(
+                    $order,
+                    'Delivery Update',
+                    'Your order is now being prepared for delivery.'
+                ));
+            }
             return redirect()->back()->with('success', 'Delivery status updated.');
         }
 
         if ($event === 'delivery_out' && $order->is_first_party_delivery) {
             $order->update(['delivery_status' => 'Out for Delivery']);
+            if ($order->customer) {
+                $order->customer->notify(new OrderStatusNotification(
+                    $order,
+                    'Delivery Update',
+                    'Your order is now out for delivery.'
+                ));
+            }
             return redirect()->back()->with('success', 'Delivery status updated.');
         }
 
@@ -154,5 +171,16 @@ class OrderController extends Controller
         }
 
         return redirect()->back()->with('success', 'Order updated successfully.');
+    }
+
+    public function resolveProblem(Order $order)
+    {
+        if (!in_array($order->order_status, ['Cancelled', 'Failed'], true)) {
+            return redirect()->back()->with('error', 'Only cancelled or failed orders can be resolved.');
+        }
+
+        $order->update(['resolved_at' => now()]);
+
+        return redirect()->back()->with('success', 'Problem order marked as resolved.');
     }
 }

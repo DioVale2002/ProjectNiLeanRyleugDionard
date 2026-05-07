@@ -100,75 +100,35 @@
                 </div>
             </div>
 
-            {{-- CARD 2: Change Password (Placeholder for future OTP) --}}
-            <div class="border border-black/50 rounded-lg ml-[63px] w-[900px] h-full bg-white">
-                <div class="m-7">
-                    <p class="font-bold text-[32px]">Change Password</p>
-                    <p class="text-[16px] text-gray-500 mb-2">Leave blank to keep your current password. (Will be replaced with OTP system later)</p>
-                    <hr class="my-4 border-gray-300" />
-                    
-                    <form action="{{ route('account.info.update') }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="mt-6 flex flex-col gap-6">
-                            {{-- Row: Current Password --}}
-                            <div class="flex items-center">
-                                <label class="text-[20px] font-bold w-[220px]" for="current_password">Current Password</label>
-                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
-                                       type="password" name="current_password" id="current_password" />
-                            </div>
-
-                            {{-- Row: New Password --}}
-                            <div class="flex items-center">
-                                <label class="text-[20px] font-bold w-[220px]" for="new_password">New Password</label>
-                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
-                                       type="password" name="new_password" id="new_password" />
-                            </div>
-
-                            {{-- Row: Confirm Password --}}
-                            <div class="flex items-center">
-                                <label class="text-[20px] font-bold w-[220px]" for="new_password_confirmation">Confirm Password</label>
-                                <input class="border border-gray-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
-                                       type="password" name="new_password_confirmation" id="new_password_confirmation" />
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end mt-8 mr-7">
-                            <button type="submit" class="bg-[#ED1B24] text-white font-bold py-3 px-10 rounded-md hover:bg-[#c1101a] transition-colors">
-                                Update Password
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {{-- CARD 3: Delete Account (Password Placeholder) --}}
+            {{-- CARD 2: Delete Account (OTP) --}}
             <div class="border border-red-500 rounded-lg ml-[63px] w-[900px] h-full bg-white">
                 <div class="m-7">
                     <p class="font-bold text-[32px] text-[#ED1B24]">Delete Account</p>
-                    <p class="text-[16px] text-[#ED1B24]">
-                        Deleting your account will remove all your data permanently and cannot be undone.
-                    </p>
+                    <p class="text-[16px] text-[#ED1B24]">Deleting your account will remove all your data permanently and cannot be undone.</p>
                     <hr class="my-4 border-red-300" />
-                    
+
+                    <form action="{{ route('account.delete.otp.request') }}" method="POST">
+                        @csrf
+                        <div class="flex justify-end mt-8 mr-7">
+                            <button type="submit" class="bg-[#ED1B24] text-white font-bold py-3 px-10 rounded-md hover:bg-[#c1101a] transition-colors">
+                                Send OTP
+                            </button>
+                        </div>
+                    </form>
+
                     <form action="{{ route('account.delete') }}" method="POST" onsubmit="return confirm('Are you absolutely sure? This cannot be undone.')">
                         @csrf
                         @method('DELETE')
-                        
+
                         <div class="mt-6 flex flex-col gap-6">
-                            {{-- Row: Enter Password --}}
                             <div class="flex items-center">
-                                <label class="text-[20px] font-bold w-[220px]" for="password">Confirm Password</label>
+                                <label class="text-[20px] font-bold w-[220px]" for="otp_code">OTP Code</label>
                                 <input class="border border-red-400 rounded-sm h-[54px] w-[602px] px-4 focus:outline-none focus:border-[#ED1B24]" 
-                                       type="password" name="password" id="password" placeholder="Enter your password to confirm deletion" required />
+                                       type="text" name="otp_code" id="otp_code" placeholder="Enter the OTP sent to your email" required />
                             </div>
                         </div>
 
                         <div class="flex justify-end mt-8 mr-7">
-                            <button type="submit" class="bg-[#ED1B24] text-white font-bold mr-6 py-3 px-10 rounded-md hover:bg-[#c1101a] transition-colors">
-                                Send OTP
-                            </button>
                             <button type="submit" class="bg-[#ED1B24] text-white font-bold py-3 px-10 rounded-md hover:bg-[#c1101a] transition-colors">
                                 Delete My Account
                             </button>

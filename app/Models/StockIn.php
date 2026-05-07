@@ -11,6 +11,7 @@ class StockIn extends Model
     protected $fillable = [
         'stockIn_date',
         'productIn',
+        'quantity',
     ];
 
     protected $casts = [
