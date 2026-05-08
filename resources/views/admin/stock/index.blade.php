@@ -225,6 +225,7 @@
                         <tr class="border-b border-gray-100 text-xs font-medium text-gray-400 uppercase tracking-wider">
                             <th class="py-3 pl-5 pr-4">ID</th>
                             <th class="py-3 px-4">Product</th>
+                            <th class="py-3 px-4 text-center">Qty</th>
                             <th class="py-3 px-4 text-right">Date</th>
                         </tr>
                     </thead>
@@ -233,10 +234,13 @@
                             <tr class="hover:bg-gray-50/50 transition-colors">
                                 <td class="py-3 pl-5 pr-4 text-gray-500 text-xs">#{{ $s->stockIn_id }}</td>
                                 <td class="py-3 px-4 font-medium text-gray-800">{{ $s->product->Title ?? '—' }}</td>
+                                <td class="py-3 px-4 text-center font-bold text-green-600">
+                                    +{{ $s->quantity ?? '—' }}
+                                </td>
                                 <td class="py-3 px-4 text-gray-500 text-right text-xs">{{ \Illuminate\Support\Carbon::parse($s->stockIn_date)->format('M d, Y') }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="py-8 text-center text-gray-400">No recent stock additions.</td></tr>
+                            <tr><td colspan="4" class="py-8 text-center text-gray-400">No recent stock additions.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -255,6 +259,7 @@
                         <tr class="border-b border-gray-100 text-xs font-medium text-gray-400 uppercase tracking-wider">
                             <th class="py-3 pl-5 pr-4">ID</th>
                             <th class="py-3 px-4">Product</th>
+                            <th class="py-3 px-4 text-center">Qty</th>
                             <th class="py-3 px-4 text-right">Date</th>
                         </tr>
                     </thead>
@@ -263,10 +268,13 @@
                             <tr class="hover:bg-gray-50/50 transition-colors">
                                 <td class="py-3 pl-5 pr-4 text-gray-500 text-xs">#{{ $s->stockOut_id }}</td>
                                 <td class="py-3 px-4 font-medium text-gray-800">{{ $s->product->Title ?? '—' }}</td>
+                                <td class="py-3 px-4 text-center font-bold text-red-500">
+                                    -{{ $s->quantity ?? '—' }}
+                                </td>
                                 <td class="py-3 px-4 text-gray-500 text-right text-xs">{{ \Illuminate\Support\Carbon::parse($s->stockOut_date)->format('M d, Y') }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="py-8 text-center text-gray-400">No recent stock deductions.</td></tr>
+                            <tr><td colspan="4" class="py-8 text-center text-gray-400">No recent stock deductions.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

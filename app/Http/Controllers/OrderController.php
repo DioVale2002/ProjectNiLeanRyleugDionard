@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Throwable;
 
 class OrderController extends Controller
@@ -38,7 +39,11 @@ class OrderController extends Controller
             ->with('items.product')
             ->first();
 
-        abort_if(!$cart || $cart->items->isEmpty(), 422, 'Your cart is empty.');
+        if (!$cart || $cart->items->isEmpty()) {
+            throw new HttpResponseException(
+                redirect()->route('cart.index')->with('error', 'Your cart is empty or has already been checked out.')
+            );
+        }
 
         return $cart;
     }

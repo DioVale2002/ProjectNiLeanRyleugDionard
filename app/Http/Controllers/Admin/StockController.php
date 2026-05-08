@@ -9,6 +9,7 @@ use App\Models\StockIn;
 use App\Models\StockOut;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class StockController extends Controller
 {
@@ -88,11 +89,11 @@ class StockController extends Controller
     {
         $product = Product::findOrFail($request->productOut);
 
-        abort_if(
-            $product->Stock < $request->quantity,
-            422,
-            'Insufficient stock.'
-        );
+        if ($product->Stock < $request->quantity) {
+            throw ValidationException::withMessages([
+                'quantity' => 'Stock out quantity exceeds available stock.',
+            ]);
+        }
 
         DB::transaction(function () use ($request, $product) {
             StockOut::create([

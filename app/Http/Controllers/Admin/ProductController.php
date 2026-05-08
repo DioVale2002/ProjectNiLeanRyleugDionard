@@ -101,6 +101,7 @@ class ProductController extends Controller
                 StockIn::create([
                     'stockIn_date' => now()->toDateString(),
                     'productIn' => $product->product_ID,
+                    'quantity' => $validated['Stock'],
                 ]);
             }
         });

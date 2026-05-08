@@ -132,13 +132,22 @@ php artisan migrate
 php artisan db:seed
 ```
 
-### 7. Start the server
+### 8. Start the server
 
 ```bash
 php artisan serve
 ```
 
 App runs at `http://localhost:8000`.
+
+### 9. Testing Email OTPs Locally
+
+By default, `.env` uses `MAIL_MAILER=log`. When the system "sends" an OTP (for registration, login, or account deletion), it does not send a real email. Instead, it writes the email content to your local log file.
+
+To retrieve your 6-digit OTP during testing:
+1. Request the OTP in the browser.
+2. Open `storage/logs/laravel.log` in your code editor.
+3. Scroll to the bottom to find the email containing your OTP code.
 
 ---
 
@@ -476,11 +485,14 @@ php artisan test tests/Feature/
 | File | Tests | What's covered |
 |------|-------|---------------|
 | `AuthTest.php` | 10 | Register, login, logout, guest redirect |
+| `OtpAccountTest.php` | 26 | OTP Login, OTP Registration, Account Deletion |
 | `AccountTest.php` | 18 | Orders, addresses, security, account update/delete |
 | `InventoryTest.php` | 23 | Product CRUD, archiving, voucher CRUD, stock in/out |
 | `CatalogTest.php` | 9 | Browsing, search, genre filter, product detail, auth gates |
 | `CartTest.php` | 19 | Cart access, add/update/remove items, place order, voucher discounts |
-| **Total** | **79** | |
+| `NotificationTest.php` | 8 | Real-time notifications for order status changes |
+| `AdminOrderEventTest.php` | 19 | Admin payment approval, order transitions, stock restoration |
+| **Total** | **132** | |
 
 ---
 
@@ -760,4 +772,4 @@ Check that migration filenames are in chronological order. The customers/address
 
 ---
 
-*Last updated: April 2026 — Backend subsystems 1 & 2 complete, 79 tests passing*
+*Last updated: May 2026 — All 5 Backend Subsystems complete, 132 tests passing*
