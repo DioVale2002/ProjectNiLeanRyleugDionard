@@ -50,13 +50,22 @@ class OtpAccountTest extends TestCase
         $customer = $this->createCustomer();
         $this->actingAs($customer, 'customer');
 
+        $paymentMethod = \App\Models\PaymentMethod::create(['methodName' => 'Cash on Delivery']);
+        $cart = \App\Models\Cart::create([
+            'createdDate' => now()->toDateString(),
+            'status' => 'active',
+            'cus_id' => $customer->cus_id,
+        ]);
+
         // Create an active order
         Order::create([
             'cus_id' => $customer->cus_id,
+            'cart_id' => $cart->cart_id,
             'order_date' => now(),
             'order_status' => 'Processing',
             'total_amount' => 1000,
             'total_price' => 1000,
+            'paymentMethod_id' => $paymentMethod->paymentMethod_id,
         ]);
 
         $response = $this->post('/account/delete/otp', []);

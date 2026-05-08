@@ -155,9 +155,6 @@
                         <span class="text-[#ED1B24]">₱{{ number_format($order->total_price, 2) }}</span>
                     </div>
 
-                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p class="text-xs text-blue-800">📧 A confirmation email has been sent to {{ $order->customer->email }}</p>
-                    </div>
                 </div>
             </div>
         </div>
